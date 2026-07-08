@@ -18,7 +18,6 @@ wchar_t :: u16;
 char32_t :: u32;
 char16_t :: u16;
 
-/* VARIANT TYPES */
 VariantType :: enum s32 {
     NIL                  :: 0;
     BOOL                 :: 1;
@@ -159,21 +158,22 @@ VariantOperator :: enum s32 {
     GDEXTENSION_VARIANT_OP_MAX           :: MAX;
 }
 
-// In this API there are multiple functions which expect the caller to pass a pointer
-// on return value as parameter.
-// In order to make it clear if the caller should initialize the return value or not
-// we have two flavor of types:
-// - `GDExtensionXXXPtr` for pointer on an initialized value
-// - `GDExtensionUninitializedXXXPtr` for pointer on uninitialized value
-//
-// Notes:
-// - Not respecting those requirements can seems harmless, but will lead to unexpected
-//   segfault or memory leak (for instance with a specific compiler/OS, or when two
-//   native extensions start doing ptrcall on each other).
-// - Initialization must be done with the function pointer returned by `variant_get_ptr_constructor`,
-//   zero-initializing the variable should not be considered a valid initialization method here !
-// - Some types have no destructor (see `extension_api.json`'s `has_destructor` field), for
-//   them it is always safe to skip the constructor for the return value if you are in a hurry ;-)
+/* In this API there are multiple functions which expect the caller to pass a pointer
+* on return value as parameter.
+* In order to make it clear if the caller should initialize the return value or not
+* we have two flavor of types:
+* - `GDExtensionXXXPtr` for pointer on an initialized value
+* - `GDExtensionUninitializedXXXPtr` for pointer on uninitialized value
+*
+* Notes:
+* - Not respecting those requirements can seems harmless, but will lead to unexpected
+* segfault or memory leak (for instance with a specific compiler/OS, or when two
+* native extensions start doing ptrcall on each other).
+* - Initialization must be done with the function pointer returned by `variant_get_ptr_constructor`,
+* zero-initializing the variable should not be considered a valid initialization method here !
+* - Some types have no destructor (see `extension_api.json`'s `has_destructor` field), for
+* them it is always safe to skip the constructor for the return value if you are in a hurry ;-)
+*/
 VariantPtr :: *void;
 ConstVariantPtr :: *void;
 UninitializedVariantPtr :: *void;
@@ -195,8 +195,6 @@ Bool :: u8;
 GDObjectInstanceID :: u64;
 RefPtr :: *void;
 ConstRefPtr :: *void;
-
-/* VARIANT DATA I/O */
 CallErrorType :: enum s32 {
     OK                       :: 0;
     ERROR_INVALID_METHOD     :: 1;
@@ -223,6 +221,7 @@ CallError :: struct {
 
 VariantFromTypeConstructorFunc :: #type (unknown0: UninitializedVariantPtr, unknown1: TypePtr) -> void #c_call;
 TypeFromVariantConstructorFunc :: #type (unknown0: UninitializedTypePtr, unknown1: VariantPtr) -> void #c_call;
+VariantGetInternalPtrFunc :: #type (unknown0: VariantPtr) -> *void #c_call;
 PtrOperatorEvaluator :: #type (p_left: ConstTypePtr, p_right: ConstTypePtr, r_result: TypePtr) -> void #c_call;
 PtrBuiltInMethod :: #type (p_base: TypePtr, p_args: *ConstTypePtr, r_return: TypePtr, p_argument_count: s32) -> void #c_call;
 PtrConstructor :: #type (p_base: UninitializedTypePtr, p_args: *ConstTypePtr) -> void #c_call;
@@ -239,33 +238,32 @@ PtrUtilityFunction :: #type (r_return: TypePtr, p_args: *ConstTypePtr, p_argumen
 InstanceBindingCreateCallback :: #type (p_token: *void, p_instance: *void) -> *void #c_call;
 InstanceBindingFreeCallback :: #type (p_token: *void, p_instance: *void, p_binding: *void) -> void #c_call;
 InstanceBindingReferenceCallback :: #type (p_token: *void, p_binding: *void, p_reference: Bool) -> Bool #c_call;
-
 InstanceBindingCallbacks :: struct {
     create_callback:    InstanceBindingCreateCallback;
     free_callback:      InstanceBindingFreeCallback;
     reference_callback: InstanceBindingReferenceCallback;
 }
 
-/* EXTENSION CLASSES */
 ClassInstancePtr :: *void;
-
 ClassSet :: #type (p_instance: ClassInstancePtr, p_name: ConstStringNamePtr, p_value: ConstVariantPtr) -> Bool #c_call;
 ClassGet :: #type (p_instance: ClassInstancePtr, p_name: ConstStringNamePtr, r_ret: VariantPtr) -> Bool #c_call;
 ClassGetRID :: #type (p_instance: ClassInstancePtr) -> u64 #c_call;
-
 PropertyInfo :: struct {
     type:        VariantType;
     name:        StringNamePtr;
     class_name:  StringNamePtr;
-    hint:        u32; // Bitfield of `PropertyHint` (defined in `extension_api.json`).
+    /* Bitfield of `PropertyHint` (defined in `extension_api.json`). */
+    hint:        u32;
     hint_string: StringPtr;
-    usage:       u32; // Bitfield of `PropertyUsageFlags` (defined in `extension_api.json`).
+    /* Bitfield of `PropertyUsageFlags` (defined in `extension_api.json`). */
+    usage:       u32;
 }
 
 MethodInfo :: struct {
     name:                   StringNamePtr;
     return_value:           PropertyInfo;
-    flags:                  u32; // Bitfield of `GDExtensionClassMethodFlags`.
+    /* Bitfield of `GDExtensionClassMethodFlags`. */
+    flags:                  u32;
     id:                     s32;
     /* Arguments: `default_arguments` is an array of size `argument_count`. */
     argument_count:         u32;
@@ -287,13 +285,28 @@ ClassToString :: #type (p_instance: ClassInstancePtr, r_is_valid: *Bool, p_out: 
 ClassReference :: #type (p_instance: ClassInstancePtr) -> void #c_call;
 ClassUnreference :: #type (p_instance: ClassInstancePtr) -> void #c_call;
 ClassCallVirtual :: #type (p_instance: ClassInstancePtr, p_args: *ConstTypePtr, r_ret: TypePtr) -> void #c_call;
+
+/* Called to construct an instance of the class.
+* For classes descending from RefCounted, the reference count should be zero.
+*/
 ClassCreateInstance :: #type (p_class_userdata: *void) -> ObjectPtr #c_call;
+
+/* Called to construct an instance of the class.
+* For classes descending from RefCounted, the reference count should be zero.
+*/
+ClassCreateInstance2 :: #type (p_class_userdata: *void, p_notify_postinitialize: Bool) -> ObjectPtr #c_call;
+
+/* Called to construct an instance of the class.
+* For classes descending from RefCounted, the reference count should already be incremented by 1.
+*/
+ClassCreateInstance3 :: #type (p_class_userdata: *void, p_notify_postinitialize: Bool) -> ObjectPtr #c_call;
 ClassFreeInstance :: #type (p_class_userdata: *void, p_instance: ClassInstancePtr) -> void #c_call;
 ClassRecreateInstance :: #type (p_class_userdata: *void, p_object: ObjectPtr) -> ClassInstancePtr #c_call;
 ClassGetVirtual :: #type (p_class_userdata: *void, p_name: ConstStringNamePtr) -> ClassCallVirtual #c_call;
+ClassGetVirtual2 :: #type (p_class_userdata: *void, p_name: ConstStringNamePtr, p_hash: u32) -> ClassCallVirtual #c_call;
 ClassGetVirtualCallData :: #type (p_class_userdata: *void, p_name: ConstStringNamePtr) -> *void #c_call;
+ClassGetVirtualCallData2 :: #type (p_class_userdata: *void, p_name: ConstStringNamePtr, p_hash: u32) -> *void #c_call;
 ClassCallVirtualWithData :: #type (p_instance: ClassInstancePtr, p_name: ConstStringNamePtr, p_virtual_call_userdata: *void, p_args: *ConstTypePtr, r_ret: TypePtr) -> void #c_call;
-
 ClassCreationInfo :: struct {
     is_virtual:               Bool;
     is_abstract:              Bool;
@@ -307,11 +320,15 @@ ClassCreationInfo :: struct {
     to_string_func:           ClassToString;
     reference_func:           ClassReference;
     unreference_func:         ClassUnreference;
-    create_instance_func:     ClassCreateInstance; // (Default) constructor; mandatory. If the class is not instantiable, consider making it virtual or abstract.
-    free_instance_func:       ClassFreeInstance; // Destructor; mandatory.
-    get_virtual_func:         ClassGetVirtual; // Queries a virtual function by name and returns a callback to invoke the requested virtual function.
+    /* Class constructor. Required unless the class is virtual or abstract. */
+    create_instance_func:     ClassCreateInstance;
+    /* Destructor; mandatory. */
+    free_instance_func:       ClassFreeInstance;
+    /* Queries a virtual function by name and returns a callback to invoke the requested virtual function. */
+    get_virtual_func:         ClassGetVirtual;
     get_rid_func:             ClassGetRID;
-    class_userdata:           *void; // Per-class user data, later accessible in instance bindings.
+    /* Per-class user data, later accessible in instance bindings. */
+    class_userdata:           *void;
 }
 
 ClassCreationInfo2 :: struct {
@@ -329,22 +346,26 @@ ClassCreationInfo2 :: struct {
     to_string_func:              ClassToString;
     reference_func:              ClassReference;
     unreference_func:            ClassUnreference;
-    create_instance_func:        ClassCreateInstance; // (Default) constructor; mandatory. If the class is not instantiable, consider making it virtual or abstract.
-    free_instance_func:          ClassFreeInstance; // Destructor; mandatory.
+    /* Class constructor. Required unless the class is virtual or abstract. */
+    create_instance_func:        ClassCreateInstance;
+    /* Destructor; mandatory. */
+    free_instance_func:          ClassFreeInstance;
     recreate_instance_func:      ClassRecreateInstance;
-    // Queries a virtual function by name and returns a callback to invoke the requested virtual function.
+    /* Queries a virtual function by name and returns a callback to invoke the requested virtual function. */
     get_virtual_func:            ClassGetVirtual;
-    // Paired with `call_virtual_with_data_func`, this is an alternative to `get_virtual_func` for extensions that
-    // need or benefit from extra data when calling virtual functions.
-    // Returns user data that will be passed to `call_virtual_with_data_func`.
-    // Returning `NULL` from this function signals to Godot that the virtual function is not overridden.
-    // Data returned from this function should be managed by the extension and must be valid until the extension is deinitialized.
-    // You should supply either `get_virtual_func`, or `get_virtual_call_data_func` with `call_virtual_with_data_func`.
+    /* Paired with `call_virtual_with_data_func`, this is an alternative to `get_virtual_func` for extensions that
+    * need or benefit from extra data when calling virtual functions.
+    * Returns user data that will be passed to `call_virtual_with_data_func`.
+    * Returning `NULL` from this function signals to Godot that the virtual function is not overridden.
+    * Data returned from this function should be managed by the extension and must be valid until the extension is deinitialized.
+    * You should supply either `get_virtual_func`, or `get_virtual_call_data_func` with `call_virtual_with_data_func`.
+    */
     get_virtual_call_data_func:  ClassGetVirtualCallData;
-    // Used to call virtual functions when `get_virtual_call_data_func` is not null.
+    /* Used to call virtual functions when `get_virtual_call_data_func` is not null. */
     call_virtual_with_data_func: ClassCallVirtualWithData;
     get_rid_func:                ClassGetRID;
-    class_userdata:              *void; // Per-class user data, later accessible in instance bindings.
+    /* Per-class user data, later accessible in instance bindings. */
+    class_userdata:              *void;
 }
 
 ClassCreationInfo3 :: struct {
@@ -363,81 +384,171 @@ ClassCreationInfo3 :: struct {
     to_string_func:              ClassToString;
     reference_func:              ClassReference;
     unreference_func:            ClassUnreference;
-    create_instance_func:        ClassCreateInstance; // (Default) constructor; mandatory. If the class is not instantiable, consider making it virtual or abstract.
-    free_instance_func:          ClassFreeInstance; // Destructor; mandatory.
+    /* Class constructor. Required unless the class is virtual or abstract. */
+    create_instance_func:        ClassCreateInstance;
+    /* Destructor; mandatory. */
+    free_instance_func:          ClassFreeInstance;
     recreate_instance_func:      ClassRecreateInstance;
-    // Queries a virtual function by name and returns a callback to invoke the requested virtual function.
+    /* Queries a virtual function by name and returns a callback to invoke the requested virtual function. */
     get_virtual_func:            ClassGetVirtual;
-    // Paired with `call_virtual_with_data_func`, this is an alternative to `get_virtual_func` for extensions that
-    // need or benefit from extra data when calling virtual functions.
-    // Returns user data that will be passed to `call_virtual_with_data_func`.
-    // Returning `NULL` from this function signals to Godot that the virtual function is not overridden.
-    // Data returned from this function should be managed by the extension and must be valid until the extension is deinitialized.
-    // You should supply either `get_virtual_func`, or `get_virtual_call_data_func` with `call_virtual_with_data_func`.
+    /* Paired with `call_virtual_with_data_func`, this is an alternative to `get_virtual_func` for extensions that
+    * need or benefit from extra data when calling virtual functions.
+    * Returns user data that will be passed to `call_virtual_with_data_func`.
+    * Returning `NULL` from this function signals to Godot that the virtual function is not overridden.
+    * Data returned from this function should be managed by the extension and must be valid until the extension is deinitialized.
+    * You should supply either `get_virtual_func`, or `get_virtual_call_data_func` with `call_virtual_with_data_func`.
+    */
     get_virtual_call_data_func:  ClassGetVirtualCallData;
-    // Used to call virtual functions when `get_virtual_call_data_func` is not null.
+    /* Used to call virtual functions when `get_virtual_call_data_func` is not null. */
     call_virtual_with_data_func: ClassCallVirtualWithData;
     get_rid_func:                ClassGetRID;
-    class_userdata:              *void; // Per-class user data, later accessible in instance bindings.
+    /* Per-class user data, later accessible in instance bindings. */
+    class_userdata:              *void;
+}
+
+ClassCreationInfo4 :: struct {
+    is_virtual:                  Bool;
+    is_abstract:                 Bool;
+    is_exposed:                  Bool;
+    is_runtime:                  Bool;
+    icon_path:                   ConstStringPtr;
+    set_func:                    ClassSet;
+    get_func:                    ClassGet;
+    get_property_list_func:      ClassGetPropertyList;
+    free_property_list_func:     ClassFreePropertyList2;
+    property_can_revert_func:    ClassPropertyCanRevert;
+    property_get_revert_func:    ClassPropertyGetRevert;
+    validate_property_func:      ClassValidateProperty;
+    notification_func:           ClassNotification2;
+    to_string_func:              ClassToString;
+    reference_func:              ClassReference;
+    unreference_func:            ClassUnreference;
+    /* Class constructor. Required unless the class is virtual or abstract. */
+    create_instance_func:        ClassCreateInstance2;
+    /* Destructor; mandatory. */
+    free_instance_func:          ClassFreeInstance;
+    recreate_instance_func:      ClassRecreateInstance;
+    /* Queries a virtual function by name and returns a callback to invoke the requested virtual function. */
+    get_virtual_func:            ClassGetVirtual2;
+    /* Paired with `call_virtual_with_data_func`, this is an alternative to `get_virtual_func` for extensions that
+    * need or benefit from extra data when calling virtual functions.
+    * Returns user data that will be passed to `call_virtual_with_data_func`.
+    * Returning `NULL` from this function signals to Godot that the virtual function is not overridden.
+    * Data returned from this function should be managed by the extension and must be valid until the extension is deinitialized.
+    * You should supply either `get_virtual_func`, or `get_virtual_call_data_func` with `call_virtual_with_data_func`.
+    */
+    get_virtual_call_data_func:  ClassGetVirtualCallData2;
+    /* Used to call virtual functions when `get_virtual_call_data_func` is not null. */
+    call_virtual_with_data_func: ClassCallVirtualWithData;
+    /* Per-class user data, later accessible in instance bindings. */
+    class_userdata:              *void;
+}
+
+ClassCreationInfo5 :: ClassCreationInfo4;
+ClassCreationInfo6 :: struct {
+    is_virtual:                  Bool;
+    is_abstract:                 Bool;
+    is_exposed:                  Bool;
+    is_runtime:                  Bool;
+    icon_path:                   ConstStringPtr;
+    set_func:                    ClassSet;
+    get_func:                    ClassGet;
+    get_property_list_func:      ClassGetPropertyList;
+    free_property_list_func:     ClassFreePropertyList2;
+    property_can_revert_func:    ClassPropertyCanRevert;
+    property_get_revert_func:    ClassPropertyGetRevert;
+    validate_property_func:      ClassValidateProperty;
+    notification_func:           ClassNotification2;
+    to_string_func:              ClassToString;
+    reference_func:              ClassReference;
+    unreference_func:            ClassUnreference;
+    /* Class constructor. Required unless the class is virtual or abstract. */
+    create_instance_func:        ClassCreateInstance3;
+    /* Destructor; mandatory. */
+    free_instance_func:          ClassFreeInstance;
+    recreate_instance_func:      ClassRecreateInstance;
+    /* Queries a virtual function by name and returns a callback to invoke the requested virtual function. */
+    get_virtual_func:            ClassGetVirtual2;
+    /* Paired with `call_virtual_with_data_func`, this is an alternative to `get_virtual_func` for extensions that
+    * need or benefit from extra data when calling virtual functions.
+    * Returns user data that will be passed to `call_virtual_with_data_func`.
+    * Returning `NULL` from this function signals to Godot that the virtual function is not overridden.
+    * Data returned from this function should be managed by the extension and must be valid until the extension is deinitialized.
+    * You should supply either `get_virtual_func`, or `get_virtual_call_data_func` with `call_virtual_with_data_func`.
+    */
+    get_virtual_call_data_func:  ClassGetVirtualCallData2;
+    /* Used to call virtual functions when `get_virtual_call_data_func` is not null. */
+    call_virtual_with_data_func: ClassCallVirtualWithData;
+    /* Per-class user data, later accessible in instance bindings. */
+    class_userdata:              *void;
 }
 
 ClassLibraryPtr :: *void;
 
-/* Method */
+/* Passed a pointer to a PackedStringArray that should be filled with the classes that may be used by the GDExtension. */
+EditorGetClassesUsedCallback :: #type (p_packed_string_array: TypePtr) -> void #c_call;
 ClassMethodFlags :: enum s32 {
-    FLAG_NORMAL   :: 1;
-    FLAG_EDITOR   :: 2;
-    FLAG_CONST    :: 4;
-    FLAG_VIRTUAL  :: 8;
-    FLAG_VARARG   :: 16;
-    FLAG_STATIC   :: 32;
-    FLAGS_DEFAULT :: 1;
+    FLAG_NORMAL           :: 1;
+    FLAG_EDITOR           :: 2;
+    FLAG_CONST            :: 4;
+    FLAG_VIRTUAL          :: 8;
+    FLAG_VARARG           :: 16;
+    FLAG_STATIC           :: 32;
+    FLAG_VIRTUAL_REQUIRED :: 128;
+    FLAGS_DEFAULT         :: 1;
 
-    GDEXTENSION_METHOD_FLAG_NORMAL   :: FLAG_NORMAL;
-    GDEXTENSION_METHOD_FLAG_EDITOR   :: FLAG_EDITOR;
-    GDEXTENSION_METHOD_FLAG_CONST    :: FLAG_CONST;
-    GDEXTENSION_METHOD_FLAG_VIRTUAL  :: FLAG_VIRTUAL;
-    GDEXTENSION_METHOD_FLAG_VARARG   :: FLAG_VARARG;
-    GDEXTENSION_METHOD_FLAG_STATIC   :: FLAG_STATIC;
-    GDEXTENSION_METHOD_FLAGS_DEFAULT :: FLAGS_DEFAULT;
+    GDEXTENSION_METHOD_FLAG_NORMAL           :: FLAG_NORMAL;
+    GDEXTENSION_METHOD_FLAG_EDITOR           :: FLAG_EDITOR;
+    GDEXTENSION_METHOD_FLAG_CONST            :: FLAG_CONST;
+    GDEXTENSION_METHOD_FLAG_VIRTUAL          :: FLAG_VIRTUAL;
+    GDEXTENSION_METHOD_FLAG_VARARG           :: FLAG_VARARG;
+    GDEXTENSION_METHOD_FLAG_STATIC           :: FLAG_STATIC;
+    GDEXTENSION_METHOD_FLAG_VIRTUAL_REQUIRED :: FLAG_VIRTUAL_REQUIRED;
+    GDEXTENSION_METHOD_FLAGS_DEFAULT         :: FLAGS_DEFAULT;
 }
 
 ClassMethodArgumentMetadata :: enum s32 {
-    NONE           :: 0;
-    INT_IS_INT8    :: 1;
-    INT_IS_INT16   :: 2;
-    INT_IS_INT32   :: 3;
-    INT_IS_INT64   :: 4;
-    INT_IS_UINT8   :: 5;
-    INT_IS_UINT16  :: 6;
-    INT_IS_UINT32  :: 7;
-    INT_IS_UINT64  :: 8;
-    REAL_IS_FLOAT  :: 9;
-    REAL_IS_DOUBLE :: 10;
+    NONE               :: 0;
+    INT_IS_INT8        :: 1;
+    INT_IS_INT16       :: 2;
+    INT_IS_INT32       :: 3;
+    INT_IS_INT64       :: 4;
+    INT_IS_UINT8       :: 5;
+    INT_IS_UINT16      :: 6;
+    INT_IS_UINT32      :: 7;
+    INT_IS_UINT64      :: 8;
+    REAL_IS_FLOAT      :: 9;
+    REAL_IS_DOUBLE     :: 10;
+    INT_IS_CHAR16      :: 11;
+    INT_IS_CHAR32      :: 12;
+    OBJECT_IS_REQUIRED :: 13;
 
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_NONE           :: NONE;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_INT8    :: INT_IS_INT8;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_INT16   :: INT_IS_INT16;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_INT32   :: INT_IS_INT32;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_INT64   :: INT_IS_INT64;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_UINT8   :: INT_IS_UINT8;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_UINT16  :: INT_IS_UINT16;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_UINT32  :: INT_IS_UINT32;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_UINT64  :: INT_IS_UINT64;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_REAL_IS_FLOAT  :: REAL_IS_FLOAT;
-    GDEXTENSION_METHOD_ARGUMENT_METADATA_REAL_IS_DOUBLE :: REAL_IS_DOUBLE;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_NONE               :: NONE;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_INT8        :: INT_IS_INT8;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_INT16       :: INT_IS_INT16;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_INT32       :: INT_IS_INT32;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_INT64       :: INT_IS_INT64;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_UINT8       :: INT_IS_UINT8;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_UINT16      :: INT_IS_UINT16;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_UINT32      :: INT_IS_UINT32;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_UINT64      :: INT_IS_UINT64;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_REAL_IS_FLOAT      :: REAL_IS_FLOAT;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_REAL_IS_DOUBLE     :: REAL_IS_DOUBLE;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_CHAR16      :: INT_IS_CHAR16;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_INT_IS_CHAR32      :: INT_IS_CHAR32;
+    GDEXTENSION_METHOD_ARGUMENT_METADATA_OBJECT_IS_REQUIRED :: OBJECT_IS_REQUIRED;
 }
 
 ClassMethodCall :: #type (method_userdata: *void, p_instance: ClassInstancePtr, p_args: *ConstVariantPtr, p_argument_count: Int, r_return: VariantPtr, r_error: *CallError) -> void #c_call;
 ClassMethodValidatedCall :: #type (method_userdata: *void, p_instance: ClassInstancePtr, p_args: *ConstVariantPtr, r_return: VariantPtr) -> void #c_call;
 ClassMethodPtrCall :: #type (method_userdata: *void, p_instance: ClassInstancePtr, p_args: *ConstTypePtr, r_ret: TypePtr) -> void #c_call;
-
 ClassMethodInfo :: struct {
     name:                   StringNamePtr;
     method_userdata:        *void;
     call_func:              ClassMethodCall;
     ptrcall_func:           ClassMethodPtrCall;
-    method_flags:           u32; // Bitfield of `GDExtensionClassMethodFlags`.
+    /* Bitfield of `GDExtensionClassMethodFlags`. */
+    method_flags:           u32;
     /* If `has_return_value` is false, `return_value_info` and `return_value_metadata` are ignored.
     *
     * @todo Consider dropping `has_return_value` and making the other two properties match `GDExtensionMethodInfo` and `GDExtensionClassVirtualMethod` for consistency in future version of this struct.
@@ -460,7 +571,8 @@ ClassMethodInfo :: struct {
 
 ClassVirtualMethodInfo :: struct {
     name:                  StringNamePtr;
-    method_flags:          u32; // Bitfield of `GDExtensionClassMethodFlags`.
+    /* Bitfield of `GDExtensionClassMethodFlags`. */
+    method_flags:          u32;
     return_value:          PropertyInfo;
     return_value_metadata: ClassMethodArgumentMetadata;
     argument_count:        u32;
@@ -471,30 +583,27 @@ ClassVirtualMethodInfo :: struct {
 CallableCustomCall :: #type (callable_userdata: *void, p_args: *ConstVariantPtr, p_argument_count: Int, r_return: VariantPtr, r_error: *CallError) -> void #c_call;
 CallableCustomIsValid :: #type (callable_userdata: *void) -> Bool #c_call;
 CallableCustomFree :: #type (callable_userdata: *void) -> void #c_call;
-
 CallableCustomHash :: #type (callable_userdata: *void) -> u32 #c_call;
 CallableCustomEqual :: #type (callable_userdata_a: *void, callable_userdata_b: *void) -> Bool #c_call;
 CallableCustomLessThan :: #type (callable_userdata_a: *void, callable_userdata_b: *void) -> Bool #c_call;
-
 CallableCustomToString :: #type (callable_userdata: *void, r_is_valid: *Bool, r_out: StringPtr) -> void #c_call;
-
 CallableCustomGetArgumentCount :: #type (callable_userdata: *void, r_is_valid: *Bool) -> Int #c_call;
 
+/* Only `call_func` and `token` are strictly required, however, `object_id` should be passed if its not a static method.
+*
+* `token` should point to an address that uniquely identifies the GDExtension (for example, the
+* `GDExtensionClassLibraryPtr` passed to the entry symbol function.
+*
+* `hash_func`, `equal_func`, and `less_than_func` are optional. If not provided both `call_func` and
+* `callable_userdata` together are used as the identity of the callable for hashing and comparison purposes.
+*
+* The hash returned by `hash_func` is cached, `hash_func` will not be called more than once per callable.
+*
+* `is_valid_func` is necessary if the validity of the callable can change before destruction.
+*
+* `free_func` is necessary if `callable_userdata` needs to be cleaned up when the callable is freed.
+*/
 CallableCustomInfo :: struct {
-    /* Only `call_func` and `token` are strictly required, however, `object_id` should be passed if its not a static method.
-    *
-    * `token` should point to an address that uniquely identifies the GDExtension (for example, the
-    * `GDExtensionClassLibraryPtr` passed to the entry symbol function.
-    *
-    * `hash_func`, `equal_func`, and `less_than_func` are optional. If not provided both `call_func` and
-    * `callable_userdata` together are used as the identity of the callable for hashing and comparison purposes.
-    *
-    * The hash returned by `hash_func` is cached, `hash_func` will not be called more than once per callable.
-    *
-    * `is_valid_func` is necessary if the validity of the callable can change before destruction.
-    *
-    * `free_func` is necessary if `callable_userdata` needs to be cleaned up when the callable is freed.
-    */
     callable_userdata: *void;
     token:             *void;
     object_id:         GDObjectInstanceID;
@@ -507,21 +616,21 @@ CallableCustomInfo :: struct {
     to_string_func:    CallableCustomToString;
 }
 
+/* Only `call_func` and `token` are strictly required, however, `object_id` should be passed if its not a static method.
+*
+* `token` should point to an address that uniquely identifies the GDExtension (for example, the
+* `GDExtensionClassLibraryPtr` passed to the entry symbol function.
+*
+* `hash_func`, `equal_func`, and `less_than_func` are optional. If not provided both `call_func` and
+* `callable_userdata` together are used as the identity of the callable for hashing and comparison purposes.
+*
+* The hash returned by `hash_func` is cached, `hash_func` will not be called more than once per callable.
+*
+* `is_valid_func` is necessary if the validity of the callable can change before destruction.
+*
+* `free_func` is necessary if `callable_userdata` needs to be cleaned up when the callable is freed.
+*/
 CallableCustomInfo2 :: struct {
-    /* Only `call_func` and `token` are strictly required, however, `object_id` should be passed if its not a static method.
-    *
-    * `token` should point to an address that uniquely identifies the GDExtension (for example, the
-    * `GDExtensionClassLibraryPtr` passed to the entry symbol function.
-    *
-    * `hash_func`, `equal_func`, and `less_than_func` are optional. If not provided both `call_func` and
-    * `callable_userdata` together are used as the identity of the callable for hashing and comparison purposes.
-    *
-    * The hash returned by `hash_func` is cached, `hash_func` will not be called more than once per callable.
-    *
-    * `is_valid_func` is necessary if the validity of the callable can change before destruction.
-    *
-    * `free_func` is necessary if `callable_userdata` needs to be cleaned up when the callable is freed.
-    */
     callable_userdata:       *void;
     token:                   *void;
     object_id:               GDObjectInstanceID;
@@ -535,53 +644,40 @@ CallableCustomInfo2 :: struct {
     get_argument_count_func: CallableCustomGetArgumentCount;
 }
 
-/* SCRIPT INSTANCE EXTENSION */
+/* Pointer to custom ScriptInstance native implementation. */
 ScriptInstanceDataPtr :: *void;
-
 ScriptInstanceSet :: #type (p_instance: ScriptInstanceDataPtr, p_name: ConstStringNamePtr, p_value: ConstVariantPtr) -> Bool #c_call;
 ScriptInstanceGet :: #type (p_instance: ScriptInstanceDataPtr, p_name: ConstStringNamePtr, r_ret: VariantPtr) -> Bool #c_call;
 ScriptInstanceGetPropertyList :: #type (p_instance: ScriptInstanceDataPtr, r_count: *u32) -> *PropertyInfo #c_call;
 ScriptInstanceFreePropertyList :: #type (p_instance: ScriptInstanceDataPtr, p_list: *PropertyInfo) -> void #c_call;
 ScriptInstanceFreePropertyList2 :: #type (p_instance: ScriptInstanceDataPtr, p_list: *PropertyInfo, p_count: u32) -> void #c_call;
 ScriptInstanceGetClassCategory :: #type (p_instance: ScriptInstanceDataPtr, p_class_category: *PropertyInfo) -> Bool #c_call;
-
 ScriptInstanceGetPropertyType :: #type (p_instance: ScriptInstanceDataPtr, p_name: ConstStringNamePtr, r_is_valid: *Bool) -> VariantType #c_call;
 ScriptInstanceValidateProperty :: #type (p_instance: ScriptInstanceDataPtr, p_property: *PropertyInfo) -> Bool #c_call;
-
 ScriptInstancePropertyCanRevert :: #type (p_instance: ScriptInstanceDataPtr, p_name: ConstStringNamePtr) -> Bool #c_call;
 ScriptInstancePropertyGetRevert :: #type (p_instance: ScriptInstanceDataPtr, p_name: ConstStringNamePtr, r_ret: VariantPtr) -> Bool #c_call;
-
 ScriptInstanceGetOwner :: #type (p_instance: ScriptInstanceDataPtr) -> ObjectPtr #c_call;
 ScriptInstancePropertyStateAdd :: #type (p_name: ConstStringNamePtr, p_value: ConstVariantPtr, p_userdata: *void) -> void #c_call;
 ScriptInstanceGetPropertyState :: #type (p_instance: ScriptInstanceDataPtr, p_add_func: ScriptInstancePropertyStateAdd, p_userdata: *void) -> void #c_call;
-
 ScriptInstanceGetMethodList :: #type (p_instance: ScriptInstanceDataPtr, r_count: *u32) -> *MethodInfo #c_call;
 ScriptInstanceFreeMethodList :: #type (p_instance: ScriptInstanceDataPtr, p_list: *MethodInfo) -> void #c_call;
 ScriptInstanceFreeMethodList2 :: #type (p_instance: ScriptInstanceDataPtr, p_list: *MethodInfo, p_count: u32) -> void #c_call;
-
 ScriptInstanceHasMethod :: #type (p_instance: ScriptInstanceDataPtr, p_name: ConstStringNamePtr) -> Bool #c_call;
-
 ScriptInstanceGetMethodArgumentCount :: #type (p_instance: ScriptInstanceDataPtr, p_name: ConstStringNamePtr, r_is_valid: *Bool) -> Int #c_call;
-
 ScriptInstanceCall :: #type (p_self: ScriptInstanceDataPtr, p_method: ConstStringNamePtr, p_args: *ConstVariantPtr, p_argument_count: Int, r_return: VariantPtr, r_error: *CallError) -> void #c_call;
 ScriptInstanceNotification :: #type (p_instance: ScriptInstanceDataPtr, p_what: s32) -> void #c_call;
 ScriptInstanceNotification2 :: #type (p_instance: ScriptInstanceDataPtr, p_what: s32, p_reversed: Bool) -> void #c_call;
 ScriptInstanceToString :: #type (p_instance: ScriptInstanceDataPtr, r_is_valid: *Bool, r_out: StringPtr) -> void #c_call;
-
 ScriptInstanceRefCountIncremented :: #type (p_instance: ScriptInstanceDataPtr) -> void #c_call;
 ScriptInstanceRefCountDecremented :: #type (p_instance: ScriptInstanceDataPtr) -> Bool #c_call;
-
 ScriptInstanceGetScript :: #type (p_instance: ScriptInstanceDataPtr) -> ObjectPtr #c_call;
 ScriptInstanceIsPlaceholder :: #type (p_instance: ScriptInstanceDataPtr) -> Bool #c_call;
-
 ScriptLanguagePtr :: *void;
-
 ScriptInstanceGetLanguage :: #type (p_instance: ScriptInstanceDataPtr) -> ScriptLanguagePtr #c_call;
-
 ScriptInstanceFree :: #type (p_instance: ScriptInstanceDataPtr) -> void #c_call;
 
+/* Pointer to ScriptInstance. */
 ScriptInstancePtr :: *void;
-
 ScriptInstanceInfo :: struct {
     set_func:                  ScriptInstanceSet;
     get_func:                  ScriptInstanceGet;
@@ -613,7 +709,8 @@ ScriptInstanceInfo2 :: struct {
     get_func:                  ScriptInstanceGet;
     get_property_list_func:    ScriptInstanceGetPropertyList;
     free_property_list_func:   ScriptInstanceFreePropertyList;
-    get_class_category_func:   ScriptInstanceGetClassCategory; // Optional. Set to NULL for the default behavior.
+    /* Optional. Set to NULL for the default behavior. */
+    get_class_category_func:   ScriptInstanceGetClassCategory;
     property_can_revert_func:  ScriptInstancePropertyCanRevert;
     property_get_revert_func:  ScriptInstancePropertyGetRevert;
     get_owner_func:            ScriptInstanceGetOwner;
@@ -641,7 +738,8 @@ ScriptInstanceInfo3 :: struct {
     get_func:                       ScriptInstanceGet;
     get_property_list_func:         ScriptInstanceGetPropertyList;
     free_property_list_func:        ScriptInstanceFreePropertyList2;
-    get_class_category_func:        ScriptInstanceGetClassCategory; // Optional. Set to NULL for the default behavior.
+    /* Optional. Set to NULL for the default behavior. */
+    get_class_category_func:        ScriptInstanceGetClassCategory;
     property_can_revert_func:       ScriptInstancePropertyCanRevert;
     property_get_revert_func:       ScriptInstancePropertyGetRevert;
     get_owner_func:                 ScriptInstanceGetOwner;
@@ -665,7 +763,8 @@ ScriptInstanceInfo3 :: struct {
     free_func:                      ScriptInstanceFree;
 }
 
-/* INITIALIZATION */
+WorkerThreadPoolGroupTask :: #type (unknown0: *void, unknown1: u32) -> void #c_call;
+WorkerThreadPoolTask :: #type (unknown0: *void) -> void #c_call;
 InitializationLevel :: enum s32 {
     INITIALIZATION_CORE      :: 0;
     INITIALIZATION_SERVERS   :: 1;
@@ -680,18 +779,20 @@ InitializationLevel :: enum s32 {
     GDEXTENSION_MAX_INITIALIZATION_LEVEL :: MAX_INITIALIZATION_LEVEL;
 }
 
+InitializeCallback :: #type (p_userdata: *void, p_level: InitializationLevel) -> void #c_call;
+DeinitializeCallback :: #type (p_userdata: *void, p_level: InitializationLevel) -> void #c_call;
 Initialization :: struct {
     /* Minimum initialization level required.
-    * If Core or Servers, the extension needs editor or game restart to take effect */
+    * If Core or Servers, the extension needs editor or game restart to take effect
+    */
     minimum_initialization_level: InitializationLevel;
     /* Up to the user to supply when initializing */
     userdata:                     *void;
     /* This function will be called multiple times for each initialization level. */
-    initialize:                   #type (userdata: *void, p_level: InitializationLevel) -> void #c_call;
-    deinitialize:                 #type (userdata: *void, p_level: InitializationLevel) -> void #c_call;
+    initialize:                   InitializeCallback;
+    deinitialize:                 DeinitializeCallback;
 }
 
-/* INTERFACE */
 GodotVersion :: struct {
     major:   u32;
     minor:   u32;
@@ -699,9 +800,30 @@ GodotVersion :: struct {
     _string: *u8;
 }
 
+GodotVersion2 :: struct {
+    major:     u32;
+    minor:     u32;
+    patch:     u32;
+    /* Full version encoded as hexadecimal with one byte (2 hex digits) per number (e.g. for "3.1.12" it would be 0x03010C) */
+    hex:       u32;
+    /* (e.g. "stable", "beta", "rc1", "rc2") */
+    status:    *u8;
+    /* (e.g. "custom_build") */
+    build:     *u8;
+    /* Full Git commit hash. */
+    hash:      *u8;
+    /* Git commit date UNIX timestamp in seconds, or 0 if unavailable. */
+    timestamp: u64;
+    /* (e.g. "Godot v3.1.4.stable.official.mono") */
+    _string:   *u8;
+}
+
+MainLoopCallbacks :: struct {}
+
 /**
 * @name get_godot_version
 * @since 4.1
+* @deprecated Deprecated in Godot 4.5. Use `get_godot_version2` instead.
 *
 * Gets the Godot version that the GDExtension was loaded into.
 *
@@ -710,8 +832,19 @@ GodotVersion :: struct {
 InterfaceGetGodotVersion :: #type (r_godot_version: *GodotVersion) -> void #c_call;
 
 /**
+* @name get_godot_version2
+* @since 4.5
+*
+* Gets the Godot version that the GDExtension was loaded into.
+*
+* @param r_godot_version A pointer to the structure to write the version information into.
+*/
+InterfaceGetGodotVersion2 :: #type (r_godot_version: *GodotVersion2) -> void #c_call;
+
+/**
 * @name mem_alloc
 * @since 4.1
+* @deprecated Deprecated in Godot 4.6. Does not allow explicitly requesting padding. Use `mem_alloc2` instead.
 *
 * Allocates memory.
 *
@@ -724,6 +857,7 @@ InterfaceMemAlloc :: #type (p_bytes: u64) -> *void #c_call;
 /**
 * @name mem_realloc
 * @since 4.1
+* @deprecated Deprecated in Godot 4.6. Does not allow explicitly requesting padding. Use `mem_realloc2` instead.
 *
 * Reallocates memory.
 *
@@ -737,6 +871,7 @@ InterfaceMemRealloc :: #type (p_ptr: *void, p_bytes: u64) -> *void #c_call;
 /**
 * @name mem_free
 * @since 4.1
+* @deprecated Deprecated in Godot 4.6. Does not allow explicitly requesting padding. Use `mem_free2` instead.
 *
 * Frees memory.
 *
@@ -745,12 +880,50 @@ InterfaceMemRealloc :: #type (p_ptr: *void, p_bytes: u64) -> *void #c_call;
 InterfaceMemFree :: #type (p_ptr: *void) -> void #c_call;
 
 /**
+* @name mem_alloc2
+* @since 4.6
+*
+* Allocates memory.
+*
+* @param p_bytes The amount of memory to allocate in bytes.
+* @param p_pad_align If true, the returned memory will have prepadding of at least 8 bytes.
+*
+* @return A pointer to the allocated memory, or NULL if unsuccessful.
+*/
+InterfaceMemAlloc2 :: #type (p_bytes: u64, p_pad_align: Bool) -> *void #c_call;
+
+/**
+* @name mem_realloc2
+* @since 4.6
+*
+* Reallocates memory.
+*
+* @param p_ptr A pointer to the previously allocated memory.
+* @param p_bytes The number of bytes to resize the memory block to.
+* @param p_pad_align If true, the returned memory will have prepadding of at least 8 bytes.
+*
+* @return A pointer to the allocated memory, or NULL if unsuccessful.
+*/
+InterfaceMemRealloc2 :: #type (p_ptr: *void, p_bytes: u64, p_pad_align: Bool) -> *void #c_call;
+
+/**
+* @name mem_free2
+* @since 4.6
+*
+* Frees memory.
+*
+* @param p_ptr A pointer to the previously allocated memory.
+* @param p_pad_align If true, the given memory was allocated with prepadding.
+*/
+InterfaceMemFree2 :: #type (p_ptr: *void, p_pad_align: Bool) -> void #c_call;
+
+/**
 * @name print_error
 * @since 4.1
 *
 * Logs an error to Godot's built-in debugger and to the OS terminal.
 *
-* @param p_description The code trigging the error.
+* @param p_description The code triggering the error.
 * @param p_function The function name where the error occurred.
 * @param p_file The file where the error occurred.
 * @param p_line The line where the error occurred.
@@ -764,7 +937,7 @@ InterfacePrintError :: #type (p_description: *u8, p_function: *u8, p_file: *u8, 
 *
 * Logs an error with a message to Godot's built-in debugger and to the OS terminal.
 *
-* @param p_description The code trigging the error.
+* @param p_description The code triggering the error.
 * @param p_message The message to show along with the error.
 * @param p_function The function name where the error occurred.
 * @param p_file The file where the error occurred.
@@ -779,7 +952,7 @@ InterfacePrintErrorWithMessage :: #type (p_description: *u8, p_message: *u8, p_f
 *
 * Logs a warning to Godot's built-in debugger and to the OS terminal.
 *
-* @param p_description The code trigging the warning.
+* @param p_description The code triggering the warning.
 * @param p_function The function name where the warning occurred.
 * @param p_file The file where the warning occurred.
 * @param p_line The line where the warning occurred.
@@ -793,7 +966,7 @@ InterfacePrintWarning :: #type (p_description: *u8, p_function: *u8, p_file: *u8
 *
 * Logs a warning with a message to Godot's built-in debugger and to the OS terminal.
 *
-* @param p_description The code trigging the warning.
+* @param p_description The code triggering the warning.
 * @param p_message The message to show along with the warning.
 * @param p_function The function name where the warning occurred.
 * @param p_file The file where the warning occurred.
@@ -808,7 +981,7 @@ InterfacePrintWarningWithMessage :: #type (p_description: *u8, p_message: *u8, p
 *
 * Logs a script error to Godot's built-in debugger and to the OS terminal.
 *
-* @param p_description The code trigging the error.
+* @param p_description The code triggering the error.
 * @param p_function The function name where the error occurred.
 * @param p_file The file where the error occurred.
 * @param p_line The line where the error occurred.
@@ -822,7 +995,7 @@ InterfacePrintScriptError :: #type (p_description: *u8, p_function: *u8, p_file:
 *
 * Logs a script error with a message to Godot's built-in debugger and to the OS terminal.
 *
-* @param p_description The code trigging the error.
+* @param p_description The code triggering the error.
 * @param p_message The message to show along with the error.
 * @param p_function The function name where the error occurred.
 * @param p_file The file where the error occurred.
@@ -897,7 +1070,7 @@ InterfaceVariantCall :: #type (p_self: VariantPtr, p_method: ConstStringNamePtr,
 *
 * Calls a static method on a Variant.
 *
-* @param p_self A pointer to the Variant.
+* @param p_type The variant type.
 * @param p_method A pointer to a StringName identifying the method.
 * @param p_args A pointer to a C array of Variant.
 * @param p_argument_count The number of arguments.
@@ -1183,7 +1356,7 @@ InterfaceVariantGetType :: #type (p_self: ConstVariantPtr) -> VariantType #c_cal
 * @param p_self A pointer to the Variant.
 * @param p_method A pointer to a StringName with the method name.
 *
-* @return
+* @return true if the variant has the given method; otherwise false.
 */
 InterfaceVariantHasMethod :: #type (p_self: ConstVariantPtr, p_method: ConstStringNamePtr) -> Bool #c_call;
 
@@ -1196,7 +1369,7 @@ InterfaceVariantHasMethod :: #type (p_self: ConstVariantPtr, p_method: ConstStri
 * @param p_type The Variant type.
 * @param p_member A pointer to a StringName with the member name.
 *
-* @return
+* @return true if the variant has the given method; otherwise false.
 */
 InterfaceVariantHasMember :: #type (p_type: VariantType, p_member: ConstStringNamePtr) -> Bool #c_call;
 
@@ -1215,6 +1388,21 @@ InterfaceVariantHasMember :: #type (p_type: VariantType, p_member: ConstStringNa
 InterfaceVariantHasKey :: #type (p_self: ConstVariantPtr, p_key: ConstVariantPtr, r_valid: *Bool) -> Bool #c_call;
 
 /**
+* @name variant_get_object_instance_id
+* @since 4.4
+*
+* Gets the object instance ID from a variant of type GDEXTENSION_VARIANT_TYPE_OBJECT.
+*
+* If the variant isn't of type GDEXTENSION_VARIANT_TYPE_OBJECT, then zero will be returned.
+* The instance ID will be returned even if the object is no longer valid - use `object_get_instance_by_id()` to check if the object is still valid.
+*
+* @param p_self A pointer to the Variant.
+*
+* @return The instance ID for the contained object.
+*/
+InterfaceVariantGetObjectInstanceId :: #type (p_self: ConstVariantPtr) -> GDObjectInstanceID #c_call;
+
+/**
 * @name variant_get_type_name
 * @since 4.1
 *
@@ -1224,6 +1412,18 @@ InterfaceVariantHasKey :: #type (p_self: ConstVariantPtr, p_key: ConstVariantPtr
 * @param r_name A pointer to a String to store the Variant type name.
 */
 InterfaceVariantGetTypeName :: #type (p_type: VariantType, r_name: UninitializedStringPtr) -> void #c_call;
+
+/**
+* @name variant_get_type_by_name
+* @since 4.7
+*
+* Gets the Variant type by name.
+*
+* @param p_type_name The variant type name.
+*
+* @return The variant type for the given name; otherwise VARIANT_MAX if name is invalid.
+*/
+InterfaceVariantGetTypeByName :: #type (p_type_name: ConstStringPtr) -> VariantType #c_call;
 
 /**
 * @name variant_can_convert
@@ -1274,6 +1474,24 @@ InterfaceGetVariantFromTypeConstructor :: #type (p_type: VariantType) -> Variant
 * @return A pointer to a function that can get the raw value from a Variant of the given type.
 */
 InterfaceGetVariantToTypeConstructor :: #type (p_type: VariantType) -> TypeFromVariantConstructorFunc #c_call;
+
+/**
+* @name variant_get_ptr_internal_getter
+* @since 4.4
+*
+* Provides a function pointer for retrieving a pointer to a variant's internal value.
+*
+* Access to a variant's internal value can be used to modify it in-place, or to retrieve its value without the overhead of variant conversion functions.
+* It is recommended to cache the getter for all variant types in a function table to avoid retrieval overhead upon use.
+*
+* Each function assumes the variant's type has already been determined and matches the function.
+* Invoking the function with a variant of a mismatched type has undefined behavior, and may lead to a segmentation fault.
+*
+* @param p_type The Variant type.
+*
+* @return A pointer to a type-specific function that returns a pointer to the internal value of a variant. Check the implementation of this function (gdextension_variant_get_ptr_internal_getter) for pointee type info of each variant type.
+*/
+InterfaceGetVariantGetInternalPtrFunc :: #type (p_type: VariantType) -> VariantGetInternalPtrFunc #c_call;
 
 /**
 * @name variant_get_ptr_operator_evaluator
@@ -1335,7 +1553,7 @@ InterfaceVariantGetPtrDestructor :: #type (p_type: VariantType) -> PtrDestructor
 * Constructs a Variant of the given type, using the first constructor that matches the given arguments.
 *
 * @param p_type The Variant type.
-* @param p_base A pointer to a Variant to store the constructed value.
+* @param r_base A pointer to a Variant to store the constructed value.
 * @param p_args A pointer to a C array of Variant pointers representing the arguments for the constructor.
 * @param p_argument_count The number of arguments to pass to the constructor.
 * @param r_error A pointer the structure which will be updated with error information.
@@ -1523,7 +1741,7 @@ InterfaceStringNewWithLatin1CharsAndLen :: #type (r_dest: UninitializedStringPtr
 /**
 * @name string_new_with_utf8_chars_and_len
 * @since 4.1
-* @deprecated in Godot 4.3. Use `string_new_with_utf8_chars_and_len2` instead.
+* @deprecated Deprecated in Godot 4.3. Use `string_new_with_utf8_chars_and_len2` instead.
 *
 * Creates a String from a UTF-8 encoded C string with the given length.
 *
@@ -1550,13 +1768,13 @@ InterfaceStringNewWithUtf8CharsAndLen2 :: #type (r_dest: UninitializedStringPtr,
 /**
 * @name string_new_with_utf16_chars_and_len
 * @since 4.1
-* @deprecated in Godot 4.3. Use `string_new_with_utf16_chars_and_len2` instead.
+* @deprecated Deprecated in Godot 4.3. Use `string_new_with_utf16_chars_and_len2` instead.
 *
 * Creates a String from a UTF-16 encoded C string with the given length.
 *
 * @param r_dest A pointer to a Variant to hold the newly created String.
 * @param p_contents A pointer to a UTF-16 encoded C string.
-* @param p_size The number of characters (not bytes).
+* @param p_char_count The number of characters (not bytes).
 */
 InterfaceStringNewWithUtf16CharsAndLen :: #type (r_dest: UninitializedStringPtr, p_contents: *char16_t, p_char_count: Int) -> void #c_call;
 
@@ -1568,7 +1786,7 @@ InterfaceStringNewWithUtf16CharsAndLen :: #type (r_dest: UninitializedStringPtr,
 *
 * @param r_dest A pointer to a Variant to hold the newly created String.
 * @param p_contents A pointer to a UTF-16 encoded C string.
-* @param p_size The number of characters (not bytes).
+* @param p_char_count The number of characters (not bytes).
 * @param p_default_little_endian If true, UTF-16 use little endian.
 *
 * @return Error code signifying if the operation successful.
@@ -1583,7 +1801,7 @@ InterfaceStringNewWithUtf16CharsAndLen2 :: #type (r_dest: UninitializedStringPtr
 *
 * @param r_dest A pointer to a Variant to hold the newly created String.
 * @param p_contents A pointer to a UTF-32 encoded C string.
-* @param p_size The number of characters (not bytes).
+* @param p_char_count The number of characters (not bytes).
 */
 InterfaceStringNewWithUtf32CharsAndLen :: #type (r_dest: UninitializedStringPtr, p_contents: *char32_t, p_char_count: Int) -> void #c_call;
 
@@ -1595,7 +1813,7 @@ InterfaceStringNewWithUtf32CharsAndLen :: #type (r_dest: UninitializedStringPtr,
 *
 * @param r_dest A pointer to a Variant to hold the newly created String.
 * @param p_contents A pointer to a wide C string.
-* @param p_size The number of characters (not bytes).
+* @param p_char_count The number of characters (not bytes).
 */
 InterfaceStringNewWithWideCharsAndLen :: #type (r_dest: UninitializedStringPtr, p_contents: *u16, p_char_count: Int) -> void #c_call;
 
@@ -1611,7 +1829,7 @@ InterfaceStringNewWithWideCharsAndLen :: #type (r_dest: UninitializedStringPtr, 
 * @param r_text A pointer to the buffer to hold the resulting data. If NULL is passed in, only the length will be computed.
 * @param p_max_write_length The maximum number of characters that can be written to r_text. It has no affect on the return value.
 *
-* @return The resulting encoded string length in characters (not bytes), not including a null terminator.
+* @return The resulting encoded string length in characters, not including a null terminator. Characters that cannot be converted to Latin-1 are replaced with a space.
 */
 InterfaceStringToLatin1Chars :: #type (p_self: ConstStringPtr, r_text: *u8, p_max_write_length: Int) -> Int #c_call;
 
@@ -1627,7 +1845,7 @@ InterfaceStringToLatin1Chars :: #type (p_self: ConstStringPtr, r_text: *u8, p_ma
 * @param r_text A pointer to the buffer to hold the resulting data. If NULL is passed in, only the length will be computed.
 * @param p_max_write_length The maximum number of characters that can be written to r_text. It has no affect on the return value.
 *
-* @return The resulting encoded string length in characters (not bytes), not including a null terminator.
+* @return The resulting encoded string length in bytes (not characters), not including a null terminator.
 */
 InterfaceStringToUtf8Chars :: #type (p_self: ConstStringPtr, r_text: *u8, p_max_write_length: Int) -> Int #c_call;
 
@@ -1643,7 +1861,7 @@ InterfaceStringToUtf8Chars :: #type (p_self: ConstStringPtr, r_text: *u8, p_max_
 * @param r_text A pointer to the buffer to hold the resulting data. If NULL is passed in, only the length will be computed.
 * @param p_max_write_length The maximum number of characters that can be written to r_text. It has no affect on the return value.
 *
-* @return The resulting encoded string length in characters (not bytes), not including a null terminator.
+* @return The resulting encoded string length in 16-bit code units (not bytes or characters), not including a null terminator.
 */
 InterfaceStringToUtf16Chars :: #type (p_self: ConstStringPtr, r_text: *char16_t, p_max_write_length: Int) -> Int #c_call;
 
@@ -1675,7 +1893,7 @@ InterfaceStringToUtf32Chars :: #type (p_self: ConstStringPtr, r_text: *char32_t,
 * @param r_text A pointer to the buffer to hold the resulting data. If NULL is passed in, only the length will be computed.
 * @param p_max_write_length The maximum number of characters that can be written to r_text. It has no affect on the return value.
 *
-* @return The resulting encoded string length in characters (not bytes), not including a null terminator.
+* @return The resulting encoded string length in characters (for UTF-32) or 16-bit code units (for UTF-16), depending on the wchar_t representation. Does not include a null terminator.
 */
 InterfaceStringToWideChars :: #type (p_self: ConstStringPtr, r_text: *u16, p_max_write_length: Int) -> Int #c_call;
 
@@ -1787,7 +2005,7 @@ InterfaceStringResize :: #type (p_self: StringPtr, p_resize: Int) -> Int #c_call
 *
 * If `p_is_static` is true, then:
 * - The StringName will reuse the `p_contents` buffer instead of copying it.
-*   You must guarantee that the buffer remains valid for the duration of the application (e.g. string literal).
+* - You must guarantee that the buffer remains valid for the duration of the application (e.g. string literal).
 * - You must not call a destructor for this StringName. Incrementing the initial reference once should achieve this.
 *
 * `p_is_static` is purely an optimization and can easily introduce undefined behavior if used wrong. In case of doubt, set it to false.
@@ -1902,6 +2120,7 @@ InterfaceImagePtr :: #type (p_instance: ObjectPtr) -> *u8 #c_call;
 * @param p_instance A pointer to a WorkerThreadPool object.
 * @param p_func A pointer to a function to run in the thread pool.
 * @param p_userdata A pointer to arbitrary data which will be passed to p_func.
+* @param p_elements The number of element needed in the group.
 * @param p_tasks The number of tasks needed in the group.
 * @param p_high_priority Whether or not this is a high priority task.
 * @param p_description A pointer to a String with the task description.
@@ -1910,7 +2129,7 @@ InterfaceImagePtr :: #type (p_instance: ObjectPtr) -> *u8 #c_call;
 *
 * @see WorkerThreadPool::add_group_task()
 */
-InterfaceWorkerThreadPoolAddNativeGroupTask :: #type (p_instance: ObjectPtr, p_func: #type (unknown0: *void, unknown1: u32) -> void #c_call, p_userdata: *void, p_elements: s32, p_tasks: s32, p_high_priority: Bool, p_description: ConstStringPtr) -> s64 #c_call;
+InterfaceWorkerThreadPoolAddNativeGroupTask :: #type (p_instance: ObjectPtr, p_func: WorkerThreadPoolGroupTask, p_userdata: *void, p_elements: s32, p_tasks: s32, p_high_priority: Bool, p_description: ConstStringPtr) -> s64 #c_call;
 
 /**
 * @name worker_thread_pool_add_native_task
@@ -1926,7 +2145,7 @@ InterfaceWorkerThreadPoolAddNativeGroupTask :: #type (p_instance: ObjectPtr, p_f
 *
 * @return The task ID.
 */
-InterfaceWorkerThreadPoolAddNativeTask :: #type (p_instance: ObjectPtr, p_func: #type (unknown0: *void) -> void #c_call, p_userdata: *void, p_high_priority: Bool, p_description: ConstStringPtr) -> s64 #c_call;
+InterfaceWorkerThreadPoolAddNativeTask :: #type (p_instance: ObjectPtr, p_func: WorkerThreadPoolTask, p_userdata: *void, p_high_priority: Bool, p_description: ConstStringPtr) -> s64 #c_call;
 
 /**
 * @name packed_byte_array_operator_index
@@ -2217,6 +2436,7 @@ InterfaceArrayOperatorIndexConst :: #type (p_self: ConstTypePtr, p_index: Int) -
 /**
 * @name array_ref
 * @since 4.1
+* @deprecated Deprecated in Godot 4.5. Removed from interface. Use copy constructor instead.
 *
 * Sets an Array to be a reference to another Array object.
 *
@@ -2263,6 +2483,22 @@ InterfaceDictionaryOperatorIndex :: #type (p_self: TypePtr, p_key: ConstVariantP
 * @return A const pointer to a Variant representing the value at the given key.
 */
 InterfaceDictionaryOperatorIndexConst :: #type (p_self: ConstTypePtr, p_key: ConstVariantPtr) -> VariantPtr #c_call;
+
+/**
+* @name dictionary_set_typed
+* @since 4.4
+*
+* Makes a Dictionary into a typed Dictionary.
+*
+* @param p_self A pointer to the Dictionary.
+* @param p_key_type The type of Variant the Dictionary key will store.
+* @param p_key_class_name A pointer to a StringName with the name of the object (if p_key_type is GDEXTENSION_VARIANT_TYPE_OBJECT).
+* @param p_key_script A pointer to a Script object (if p_key_type is GDEXTENSION_VARIANT_TYPE_OBJECT and the base class is extended by a script).
+* @param p_value_type The type of Variant the Dictionary value will store.
+* @param p_value_class_name A pointer to a StringName with the name of the object (if p_value_type is GDEXTENSION_VARIANT_TYPE_OBJECT).
+* @param p_value_script A pointer to a Script object (if p_value_type is GDEXTENSION_VARIANT_TYPE_OBJECT and the base class is extended by a script).
+*/
+InterfaceDictionarySetTyped :: #type (p_self: TypePtr, p_key_type: VariantType, p_key_class_name: ConstStringNamePtr, p_key_script: ConstVariantPtr, p_value_type: VariantType, p_value_class_name: ConstStringNamePtr, p_value_script: ConstVariantPtr) -> void #c_call;
 
 /**
 * @name object_method_bind_call
@@ -2321,10 +2557,10 @@ InterfaceGlobalGetSingleton :: #type (p_name: ConstStringNamePtr) -> ObjectPtr #
 * Gets a pointer representing an Object's instance binding.
 *
 * @param p_o A pointer to the Object.
-* @param p_library A token the library received by the GDExtension's entry point function.
+* @param p_token A token the library received by the GDExtension's entry point function.
 * @param p_callbacks A pointer to a GDExtensionInstanceBindingCallbacks struct.
 *
-* @return
+* @return A pointer to the instance binding.
 */
 InterfaceObjectGetInstanceBinding :: #type (p_o: ObjectPtr, p_token: *void, p_callbacks: *InstanceBindingCallbacks) -> *void #c_call;
 
@@ -2335,7 +2571,7 @@ InterfaceObjectGetInstanceBinding :: #type (p_o: ObjectPtr, p_token: *void, p_ca
 * Sets an Object's instance binding.
 *
 * @param p_o A pointer to the Object.
-* @param p_library A token the library received by the GDExtension's entry point function.
+* @param p_token A token the library received by the GDExtension's entry point function.
 * @param p_binding A pointer to the instance binding.
 * @param p_callbacks A pointer to a GDExtensionInstanceBindingCallbacks struct.
 */
@@ -2348,7 +2584,7 @@ InterfaceObjectSetInstanceBinding :: #type (p_o: ObjectPtr, p_token: *void, p_bi
 * Free an Object's instance binding.
 *
 * @param p_o A pointer to the Object.
-* @param p_library A token the library received by the GDExtension's entry point function.
+* @param p_token A token the library received by the GDExtension's entry point function.
 */
 InterfaceObjectFreeInstanceBinding :: #type (p_o: ObjectPtr, p_token: *void) -> void #c_call;
 
@@ -2357,6 +2593,8 @@ InterfaceObjectFreeInstanceBinding :: #type (p_o: ObjectPtr, p_token: *void) -> 
 * @since 4.1
 *
 * Sets an extension class instance on a Object.
+*
+* `p_classname` should be a registered extension class and should extend the `p_o` Object's class.
 *
 * @param p_o A pointer to the Object.
 * @param p_classname A pointer to a StringName with the registered extension class's name.
@@ -2384,6 +2622,7 @@ InterfaceObjectGetClassName :: #type (p_object: ConstObjectPtr, p_library: Class
 /**
 * @name object_cast_to
 * @since 4.1
+* @deprecated Deprecated in Godot 4.7. Use the `is_class` method on `Object` to check if an object can be cast instead. If true, the previous pointer can be reinterpreted as a pointer to the target type.
 *
 * Casts an Object to a different type.
 *
@@ -2427,7 +2666,7 @@ InterfaceObjectGetInstanceId :: #type (p_object: ConstObjectPtr) -> GDObjectInst
 * @param p_object A pointer to the Object.
 * @param p_method A pointer to a StringName identifying the method.
 *
-* @returns true if the object has a script and that script has a method with the given name. Returns false if the object has no script.
+* @return true if the object has a script and that script has a method with the given name. Returns false if the object has no script.
 */
 InterfaceObjectHasScriptMethod :: #type (p_object: ConstObjectPtr, p_method: ConstStringNamePtr) -> Bool #c_call;
 
@@ -2472,7 +2711,7 @@ InterfaceRefSetObject :: #type (p_ref: RefPtr, p_object: ObjectPtr) -> void #c_c
 /**
 * @name script_instance_create
 * @since 4.1
-* @deprecated in Godot 4.2. Use `script_instance_create3` instead.
+* @deprecated Deprecated in Godot 4.2. Use `script_instance_create3` instead.
 *
 * Creates a script instance that contains the given info and instance data.
 *
@@ -2486,7 +2725,7 @@ InterfaceScriptInstanceCreate :: #type (p_info: *ScriptInstanceInfo, p_instance_
 /**
 * @name script_instance_create2
 * @since 4.2
-* @deprecated in Godot 4.3. Use `script_instance_create3` instead.
+* @deprecated Deprecated in Godot 4.3. Use `script_instance_create3` instead.
 *
 * Creates a script instance that contains the given info and instance data.
 *
@@ -2555,9 +2794,20 @@ InterfacePlaceHolderScriptInstanceUpdate :: #type (p_placeholder: ScriptInstance
 InterfaceObjectGetScriptInstance :: #type (p_object: ConstObjectPtr, p_language: ObjectPtr) -> ScriptInstanceDataPtr #c_call;
 
 /**
+* @name object_set_script_instance
+* @since 4.5
+*
+* Set the script instance data attached to this object.
+*
+* @param p_object A pointer to the Object.
+* @param p_script_instance A pointer to the script instance data to attach to this object.
+*/
+InterfaceObjectSetScriptInstance :: #type (p_object: ObjectPtr, p_script_instance: ScriptInstanceDataPtr) -> void #c_call;
+
+/**
 * @name callable_custom_create
 * @since 4.2
-* @deprecated in Godot 4.3. Use `callable_custom_create2` instead.
+* @deprecated Deprecated in Godot 4.3. Use `callable_custom_create2` instead.
 *
 * Creates a custom Callable object from a function pointer.
 *
@@ -2591,12 +2841,15 @@ InterfaceCallableCustomCreate2 :: #type (r_callable: UninitializedTypePtr, p_cal
 *
 * @param p_callable A pointer to a Callable.
 * @param p_token A pointer to an address that uniquely identifies the GDExtension.
+*
+* @return The userdata pointer given when creating this custom Callable.
 */
 InterfaceCallableCustomGetUserData :: #type (p_callable: ConstTypePtr, p_token: *void) -> *void #c_call;
 
 /**
 * @name classdb_construct_object
 * @since 4.1
+* @deprecated Deprecated in Godot 4.4. Use `classdb_construct_object3` instead.
 *
 * Constructs an Object of the requested class.
 *
@@ -2607,6 +2860,40 @@ InterfaceCallableCustomGetUserData :: #type (p_callable: ConstTypePtr, p_token: 
 * @return A pointer to the newly created Object.
 */
 InterfaceClassdbConstructObject :: #type (p_classname: ConstStringNamePtr) -> ObjectPtr #c_call;
+
+/**
+* @name classdb_construct_object2
+* @since 4.4
+* @deprecated Deprecated in Godot 4.7. Use `classdb_construct_object3` instead.
+*
+* Constructs an Object of the requested class.
+*
+* The passed class must be a built-in godot class, or an already-registered extension class. In both cases, object_set_instance() should be called to fully initialize the object.
+*
+* "NOTIFICATION_POSTINITIALIZE" must be sent after construction.
+*
+* @param p_classname A pointer to a StringName with the class name.
+*
+* @return A pointer to the newly created Object.
+*/
+InterfaceClassdbConstructObject2 :: #type (p_classname: ConstStringNamePtr) -> ObjectPtr #c_call;
+
+/**
+* @name classdb_construct_object3
+* @since 4.7
+*
+* Constructs an Object of the requested class.
+*
+* The passed class must be a built-in godot class, or an already-registered extension class. In both cases, object_set_instance() should be called to fully initialize the object.
+* If the type is a subtype of RefCounted, it already has a refcount of 1. The caller must take ownership the refcount and is responsible for decrementing it again when the object is no longer needed.
+*
+* "NOTIFICATION_POSTINITIALIZE" must be sent after construction.
+*
+* @param p_classname A pointer to a StringName with the class name.
+*
+* @return A pointer to the newly created Object.
+*/
+InterfaceClassdbConstructObject3 :: #type (p_classname: ConstStringNamePtr) -> ObjectPtr #c_call;
 
 /**
 * @name classdb_get_method_bind
@@ -2625,6 +2912,7 @@ InterfaceClassdbGetMethodBind :: #type (p_classname: ConstStringNamePtr, p_metho
 /**
 * @name classdb_get_class_tag
 * @since 4.1
+* @deprecated Deprecated in Godot 4.7. No longer needed. Use the `is_class` method on `Object` instead.
 *
 * Gets a pointer uniquely identifying the given built-in class in the ClassDB.
 *
@@ -2637,7 +2925,7 @@ InterfaceClassdbGetClassTag :: #type (p_classname: ConstStringNamePtr) -> *void 
 /**
 * @name classdb_register_extension_class
 * @since 4.1
-* @deprecated in Godot 4.2. Use `classdb_register_extension_class3` instead.
+* @deprecated Deprecated in Godot 4.2. Use `classdb_register_extension_class6` instead.
 *
 * Registers an extension class in the ClassDB.
 *
@@ -2653,7 +2941,7 @@ InterfaceClassdbRegisterExtensionClass :: #type (p_library: ClassLibraryPtr, p_c
 /**
 * @name classdb_register_extension_class2
 * @since 4.2
-* @deprecated in Godot 4.3. Use `classdb_register_extension_class3` instead.
+* @deprecated Deprecated in Godot 4.3. Use `classdb_register_extension_class6` instead.
 *
 * Registers an extension class in the ClassDB.
 *
@@ -2669,6 +2957,7 @@ InterfaceClassdbRegisterExtensionClass2 :: #type (p_library: ClassLibraryPtr, p_
 /**
 * @name classdb_register_extension_class3
 * @since 4.3
+* @deprecated Deprecated in Godot 4.4. Use `classdb_register_extension_class6` instead.
 *
 * Registers an extension class in the ClassDB.
 *
@@ -2677,9 +2966,56 @@ InterfaceClassdbRegisterExtensionClass2 :: #type (p_library: ClassLibraryPtr, p_
 * @param p_library A pointer the library received by the GDExtension's entry point function.
 * @param p_class_name A pointer to a StringName with the class name.
 * @param p_parent_class_name A pointer to a StringName with the parent class name.
-* @param p_extension_funcs A pointer to a GDExtensionClassCreationInfo2 struct.
+* @param p_extension_funcs A pointer to a GDExtensionClassCreationInfo3 struct.
 */
 InterfaceClassdbRegisterExtensionClass3 :: #type (p_library: ClassLibraryPtr, p_class_name: ConstStringNamePtr, p_parent_class_name: ConstStringNamePtr, p_extension_funcs: *ClassCreationInfo3) -> void #c_call;
+
+/**
+* @name classdb_register_extension_class4
+* @since 4.4
+* @deprecated Deprecated in Godot 4.5. Use `classdb_register_extension_class6` instead.
+*
+* Registers an extension class in the ClassDB.
+*
+* Provided struct can be safely freed once the function returns.
+*
+* @param p_library A pointer the library received by the GDExtension's entry point function.
+* @param p_class_name A pointer to a StringName with the class name.
+* @param p_parent_class_name A pointer to a StringName with the parent class name.
+* @param p_extension_funcs A pointer to a GDExtensionClassCreationInfo4 struct.
+*/
+InterfaceClassdbRegisterExtensionClass4 :: #type (p_library: ClassLibraryPtr, p_class_name: ConstStringNamePtr, p_parent_class_name: ConstStringNamePtr, p_extension_funcs: *ClassCreationInfo4) -> void #c_call;
+
+/**
+* @name classdb_register_extension_class5
+* @since 4.5
+* @deprecated Deprecated in Godot 4.7. Use `classdb_register_extension_class6` instead.
+*
+* Registers an extension class in the ClassDB.
+*
+* Provided struct can be safely freed once the function returns.
+*
+* @param p_library A pointer the library received by the GDExtension's entry point function.
+* @param p_class_name A pointer to a StringName with the class name.
+* @param p_parent_class_name A pointer to a StringName with the parent class name.
+* @param p_extension_funcs A pointer to a GDExtensionClassCreationInfo5 struct.
+*/
+InterfaceClassdbRegisterExtensionClass5 :: #type (p_library: ClassLibraryPtr, p_class_name: ConstStringNamePtr, p_parent_class_name: ConstStringNamePtr, p_extension_funcs: *ClassCreationInfo5) -> void #c_call;
+
+/**
+* @name classdb_register_extension_class6
+* @since 4.7
+*
+* Registers an extension class in the ClassDB.
+*
+* Provided struct can be safely freed once the function returns.
+*
+* @param p_library A pointer the library received by the GDExtension's entry point function.
+* @param p_class_name A pointer to a StringName with the class name.
+* @param p_parent_class_name A pointer to a StringName with the parent class name.
+* @param p_extension_funcs A pointer to a GDExtensionClassCreationInfo6 struct.
+*/
+InterfaceClassdbRegisterExtensionClass6 :: #type (p_library: ClassLibraryPtr, p_class_name: ConstStringNamePtr, p_parent_class_name: ConstStringNamePtr, p_extension_funcs: *ClassCreationInfo6) -> void #c_call;
 
 /**
 * @name classdb_register_extension_class_method
@@ -2809,6 +3145,8 @@ InterfaceClassdbRegisterExtensionClassSignal :: #type (p_library: ClassLibraryPt
 *
 * Unregisters an extension class in the ClassDB.
 *
+* Unregistering a parent class before a class that inherits it will result in failure. Inheritors must be unregistered first.
+*
 * @param p_library A pointer the library received by the GDExtension's entry point function.
 * @param p_class_name A pointer to a StringName with the class name.
 */
@@ -2872,14 +3210,45 @@ sInterfaceEditorHelpLoadXmlFromUtf8Chars :: #type (p_data: *u8) -> void #c_call;
 */
 sInterfaceEditorHelpLoadXmlFromUtf8CharsAndLen :: #type (p_data: *u8, p_size: Int) -> void #c_call;
 
+/**
+* @name editor_register_get_classes_used_callback
+* @since 4.5
+*
+* Registers a callback that Godot can call to get the list of all classes (from ClassDB) that may be used by the calling GDExtension.
+*
+* This is used by the editor to generate a build profile (in "Tools" > "Engine Compilation Configuration Editor..." > "Detect from project"),
+* in order to recompile Godot with only the classes used.
+* In the provided callback, the GDExtension should provide the list of classes that _may_ be used statically, thus the time of invocation shouldn't matter.
+* If a GDExtension doesn't register a callback, Godot will assume that it could be using any classes.
+*
+* @param p_library A pointer the library received by the GDExtension's entry point function.
+* @param p_callback The callback to retrieve the list of classes used.
+*/
+InterfaceEditorRegisterGetClassesUsedCallback :: #type (p_library: ClassLibraryPtr, p_callback: EditorGetClassesUsedCallback) -> void #c_call;
+
+/**
+* @name register_main_loop_callbacks
+* @since 4.5
+*
+* Registers callbacks to be called at different phases of the main loop.
+*
+* @param p_library A pointer the library received by the GDExtension's entry point function.
+* @param p_callbacks A pointer to the structure that contains the callbacks.
+*/
+InterfaceRegisterMainLoopCallbacks :: #type (p_library: ClassLibraryPtr, p_callbacks: *MainLoopCallbacks) -> void #c_call;
+
 #scope_file
 
 #scope_export
 // Declarations
 get_godot_version : InterfaceGetGodotVersion;
+get_godot_version2 : InterfaceGetGodotVersion2;
 mem_alloc : InterfaceMemAlloc;
 mem_realloc : InterfaceMemRealloc;
 mem_free : InterfaceMemFree;
+mem_alloc2 : InterfaceMemAlloc2;
+mem_realloc2 : InterfaceMemRealloc2;
+mem_free2 : InterfaceMemFree2;
 print_error : InterfacePrintError;
 print_error_with_message : InterfacePrintErrorWithMessage;
 print_warning : InterfacePrintWarning;
@@ -2914,11 +3283,14 @@ variant_get_type : InterfaceVariantGetType;
 variant_has_method : InterfaceVariantHasMethod;
 variant_has_member : InterfaceVariantHasMember;
 variant_has_key : InterfaceVariantHasKey;
+variant_get_object_instance_id : InterfaceVariantGetObjectInstanceId;
 variant_get_type_name : InterfaceVariantGetTypeName;
+variant_get_type_by_name : InterfaceVariantGetTypeByName;
 variant_can_convert : InterfaceVariantCanConvert;
 variant_can_convert_strict : InterfaceVariantCanConvertStrict;
 get_variant_from_type_constructor : InterfaceGetVariantFromTypeConstructor;
 get_variant_to_type_constructor : InterfaceGetVariantToTypeConstructor;
+get_variant_get_internal_ptr_func : InterfaceGetVariantGetInternalPtrFunc;
 variant_get_ptr_operator_evaluator : InterfaceVariantGetPtrOperatorEvaluator;
 variant_get_ptr_builtin_method : InterfaceVariantGetPtrBuiltinMethod;
 variant_get_ptr_constructor : InterfaceVariantGetPtrConstructor;
@@ -2994,6 +3366,7 @@ array_ref : InterfaceArrayRef;
 array_set_typed : InterfaceArraySetTyped;
 dictionary_operator_index : InterfaceDictionaryOperatorIndex;
 dictionary_operator_index_const : InterfaceDictionaryOperatorIndexConst;
+dictionary_set_typed : InterfaceDictionarySetTyped;
 object_method_bind_call : InterfaceObjectMethodBindCall;
 object_method_bind_ptrcall : InterfaceObjectMethodBindPtrcall;
 object_destroy : InterfaceObjectDestroy;
@@ -3016,15 +3389,21 @@ script_instance_create3 : InterfaceScriptInstanceCreate3;
 place_holder_script_instance_create : InterfacePlaceHolderScriptInstanceCreate;
 place_holder_script_instance_update : InterfacePlaceHolderScriptInstanceUpdate;
 object_get_script_instance : InterfaceObjectGetScriptInstance;
+object_set_script_instance : InterfaceObjectSetScriptInstance;
 callable_custom_create : InterfaceCallableCustomCreate;
 callable_custom_create2 : InterfaceCallableCustomCreate2;
 callable_custom_get_user_data : InterfaceCallableCustomGetUserData;
 classdb_construct_object : InterfaceClassdbConstructObject;
+classdb_construct_object2 : InterfaceClassdbConstructObject2;
+classdb_construct_object3 : InterfaceClassdbConstructObject3;
 classdb_get_method_bind : InterfaceClassdbGetMethodBind;
 classdb_get_class_tag : InterfaceClassdbGetClassTag;
 classdb_register_extension_class : InterfaceClassdbRegisterExtensionClass;
 classdb_register_extension_class2 : InterfaceClassdbRegisterExtensionClass2;
 classdb_register_extension_class3 : InterfaceClassdbRegisterExtensionClass3;
+classdb_register_extension_class4 : InterfaceClassdbRegisterExtensionClass4;
+classdb_register_extension_class5 : InterfaceClassdbRegisterExtensionClass5;
+classdb_register_extension_class6 : InterfaceClassdbRegisterExtensionClass6;
 classdb_register_extension_class_method : InterfaceClassdbRegisterExtensionClassMethod;
 classdb_register_extension_class_virtual_method : InterfaceClassdbRegisterExtensionClassVirtualMethod;
 classdb_register_extension_class_integer_constant : InterfaceClassdbRegisterExtensionClassIntegerConstant;
@@ -3037,13 +3416,19 @@ classdb_unregister_extension_class : InterfaceClassdbUnregisterExtensionClass;
 get_library_path : InterfaceGetLibraryPath;
 editor_add_plugin : InterfaceEditorAddPlugin;
 editor_remove_plugin : InterfaceEditorRemovePlugin;
+editor_register_get_classes_used_callback : InterfaceEditorRegisterGetClassesUsedCallback;
+register_main_loop_callbacks : InterfaceRegisterMainLoopCallbacks;
 
 // Load
 load_interface_functions :: (get_proc_address: InterfaceGetProcAddress) {
 	get_godot_version = get_proc_address("get_godot_version");
+	get_godot_version2 = get_proc_address("get_godot_version2");
 	mem_alloc = get_proc_address("mem_alloc");
 	mem_realloc = get_proc_address("mem_realloc");
 	mem_free = get_proc_address("mem_free");
+	mem_alloc2 = get_proc_address("mem_alloc2");
+	mem_realloc2 = get_proc_address("mem_realloc2");
+	mem_free2 = get_proc_address("mem_free2");
 	print_error = get_proc_address("print_error");
 	print_error_with_message = get_proc_address("print_error_with_message");
 	print_warning = get_proc_address("print_warning");
@@ -3078,11 +3463,14 @@ load_interface_functions :: (get_proc_address: InterfaceGetProcAddress) {
 	variant_has_method = get_proc_address("variant_has_method");
 	variant_has_member = get_proc_address("variant_has_member");
 	variant_has_key = get_proc_address("variant_has_key");
+	variant_get_object_instance_id = get_proc_address("variant_get_object_instance_id");
 	variant_get_type_name = get_proc_address("variant_get_type_name");
+	variant_get_type_by_name = get_proc_address("variant_get_type_by_name");
 	variant_can_convert = get_proc_address("variant_can_convert");
 	variant_can_convert_strict = get_proc_address("variant_can_convert_strict");
 	get_variant_from_type_constructor = get_proc_address("get_variant_from_type_constructor");
 	get_variant_to_type_constructor = get_proc_address("get_variant_to_type_constructor");
+	get_variant_get_internal_ptr_func = get_proc_address("get_variant_get_internal_ptr_func");
 	variant_get_ptr_operator_evaluator = get_proc_address("variant_get_ptr_operator_evaluator");
 	variant_get_ptr_builtin_method = get_proc_address("variant_get_ptr_builtin_method");
 	variant_get_ptr_constructor = get_proc_address("variant_get_ptr_constructor");
@@ -3158,6 +3546,7 @@ load_interface_functions :: (get_proc_address: InterfaceGetProcAddress) {
 	array_set_typed = get_proc_address("array_set_typed");
 	dictionary_operator_index = get_proc_address("dictionary_operator_index");
 	dictionary_operator_index_const = get_proc_address("dictionary_operator_index_const");
+	dictionary_set_typed = get_proc_address("dictionary_set_typed");
 	object_method_bind_call = get_proc_address("object_method_bind_call");
 	object_method_bind_ptrcall = get_proc_address("object_method_bind_ptrcall");
 	object_destroy = get_proc_address("object_destroy");
@@ -3178,14 +3567,20 @@ load_interface_functions :: (get_proc_address: InterfaceGetProcAddress) {
 	script_instance_create2 = get_proc_address("script_instance_create2");
 	script_instance_create3 = get_proc_address("script_instance_create3");
 	object_get_script_instance = get_proc_address("object_get_script_instance");
+	object_set_script_instance = get_proc_address("object_set_script_instance");
 	callable_custom_create = get_proc_address("callable_custom_create");
 	callable_custom_create2 = get_proc_address("callable_custom_create2");
 	classdb_construct_object = get_proc_address("classdb_construct_object");
+	classdb_construct_object2 = get_proc_address("classdb_construct_object2");
+	classdb_construct_object3 = get_proc_address("classdb_construct_object3");
 	classdb_get_method_bind = get_proc_address("classdb_get_method_bind");
 	classdb_get_class_tag = get_proc_address("classdb_get_class_tag");
 	classdb_register_extension_class = get_proc_address("classdb_register_extension_class");
 	classdb_register_extension_class2 = get_proc_address("classdb_register_extension_class2");
 	classdb_register_extension_class3 = get_proc_address("classdb_register_extension_class3");
+	classdb_register_extension_class4 = get_proc_address("classdb_register_extension_class4");
+	classdb_register_extension_class5 = get_proc_address("classdb_register_extension_class5");
+	classdb_register_extension_class6 = get_proc_address("classdb_register_extension_class6");
 	classdb_register_extension_class_method = get_proc_address("classdb_register_extension_class_method");
 	classdb_register_extension_class_virtual_method = get_proc_address("classdb_register_extension_class_virtual_method");
 	classdb_register_extension_class_integer_constant = get_proc_address("classdb_register_extension_class_integer_constant");
@@ -3198,4 +3593,6 @@ load_interface_functions :: (get_proc_address: InterfaceGetProcAddress) {
 	get_library_path = get_proc_address("get_library_path");
 	editor_add_plugin = get_proc_address("editor_add_plugin");
 	editor_remove_plugin = get_proc_address("editor_remove_plugin");
+	editor_register_get_classes_used_callback = get_proc_address("editor_register_get_classes_used_callback");
+	register_main_loop_callbacks = get_proc_address("register_main_loop_callbacks");
 }

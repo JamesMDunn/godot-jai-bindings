@@ -23,13 +23,19 @@ Extension_Api :: struct {
     };
     builtin_class_sizes : [] Size_Configuration;
     builtin_class_member_offsets: [] Offset_Configuration;
-    global_constants: []int;
+    global_constants: []Global_Constants;
     global_enums: [] Enum_Info;
     utility_functions: [] Utility_Function;
     builtin_classes: [] Builtin_Class;
     classes: [] Class;
     singletons: [] Singleton;
     native_structures: [] Native_Structure;
+}
+
+Global_Constants :: struct {
+  name: string;
+  value: int;
+  is_bitfield: bool;
 }
 
 Size_Configuration :: struct {
@@ -218,14 +224,14 @@ add_variant_constructors :: (b: *String_Builder, api: Extension_Api) {
     variant_ti := cast(*Type_Info_Enum)type_info(GD.VariantType);
     for 0..GD.VariantType.VARIANT_MAX {
         name := enum_value_to_name(cast(GD.VariantType)it);
-        print_to_builder(b, "variant_from_% : (result: UninitializedVariantPtr, from: TypePtr) -> void #c_call;\n", to_lower_copy_new(name));
+        print_to_builder(b, "variant_from_% : (result: UninitializedVariantPtr, from: TypePtr) -> void #c_call;\n", to_lower_copy(name));
     }
 
     append(b, "\n");
     append(b, "load_variant_constructors :: () {\n");
     for (GD.VariantType.NIL + 1)..(GD.VariantType.VARIANT_MAX - 1) {
         name := enum_value_to_name(cast(GD.VariantType)it);
-        print_to_builder(b, "\tvariant_from_% = get_variant_from_type_constructor(.%);\n", to_lower_copy_new(name), name);
+        print_to_builder(b, "\tvariant_from_% = get_variant_from_type_constructor(.%);\n", to_lower_copy(name), name);
     }
     append(b, "}\n\n");
 
@@ -364,7 +370,7 @@ add_builtin_class_destructor :: (b: *String_Builder, class: Builtin_Class) -> st
 type_to_variant_type :: (type_name: string) -> string {
     if type_name == {
         case "StringName"; return "STRING_NAME";
-        case; return to_upper_copy_new(type_name);
+        case; return to_upper_copy(type_name);
     }
 }
 
@@ -445,7 +451,7 @@ add_builtin_classes :: (b: *String_Builder, api: Extension_Api) {
 
             for class.constants {
                 if it_index == 0 then append(b, "\n");
-                constant_name := tprint("%_%", to_upper_copy_new(class.name), it.name);
+                constant_name := tprint("%_%", to_upper_copy(class.name), it.name);
                 // Special cases for annoying cases
                 if constant_name == { // @Hardcoded
                     case "PROJECTION_IDENTITY";  append(b, "PROJECTION_IDENTITY :: Projection.{.{1, 0, 0, 0}, .{0, 1, 0, 0}, .{0, 0, 1, 0}, .{0, 0, 0, 1}};\n");
@@ -474,7 +480,7 @@ add_builtin_classes :: (b: *String_Builder, api: Extension_Api) {
 
     append(b, "load_all_destructors :: () {\n");
     for all_destr {
-        print_to_builder(b, "\t%_destroy = variant_get_ptr_destructor(.%);\n", it, to_upper_copy_new(it));
+        print_to_builder(b, "\t%_destroy = variant_get_ptr_destructor(.%);\n", it, to_upper_copy(it));
     }
     append(b, "}\n\n");
 
@@ -487,7 +493,7 @@ add_builtin_classes :: (b: *String_Builder, api: Extension_Api) {
 
 clean_type :: (type: string) -> string {
     if type.count == 0 return "";
-    
+
     if type == {
         case "typedarray::Dictionary"; {
             return "Dictionary";
@@ -562,11 +568,32 @@ add_method :: (b: *String_Builder, method: Method, class_name: string, method_bo
         print_to_builder(b, "%: %", clean_name(it.name), clean_type(it.type));
     }
     append(b, ")");
-    if method.return_value.type.count != 0 {
+    returns := method.return_value.type.count != 0;
+    if returns {
         print_to_builder(b, " -> %", clean_type(method.return_value.type));
     }
     append(b, " {\n");
-    append(b, method_body);
+
+    print_to_builder(b, "\tmethod_name := new_string_name(\"%\");\n\tdefer destroy(*method_name);\n", method.name);
+    print_to_builder(b, "\tclass_name := new_string_name(\"%\");\n\tdefer destroy(*class_name);\n", class_name);
+    print_to_builder(b, "\tbind := classdb_get_method_bind(*class_name, *method_name, %);\n", method.hash);
+
+    append(b, "\targs : = *void.[");
+    for method.arguments {
+        print_to_builder(b, "*%, ", clean_name(it.name));
+    }
+    append(b, "];\n");
+    if returns {
+        print_to_builder(b, "\tret: %;\n", clean_type(method.return_value.type));
+    }
+    print_to_builder(b, "\tobject_method_bind_ptrcall(bind, self.__private, args.data,");
+    
+    if returns  {
+        print_to_builder(b, "*ret);\n"); 
+        append(b, "\treturn ret;\n");
+    } else {
+        print_to_builder(b, " null);\n");
+    }
     append(b, "}\n");
 }
 
@@ -575,32 +602,29 @@ add_classes :: (b: *String_Builder, api: Extension_Api) {
         print_to_builder(b, "// %\n", class.name);
         print_to_builder(b, "% :: struct {\n", class.name);
 
-        // Data
-        print_to_builder(b, "\t__private: *void;\n");
+        // Data / inheritance
+        if class.inherits.count > 0 {
+            print_to_builder(b, "\tusing #as _base_%: %;\n", class.inherits, class.inherits);
+        } else {
+            print_to_builder(b, "\t__private: *void;\n");   
+        }
 
-        // Constants
         for class.constants {
             if it_index == 0 then append(b, "\n");
             print_to_builder(b, "\t% :: %;\n", it.name, it.value);
         }
-
-        // Enums 
         for class.enums {
             if it_index == 0 then append(b, "\n");
             print_enum(b, it, "\t");
         }
-
         append(b, "}\n");
 
-        // Methods
         for class.methods {
             if it_index == 0 then append(b, "\n");
             add_method(b, it, class.name);
         }
-
         append(b, "\n");
     }
-
 }
 
 add_global_enums :: (b: *String_Builder, api: Extension_Api) {
@@ -617,6 +641,7 @@ clean_format :: (f: string) -> string {
     clean_type :: (type: string, occurences: int) -> string {
 
         if type == {
+            case "enum::Error"; return "Error";
             case "TextServer::Direction"; return "TextServer.Direction";
             case "uint64_t"; return "u64";
             case "uint16_t"; return "u16";

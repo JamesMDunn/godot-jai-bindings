@@ -323,7 +323,7 @@ json_parse_file :: (filename: string, $T: Type, ignore_unknown := true, rename :
 json_write_native :: (builder: *String_Builder, data: *void, info: *Type_Info, indent_char := "\t", ignore := ignore_by_note, rename := rename_by_note, level := 0) {
 	if info.type == {
 		case .BOOL;
-			append(builder, ifx <<(cast(*bool) data) "true" else "false");
+			append(builder, ifx (.*)(cast(*bool) data) "true" else "false");
 		case .INTEGER; #through;
 		case .FLOAT;
 			any_val: Any;
@@ -339,7 +339,7 @@ json_write_native :: (builder: *String_Builder, data: *void, info: *Type_Info, i
 			print_item_to_builder(builder, any_val);
 			append(builder, #char "\"");
 		case .STRING;
-			json_append_escaped(builder, <<(cast(*string) data));
+			json_append_escaped(builder, (.*)(cast(*string) data));
 		case .ARRAY;
 			info_array := cast(*Type_Info_Array) info;
 			element_size := info_array.element_type.runtime_size;
@@ -349,10 +349,10 @@ json_write_native :: (builder: *String_Builder, data: *void, info: *Type_Info, i
 			array_data := data;
 			array_count := info_array.array_count;
 			if info_array.array_count == -1 {
-				array_count = << cast(*s64) data;
+				array_count = (.*) cast(*s64) data;
 
 				array_dest: **void = data + 8;
-				array_data = << array_dest;
+				array_data = (.*) array_dest;
 			}
 
 			append(builder, "[");
@@ -376,7 +376,7 @@ json_write_native :: (builder: *String_Builder, data: *void, info: *Type_Info, i
 			struct_info := cast(*Type_Info_Struct) info;
 			if is_generic_json_value(info) {
 				value := cast(*JSON_Value) data;
-				json_write_json_value(builder, <<value, indent_char, level);
+				json_write_json_value(builder, (.*)value, indent_char, level);
 			} else {
 				append(builder, #char "{");
 				first := true;
@@ -389,7 +389,7 @@ json_write_native :: (builder: *String_Builder, data: *void, info: *Type_Info, i
 			}
 		case .POINTER;
 			ptr_info := cast(*Type_Info_Pointer) info;
-			ptr := << cast(**void) data;
+			ptr := (.*) cast(**void) data;
 			if ptr {
 				json_write_native(builder, ptr, ptr_info.pointer_to, indent_char, ignore, rename, level);
 			} else {
@@ -425,8 +425,8 @@ json_write_native_members :: (builder: *String_Builder, data: *void, members: []
 			info := cast(*Type_Info_Struct) member.type;
 			json_write_native_members(builder, data + member.offset_in_bytes, info.members, indent_char, ignore, rename, level, first);
 		} else {
-			if !<<first	append(builder, ",");
-			<<first = false;
+			if !(.*)first	append(builder, ",");
+			(.*)first = false;
 
 			if indent_char.count {
 				append(builder, "\n");
@@ -491,7 +491,7 @@ parse_value :: (to_parse: string, slot: *u8, info: *Type_Info, ignore_unknown: b
 
 		if info.type == .POINTER {
 			value_slot := alloc(value_info.runtime_size);
-			initializer: (*void);
+			initializer: (*void) #no_context;
 			if value_info.type == .STRUCT {
 				struct_info := cast(*Type_Info_Struct) value_info;
 				initializer = struct_info.initializer;
@@ -501,7 +501,7 @@ parse_value :: (to_parse: string, slot: *u8, info: *Type_Info, ignore_unknown: b
 			} else {
 				memset(value_slot, 0, value_info.runtime_size);
 			}
-			<<cast(**u8)slot = value_slot;
+			(.*)cast(**u8)slot = value_slot;
 			return value_slot, true, is_generic, value_info;
 		} else {
 			return slot, true, is_generic, value_info;
@@ -515,7 +515,7 @@ parse_value :: (to_parse: string, slot: *u8, info: *Type_Info, ignore_unknown: b
 			if !success		return remainder, false;
 			if slot {
 				if info.type == .POINTER {
-                    <<cast(**void) slot = null;
+                    (.*)cast(**void) slot = null;
                 } else {
                     builder: String_Builder;
                     print_type_to_builder(*builder, info);
@@ -534,7 +534,7 @@ parse_value :: (to_parse: string, slot: *u8, info: *Type_Info, ignore_unknown: b
 					if is_generic {
 						json_set(cast(*JSON_Value)value_slot, true);
 					} else {
-						<<cast(*bool)value_slot = true;
+						(.*)cast(*bool)value_slot = true;
 					}
 				}
 			}
@@ -548,7 +548,7 @@ parse_value :: (to_parse: string, slot: *u8, info: *Type_Info, ignore_unknown: b
 					if is_generic {
 						json_set(cast(*JSON_Value)value_slot, false);
 					} else {
-						<<cast(*bool)value_slot = false;
+						(.*)cast(*bool)value_slot = false;
 					}
 				}
 			}
@@ -570,7 +570,7 @@ parse_value :: (to_parse: string, slot: *u8, info: *Type_Info, ignore_unknown: b
 						if is_generic {
 							json_set(cast(*JSON_Value)value_slot, value);
 						} else {
-							<<cast(*string)value_slot = value;
+							(.*)cast(*string)value_slot = value;
 						}
 						stored = true;
 					}
@@ -600,7 +600,7 @@ parse_value :: (to_parse: string, slot: *u8, info: *Type_Info, ignore_unknown: b
 			if success {
 				if is_generic {
 					value := New(JSON_Object);
-					<<value, remainder, success = parse_object(remainder);
+					(.*)value, remainder, success = parse_object(remainder);
 					json_set(cast(*JSON_Value)value_slot, value);
 				} else {
 					remainder, success = parse_object(remainder, value_slot, cast(*Type_Info_Struct) value_info, ignore_unknown, rename=rename);
@@ -619,10 +619,10 @@ parse_value :: (to_parse: string, slot: *u8, info: *Type_Info, ignore_unknown: b
 							json_set(cast(*JSON_Value)value_slot, float_value);
 						} else {
 							if value_info.runtime_size == 4 {
-								(<< cast(*float) slot) = cast(float) float_value;
+								((.*) cast(*float) slot) = cast(float) float_value;
 							} else {
 								assert(value_info.runtime_size == 8);
-								(<< cast(*float64) slot) = float_value;
+								((.*) cast(*float64) slot) = float_value;
 							}
 						}
 					}
@@ -748,7 +748,7 @@ parse_array :: (str: string, slot: *u8, info: *Type_Info_Array, ignore_unknown: 
 	if slot {
 		array: Resizable_Array;
 
-        initializer: (*void);
+		    initializer: (*void) #no_context;
         if info.element_type.type == .STRUCT {
             struct_info := cast(*Type_Info_Struct) info.element_type;
             initializer = struct_info.initializer;
@@ -781,7 +781,7 @@ parse_array :: (str: string, slot: *u8, info: *Type_Info_Array, ignore_unknown: 
 			view.data = array.data;
 		} else if info.array_count == -1 {
             // Resizable array
-			<<(cast(*Resizable_Array) slot) = array;
+			(.*)(cast(*Resizable_Array) slot) = array;
 		} else {
             // Fixed-size array
             if (info.array_count != array.count) {
@@ -842,7 +842,6 @@ parse_object :: (str: string, slot: *u8, info: *Type_Info_Struct, ignore_unknown
     // @Speed: Building this table every time is pretty silly.
     // We should probably either not build it at all or cache it somewhere.
 	member_table: Table(string, Member_Offset);
-	init(*member_table);
 	defer deinit(*member_table);
 
 	if info fill_member_table(*member_table, info, rename);
@@ -856,7 +855,7 @@ parse_object :: (str: string, slot: *u8, info: *Type_Info_Struct, ignore_unknown
 		if !success		return remainder, false;
 		defer free(key);
 
-		member_offset, member_found := table_find(*member_table, key);
+		member_found, member_offset  := table_find(*member_table, key);
 
 		member_slot: *u8;
 		member_info: *Type_Info;
@@ -864,7 +863,7 @@ parse_object :: (str: string, slot: *u8, info: *Type_Info_Struct, ignore_unknown
 			member_slot = slot + member_offset.offset_in_bytes;
 			member_info = member_offset.member.type;
 		} else if !ignore_unknown {
-			log_error("Missing member % in %", key, <<info);
+			log_error("Missing member % in %", key, (.*)info);
 			return remainder, false;
 		}
 
@@ -1045,7 +1044,7 @@ print_val :: (using val: JSON_Value) {
 			for array	print_val(it);
 			print("]");
 		case .OBJECT;
-			print("%", <<object);
+			print("%", (.*)object);
 	}
 }
 
@@ -1128,7 +1127,7 @@ json_write_json_value :: (builder: *String_Builder, using val: JSON_Value, inden
 			keys: [..] string;
 			defer array_free(keys);
 			array_reserve(*keys, obj.count);
-			for v, k: <<obj {
+			for v, k: (.*)obj {
 				array_add(*keys, k);
 			}
 			intro_sort(keys, compare);
@@ -1139,7 +1138,7 @@ json_write_json_value :: (builder: *String_Builder, using val: JSON_Value, inden
 				}
 				json_append_escaped(builder, it);
 				append(builder, ": ");
-				v, found := table_find(obj, it);
+				found, v := table_find(obj, it);
 				assert(found, "Missing table value %", it);
 				json_write_json_value(builder, v, indent_char, level + 1);
 				if it_index != obj.count - 1	append(builder, ",");
@@ -1164,7 +1163,7 @@ json_set :: (obj: *JSON_Object, path: string, val: JSON_Value) -> bool {
 	if !next.count		return false;
 	if !remainder.count	return false;
 
-	next_value, success := table_find(obj, next);
+	success, next_value  := table_find(obj, next);
 	next_obj: *JSON_Object;
 	if success {
 		if next_value.type != JSON_Type.OBJECT	return false;
@@ -1204,7 +1203,7 @@ get_as :: (val: JSON_Value, $T: Type) -> T {
 		} else if T == JSON_Object {
 			return #string END
 				assert(val.type == .OBJECT, "Expected a % but got %", T, val.type);
-				return <<val.object;
+				return (.*)val.object;
 			END;
 		} else {
 			compiler_report("Unsupported type");
@@ -1245,7 +1244,7 @@ parse_value :: (to_parse: string) -> JSON_Value, remainder: string, success: boo
 			result.array, remainder, success = parse_array(remainder);
 		case #char "{";
 			obj := cast(*JSON_Object) alloc(size_of(JSON_Object));
-			<<obj, remainder, success = parse_object(remainder);
+			(.*)obj, remainder, success = parse_object(remainder);
 			result = json_value(obj);
 		case;
 			result.type = JSON_Type.NUMBER;
@@ -1294,7 +1293,6 @@ parse_object :: (str: string) -> result: JSON_Object, remainder: string, success
 		return result, remainder, true;
 	}
 
-	init(*result, 32);
 	while true {
 		if remainder[0] != #char "\""	return result, remainder, false;
 

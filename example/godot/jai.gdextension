@@ -1,6 +1,6 @@
 [configuration]
 entry_symbol = "jai_entry"
-compatibility_minimum = "4.3"
+compatibility_minimum = "4.7"
 
 [libraries]
 linux.debug.x86_64 = "../gd_jai.so"

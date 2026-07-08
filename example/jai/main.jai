@@ -1,6 +1,6 @@
 #import "Basic";
 
-#import "godot-jai";
+#import "godot-jai-bindings";
 #load "helpers.jai";
 
 // Initialization code (could be automated)
@@ -18,29 +18,66 @@ jai_entry :: (p_get_proc_address: InterfaceGetProcAddress, p_library: ClassLibra
 }
 
 initialize :: (data: *void, level: InitializationLevel) #c_call {
-    push_context cast(*Context)data {
-        if level != .INITIALIZATION_SCENE return; 
-        register_class(JaiClass);
+    push_context cast(*#Context)data {
+        if level != .INITIALIZATION_SCENE return;
+        register_class(Player);
+        register_class(Inventory);
     }
 }
 
 deinitialize :: (data: *void, level: InitializationLevel) #c_call {
-    push_context cast(*Context)data {
+    push_context cast(*#Context)data {
     }
 }
 
-JaiClass :: struct {
-    base: Node2D; @Base // @Base to mark this member as its' base class
+Player :: struct {
+    using #as base: Node2D; @Base // @Base to mark this member as its' base class
+    inventory: *Inventory;
 
-    _enter_tree :: (self: *JaiClass) {
+    speed: float32; @export;
+
+    // get_speed :: (self: *Player) -> float32 {
+    //     return self.speed;
+    // }
+
+    
+    hit :: (self: *Player) {
+
+    } @signal
+
+    _enter_tree :: (self: *Player) {
         print_to_godot("Hello from jai!");
     }
 
-    // _process :: (self: *JaiClass, delta: float) {
-    //     print_to_godot("Process!");
-    // }
+    _ready :: (self: *Player) {
+        print_to_godot("ready player one");
+        self.inventory = construct(Inventory);
+        self.inventory.size = 8;
+        Node_add_child(self, self.inventory, true, .INTERNAL_MODE_DISABLED);
+    }
+
+    _input :: (self: *Player, event: InputEvent) {
+        action := new_string_name("ui_accept");
+        defer destroy(*action);
+        if InputEvent_is_action_pressed(*event, action, false, false) && self.inventory {  
+            print_to_godot(tprint("inv: %", self.inventory.size));
+            Node_queue_free(self.inventory);
+            self.inventory = null;
+        }
+    }
 
 }
+
+
+Inventory :: struct {
+    using #as base : Node2D; @Base
+    size : u8;
+
+    _ready :: (self: *Inventory) {
+        print_to_godot("ready players inventory");
+    }
+}
+
 
 to_variant :: (val: float) -> Variant {
     result: Variant = ---;

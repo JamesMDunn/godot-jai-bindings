@@ -3,7 +3,7 @@
 // This file contains code written by hand to facilitate API usage
 
 _library: ClassLibraryPtr;
-__context : Context;
+__context : #Context;
 
 register_library :: (lib: ClassLibraryPtr) {
     _library = lib;
@@ -11,7 +11,7 @@ register_library :: (lib: ClassLibraryPtr) {
 
 INITIALIZATION_CODE :: #string __END
 _library: ClassLibraryPtr;
-__context : Context;
+__context : #Context;
 
 #program_export
 jai_entry :: (p_get_proc_address: InterfaceGetProcAddress, p_library: ClassLibraryPtr, r_initialization: *Initialization) -> Bool #c_call {
@@ -89,12 +89,12 @@ to_variant :: (val: $T) -> Variant #c_call {
         }
     }
     return result;
-    // #insert #run -> string { 
+    // #insert #run -> string {
     //     ti := cast(*Type_Info_Struct)type_info(T);
     //     Basic.log("%", ti.name);
     //     snake_case := to_snake_case(ti.name);
     //     builder: String_Builder;
-        
+
     //     append(*builder, "result: Variant = ---;\n");
     //     print_to_builder(*builder, "variant_from_%(*result, val);\n", snake_case);
     //     append(*builder, "return result;\n");
@@ -110,7 +110,7 @@ new_string_name :: (str: string) -> StringName #no_context {
 }
 
 new_string :: (str: string) -> String #no_context {
-    result : String = ---; 
+    result : String = ---;
     string_new_with_utf8_chars_and_len(*result, str.data, str.count);
     return result;
 }

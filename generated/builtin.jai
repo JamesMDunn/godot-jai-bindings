@@ -288,6 +288,46 @@ String_replacen :: (using self: *String, what: String, forwhat: String) -> Strin
 	return ret;
 }
 
+String_replace_char :: (using self: *String, key: int, with: int) -> String #c_call {
+	method_name := new_string_name("replace_char");
+	defer destroy(*method_name);
+	args : = *void.[*key, *with, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 787537301);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+String_replace_chars :: (using self: *String, keys: String, with: int) -> String #c_call {
+	method_name := new_string_name("replace_chars");
+	defer destroy(*method_name);
+	args : = *void.[*keys, *with, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3535100402);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+String_remove_char :: (using self: *String, what: int) -> String #c_call {
+	method_name := new_string_name("remove_char");
+	defer destroy(*method_name);
+	args : = *void.[*what, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 2162347432);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+String_remove_chars :: (using self: *String, chars: String) -> String #c_call {
+	method_name := new_string_name("remove_chars");
+	defer destroy(*method_name);
+	args : = *void.[*chars, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3134094431);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 String_repeat :: (using self: *String, count: int) -> String #c_call {
 	method_name := new_string_name("repeat");
 	defer destroy(*method_name);
@@ -360,6 +400,16 @@ String_to_pascal_case :: (using self: *String) -> String #c_call {
 
 String_to_snake_case :: (using self: *String) -> String #c_call {
 	method_name := new_string_name("to_snake_case");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3942272618);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+String_to_kebab_case :: (using self: *String) -> String #c_call {
+	method_name := new_string_name("to_kebab_case");
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: String;
@@ -508,10 +558,10 @@ String_get_basename :: (using self: *String) -> String #c_call {
 	return ret;
 }
 
-String_path_join :: (using self: *String, file: String) -> String #c_call {
+String_path_join :: (using self: *String, path: String) -> String #c_call {
 	method_name := new_string_name("path_join");
 	defer destroy(*method_name);
-	args : = *void.[*file, ];
+	args : = *void.[*path, ];
 	ret: String;
 	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3134094431);
 	func(self, args.data, *ret, args.count);
@@ -738,6 +788,16 @@ String_uri_decode :: (using self: *String) -> String #c_call {
 	return ret;
 }
 
+String_uri_file_decode :: (using self: *String) -> String #c_call {
+	method_name := new_string_name("uri_file_decode");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3942272618);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 String_c_escape :: (using self: *String) -> String #c_call {
 	method_name := new_string_name("c_escape");
 	defer destroy(*method_name);
@@ -784,6 +844,26 @@ String_validate_filename :: (using self: *String) -> String #c_call {
 	args : = *void.[];
 	ret: String;
 	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3942272618);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+String_is_valid_ascii_identifier :: (using self: *String) -> bool #c_call {
+	method_name := new_string_name("is_valid_ascii_identifier");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3918633141);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+String_is_valid_unicode_identifier :: (using self: *String) -> bool #c_call {
+	method_name := new_string_name("is_valid_unicode_identifier");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -998,8 +1078,8 @@ String_to_utf32_buffer :: (using self: *String) -> PackedByteArray #c_call {
 	return ret;
 }
 
-String_hex_decode :: (using self: *String) -> PackedByteArray #c_call {
-	method_name := new_string_name("hex_decode");
+String_to_wchar_buffer :: (using self: *String) -> PackedByteArray #c_call {
+	method_name := new_string_name("to_wchar_buffer");
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedByteArray;
@@ -1008,8 +1088,18 @@ String_hex_decode :: (using self: *String) -> PackedByteArray #c_call {
 	return ret;
 }
 
-String_to_wchar_buffer :: (using self: *String) -> PackedByteArray #c_call {
-	method_name := new_string_name("to_wchar_buffer");
+String_to_multibyte_char_buffer :: (using self: *String, encoding: String) -> PackedByteArray #c_call {
+	method_name := new_string_name("to_multibyte_char_buffer");
+	defer destroy(*method_name);
+	args : = *void.[*encoding, ];
+	ret: PackedByteArray;
+	func := variant_get_ptr_builtin_method(.STRING, *method_name, 3055765187);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+String_hex_decode :: (using self: *String) -> PackedByteArray #c_call {
+	method_name := new_string_name("hex_decode");
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedByteArray;
@@ -1058,10 +1148,10 @@ String_num_uint64 :: (using self: *String, number: int, base: int, capitalize_he
 	return ret;
 }
 
-String_chr :: (using self: *String, char: int) -> String #c_call {
+String_chr :: (using self: *String, code: int) -> String #c_call {
 	method_name := new_string_name("chr");
 	defer destroy(*method_name);
-	args : = *void.[*char, ];
+	args : = *void.[*code, ];
 	ret: String;
 	func := variant_get_ptr_builtin_method(.STRING, *method_name, 897497541);
 	func(self, args.data, *ret, args.count);
@@ -1568,8 +1658,6 @@ Vector2_from_angle :: (using self: *Vector2, angle: float) -> Vector2 #c_call {
 	return ret;
 }
 
-VECTOR2_AXIS_X :: 0;
-VECTOR2_AXIS_Y :: 1;
 VECTOR2_ZERO :: Vector2.{0, 0};
 VECTOR2_ONE :: Vector2.{1, 1};
 VECTOR2_INF :: Vector2.{FLOAT32_INFINITY, FLOAT32_INFINITY};
@@ -1758,8 +1846,6 @@ Vector2i_maxi :: (using self: *Vector2i, with: int) -> Vector2i #c_call {
 	return ret;
 }
 
-VECTOR2I_AXIS_X :: 0;
-VECTOR2I_AXIS_Y :: 1;
 VECTOR2I_ZERO :: Vector2i.{0, 0};
 VECTOR2I_ONE :: Vector2i.{1, 1};
 VECTOR2I_MIN :: Vector2i.{-2147483648, -2147483648};
@@ -1880,6 +1966,16 @@ Rect2_expand :: (using self: *Rect2, to: Vector2) -> Rect2 #c_call {
 	args : = *void.[*to, ];
 	ret: Rect2;
 	func := variant_get_ptr_builtin_method(.RECT2, *method_name, 293272265);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Rect2_get_support :: (using self: *Rect2, direction: Vector2) -> Vector2 #c_call {
+	method_name := new_string_name("get_support");
+	defer destroy(*method_name);
+	args : = *void.[*direction, ];
+	ret: Vector2;
+	func := variant_get_ptr_builtin_method(.RECT2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -2551,9 +2647,6 @@ Vector3_octahedron_decode :: (using self: *Vector3, uv: Vector2) -> Vector3 #c_c
 	return ret;
 }
 
-VECTOR3_AXIS_X :: 0;
-VECTOR3_AXIS_Y :: 1;
-VECTOR3_AXIS_Z :: 2;
 VECTOR3_ZERO :: Vector3.{0, 0, 0};
 VECTOR3_ONE :: Vector3.{1, 1, 1};
 VECTOR3_INF :: Vector3.{FLOAT32_INFINITY, FLOAT32_INFINITY, FLOAT32_INFINITY};
@@ -2742,9 +2835,6 @@ Vector3i_maxi :: (using self: *Vector3i, with: int) -> Vector3i #c_call {
 	return ret;
 }
 
-VECTOR3I_AXIS_X :: 0;
-VECTOR3I_AXIS_Y :: 1;
-VECTOR3I_AXIS_Z :: 2;
 VECTOR3I_ZERO :: Vector3i.{0, 0, 0};
 VECTOR3I_ONE :: Vector3i.{1, 1, 1};
 VECTOR3I_MIN :: Vector3i.{-2147483648, -2147483648, -2147483648};
@@ -3310,10 +3400,6 @@ Vector4_maxf :: (using self: *Vector4, with: float) -> Vector4 #c_call {
 	return ret;
 }
 
-VECTOR4_AXIS_X :: 0;
-VECTOR4_AXIS_Y :: 1;
-VECTOR4_AXIS_Z :: 2;
-VECTOR4_AXIS_W :: 3;
 VECTOR4_ZERO :: Vector4.{0, 0, 0, 0};
 VECTOR4_ONE :: Vector4.{1, 1, 1, 1};
 VECTOR4_INF :: Vector4.{FLOAT32_INFINITY, FLOAT32_INFINITY, FLOAT32_INFINITY, FLOAT32_INFINITY};
@@ -3492,10 +3578,6 @@ Vector4i_distance_squared_to :: (using self: *Vector4i, to: Vector4i) -> int #c_
 	return ret;
 }
 
-VECTOR4I_AXIS_X :: 0;
-VECTOR4I_AXIS_Y :: 1;
-VECTOR4I_AXIS_Z :: 2;
-VECTOR4I_AXIS_W :: 3;
 VECTOR4I_ZERO :: Vector4i.{0, 0, 0, 0};
 VECTOR4I_ONE :: Vector4i.{1, 1, 1, 1};
 VECTOR4I_MIN :: Vector4i.{-2147483648, -2147483648, -2147483648, -2147483648};
@@ -3974,10 +4056,10 @@ AABB_grow :: (using self: *AABB, by: float) -> AABB #c_call {
 	return ret;
 }
 
-AABB_get_support :: (using self: *AABB, dir: Vector3) -> Vector3 #c_call {
+AABB_get_support :: (using self: *AABB, direction: Vector3) -> Vector3 #c_call {
 	method_name := new_string_name("get_support");
 	defer destroy(*method_name);
-	args : = *void.[*dir, ];
+	args : = *void.[*direction, ];
 	ret: Vector3;
 	func := variant_get_ptr_builtin_method(.AABB, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
@@ -4140,6 +4222,16 @@ Basis_scaled :: (using self: *Basis, scale: Vector3) -> Basis #c_call {
 	return ret;
 }
 
+Basis_scaled_local :: (using self: *Basis, scale: Vector3) -> Basis #c_call {
+	method_name := new_string_name("scaled_local");
+	defer destroy(*method_name);
+	args : = *void.[*scale, ];
+	ret: Basis;
+	func := variant_get_ptr_builtin_method(.BASIS, *method_name, 3934786792);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 Basis_get_scale :: (using self: *Basis) -> Vector3 #c_call {
 	method_name := new_string_name("get_scale");
 	defer destroy(*method_name);
@@ -4222,6 +4314,16 @@ Basis_is_equal_approx :: (using self: *Basis, b: Basis) -> bool #c_call {
 
 Basis_is_finite :: (using self: *Basis) -> bool #c_call {
 	method_name := new_string_name("is_finite");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.BASIS, *method_name, 3918633141);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Basis_is_orthonormal :: (using self: *Basis) -> bool #c_call {
+	method_name := new_string_name("is_orthonormal");
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: bool;
@@ -4691,12 +4793,6 @@ Projection_get_lod_multiplier :: (using self: *Projection) -> float #c_call {
 	return ret;
 }
 
-PROJECTION_PLANE_NEAR :: 0;
-PROJECTION_PLANE_FAR :: 1;
-PROJECTION_PLANE_LEFT :: 2;
-PROJECTION_PLANE_TOP :: 3;
-PROJECTION_PLANE_RIGHT :: 4;
-PROJECTION_PLANE_BOTTOM :: 5;
 PROJECTION_IDENTITY :: Projection.{.{1, 0, 0, 0}, .{0, 1, 0, 0}, .{0, 0, 1, 0}, .{0, 0, 0, 1}};
 PROJECTION_ZERO :: Projection.{.{0, 0, 0, 0}, .{0, 0, 0, 0}, .{0, 0, 0, 0}, .{0, 0, 0, 0}};
 
@@ -4957,152 +5053,162 @@ Color_from_rgbe9995 :: (using self: *Color, rgbe: int) -> Color #c_call {
 	return ret;
 }
 
-COLOR_ALICE_BLUE :: Color.{0.941176, 0.972549, 1, 1};
-COLOR_ANTIQUE_WHITE :: Color.{0.980392, 0.921569, 0.843137, 1};
+Color_from_rgba8 :: (using self: *Color, r8: int, g8: int, b8: int, a8: int) -> Color #c_call {
+	method_name := new_string_name("from_rgba8");
+	defer destroy(*method_name);
+	args : = *void.[*r8, *g8, *b8, *a8, ];
+	ret: Color;
+	func := variant_get_ptr_builtin_method(.COLOR, *method_name, 3072934735);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+COLOR_ALICE_BLUE :: Color.{0.9411765, 0.972549, 1, 1};
+COLOR_ANTIQUE_WHITE :: Color.{0.98039216, 0.92156863, 0.84313726, 1};
 COLOR_AQUA :: Color.{0, 1, 1, 1};
-COLOR_AQUAMARINE :: Color.{0.498039, 1, 0.831373, 1};
-COLOR_AZURE :: Color.{0.941176, 1, 1, 1};
-COLOR_BEIGE :: Color.{0.960784, 0.960784, 0.862745, 1};
-COLOR_BISQUE :: Color.{1, 0.894118, 0.768627, 1};
+COLOR_AQUAMARINE :: Color.{0.49803922, 1, 0.83137256, 1};
+COLOR_AZURE :: Color.{0.9411765, 1, 1, 1};
+COLOR_BEIGE :: Color.{0.9607843, 0.9607843, 0.8627451, 1};
+COLOR_BISQUE :: Color.{1, 0.89411765, 0.76862746, 1};
 COLOR_BLACK :: Color.{0, 0, 0, 1};
-COLOR_BLANCHED_ALMOND :: Color.{1, 0.921569, 0.803922, 1};
+COLOR_BLANCHED_ALMOND :: Color.{1, 0.92156863, 0.8039216, 1};
 COLOR_BLUE :: Color.{0, 0, 1, 1};
-COLOR_BLUE_VIOLET :: Color.{0.541176, 0.168627, 0.886275, 1};
-COLOR_BROWN :: Color.{0.647059, 0.164706, 0.164706, 1};
-COLOR_BURLYWOOD :: Color.{0.870588, 0.721569, 0.529412, 1};
-COLOR_CADET_BLUE :: Color.{0.372549, 0.619608, 0.627451, 1};
-COLOR_CHARTREUSE :: Color.{0.498039, 1, 0, 1};
-COLOR_CHOCOLATE :: Color.{0.823529, 0.411765, 0.117647, 1};
-COLOR_CORAL :: Color.{1, 0.498039, 0.313726, 1};
-COLOR_CORNFLOWER_BLUE :: Color.{0.392157, 0.584314, 0.929412, 1};
-COLOR_CORNSILK :: Color.{1, 0.972549, 0.862745, 1};
-COLOR_CRIMSON :: Color.{0.862745, 0.0784314, 0.235294, 1};
+COLOR_BLUE_VIOLET :: Color.{0.5411765, 0.16862746, 0.8862745, 1};
+COLOR_BROWN :: Color.{0.64705884, 0.16470589, 0.16470589, 1};
+COLOR_BURLYWOOD :: Color.{0.87058824, 0.72156864, 0.5294118, 1};
+COLOR_CADET_BLUE :: Color.{0.37254903, 0.61960787, 0.627451, 1};
+COLOR_CHARTREUSE :: Color.{0.49803922, 1, 0, 1};
+COLOR_CHOCOLATE :: Color.{0.8235294, 0.4117647, 0.11764706, 1};
+COLOR_CORAL :: Color.{1, 0.49803922, 0.3137255, 1};
+COLOR_CORNFLOWER_BLUE :: Color.{0.39215687, 0.58431375, 0.92941177, 1};
+COLOR_CORNSILK :: Color.{1, 0.972549, 0.8627451, 1};
+COLOR_CRIMSON :: Color.{0.8627451, 0.078431375, 0.23529412, 1};
 COLOR_CYAN :: Color.{0, 1, 1, 1};
-COLOR_DARK_BLUE :: Color.{0, 0, 0.545098, 1};
-COLOR_DARK_CYAN :: Color.{0, 0.545098, 0.545098, 1};
-COLOR_DARK_GOLDENROD :: Color.{0.721569, 0.52549, 0.0431373, 1};
-COLOR_DARK_GRAY :: Color.{0.662745, 0.662745, 0.662745, 1};
-COLOR_DARK_GREEN :: Color.{0, 0.392157, 0, 1};
-COLOR_DARK_KHAKI :: Color.{0.741176, 0.717647, 0.419608, 1};
-COLOR_DARK_MAGENTA :: Color.{0.545098, 0, 0.545098, 1};
-COLOR_DARK_OLIVE_GREEN :: Color.{0.333333, 0.419608, 0.184314, 1};
-COLOR_DARK_ORANGE :: Color.{1, 0.54902, 0, 1};
-COLOR_DARK_ORCHID :: Color.{0.6, 0.196078, 0.8, 1};
-COLOR_DARK_RED :: Color.{0.545098, 0, 0, 1};
-COLOR_DARK_SALMON :: Color.{0.913725, 0.588235, 0.478431, 1};
-COLOR_DARK_SEA_GREEN :: Color.{0.560784, 0.737255, 0.560784, 1};
-COLOR_DARK_SLATE_BLUE :: Color.{0.282353, 0.239216, 0.545098, 1};
-COLOR_DARK_SLATE_GRAY :: Color.{0.184314, 0.309804, 0.309804, 1};
-COLOR_DARK_TURQUOISE :: Color.{0, 0.807843, 0.819608, 1};
-COLOR_DARK_VIOLET :: Color.{0.580392, 0, 0.827451, 1};
-COLOR_DEEP_PINK :: Color.{1, 0.0784314, 0.576471, 1};
-COLOR_DEEP_SKY_BLUE :: Color.{0, 0.74902, 1, 1};
-COLOR_DIM_GRAY :: Color.{0.411765, 0.411765, 0.411765, 1};
-COLOR_DODGER_BLUE :: Color.{0.117647, 0.564706, 1, 1};
-COLOR_FIREBRICK :: Color.{0.698039, 0.133333, 0.133333, 1};
-COLOR_FLORAL_WHITE :: Color.{1, 0.980392, 0.941176, 1};
-COLOR_FOREST_GREEN :: Color.{0.133333, 0.545098, 0.133333, 1};
+COLOR_DARK_BLUE :: Color.{0, 0, 0.54509807, 1};
+COLOR_DARK_CYAN :: Color.{0, 0.54509807, 0.54509807, 1};
+COLOR_DARK_GOLDENROD :: Color.{0.72156864, 0.5254902, 0.043137256, 1};
+COLOR_DARK_GRAY :: Color.{0.6627451, 0.6627451, 0.6627451, 1};
+COLOR_DARK_GREEN :: Color.{0, 0.39215687, 0, 1};
+COLOR_DARK_KHAKI :: Color.{0.7411765, 0.7176471, 0.41960785, 1};
+COLOR_DARK_MAGENTA :: Color.{0.54509807, 0, 0.54509807, 1};
+COLOR_DARK_OLIVE_GREEN :: Color.{0.33333334, 0.41960785, 0.18431373, 1};
+COLOR_DARK_ORANGE :: Color.{1, 0.54901963, 0, 1};
+COLOR_DARK_ORCHID :: Color.{0.6, 0.19607843, 0.8, 1};
+COLOR_DARK_RED :: Color.{0.54509807, 0, 0, 1};
+COLOR_DARK_SALMON :: Color.{0.9137255, 0.5882353, 0.47843137, 1};
+COLOR_DARK_SEA_GREEN :: Color.{0.56078434, 0.7372549, 0.56078434, 1};
+COLOR_DARK_SLATE_BLUE :: Color.{0.28235295, 0.23921569, 0.54509807, 1};
+COLOR_DARK_SLATE_GRAY :: Color.{0.18431373, 0.30980393, 0.30980393, 1};
+COLOR_DARK_TURQUOISE :: Color.{0, 0.80784315, 0.81960785, 1};
+COLOR_DARK_VIOLET :: Color.{0.5803922, 0, 0.827451, 1};
+COLOR_DEEP_PINK :: Color.{1, 0.078431375, 0.5764706, 1};
+COLOR_DEEP_SKY_BLUE :: Color.{0, 0.7490196, 1, 1};
+COLOR_DIM_GRAY :: Color.{0.4117647, 0.4117647, 0.4117647, 1};
+COLOR_DODGER_BLUE :: Color.{0.11764706, 0.5647059, 1, 1};
+COLOR_FIREBRICK :: Color.{0.69803923, 0.13333334, 0.13333334, 1};
+COLOR_FLORAL_WHITE :: Color.{1, 0.98039216, 0.9411765, 1};
+COLOR_FOREST_GREEN :: Color.{0.13333334, 0.54509807, 0.13333334, 1};
 COLOR_FUCHSIA :: Color.{1, 0, 1, 1};
-COLOR_GAINSBORO :: Color.{0.862745, 0.862745, 0.862745, 1};
+COLOR_GAINSBORO :: Color.{0.8627451, 0.8627451, 0.8627451, 1};
 COLOR_GHOST_WHITE :: Color.{0.972549, 0.972549, 1, 1};
-COLOR_GOLD :: Color.{1, 0.843137, 0, 1};
-COLOR_GOLDENROD :: Color.{0.854902, 0.647059, 0.12549, 1};
-COLOR_GRAY :: Color.{0.745098, 0.745098, 0.745098, 1};
+COLOR_GOLD :: Color.{1, 0.84313726, 0, 1};
+COLOR_GOLDENROD :: Color.{0.85490197, 0.64705884, 0.1254902, 1};
+COLOR_GRAY :: Color.{0.74509805, 0.74509805, 0.74509805, 1};
 COLOR_GREEN :: Color.{0, 1, 0, 1};
-COLOR_GREEN_YELLOW :: Color.{0.678431, 1, 0.184314, 1};
-COLOR_HONEYDEW :: Color.{0.941176, 1, 0.941176, 1};
-COLOR_HOT_PINK :: Color.{1, 0.411765, 0.705882, 1};
-COLOR_INDIAN_RED :: Color.{0.803922, 0.360784, 0.360784, 1};
-COLOR_INDIGO :: Color.{0.294118, 0, 0.509804, 1};
-COLOR_IVORY :: Color.{1, 1, 0.941176, 1};
-COLOR_KHAKI :: Color.{0.941176, 0.901961, 0.54902, 1};
-COLOR_LAVENDER :: Color.{0.901961, 0.901961, 0.980392, 1};
-COLOR_LAVENDER_BLUSH :: Color.{1, 0.941176, 0.960784, 1};
-COLOR_LAWN_GREEN :: Color.{0.486275, 0.988235, 0, 1};
-COLOR_LEMON_CHIFFON :: Color.{1, 0.980392, 0.803922, 1};
-COLOR_LIGHT_BLUE :: Color.{0.678431, 0.847059, 0.901961, 1};
-COLOR_LIGHT_CORAL :: Color.{0.941176, 0.501961, 0.501961, 1};
-COLOR_LIGHT_CYAN :: Color.{0.878431, 1, 1, 1};
-COLOR_LIGHT_GOLDENROD :: Color.{0.980392, 0.980392, 0.823529, 1};
+COLOR_GREEN_YELLOW :: Color.{0.6784314, 1, 0.18431373, 1};
+COLOR_HONEYDEW :: Color.{0.9411765, 1, 0.9411765, 1};
+COLOR_HOT_PINK :: Color.{1, 0.4117647, 0.7058824, 1};
+COLOR_INDIAN_RED :: Color.{0.8039216, 0.36078432, 0.36078432, 1};
+COLOR_INDIGO :: Color.{0.29411766, 0, 0.50980395, 1};
+COLOR_IVORY :: Color.{1, 1, 0.9411765, 1};
+COLOR_KHAKI :: Color.{0.9411765, 0.9019608, 0.54901963, 1};
+COLOR_LAVENDER :: Color.{0.9019608, 0.9019608, 0.98039216, 1};
+COLOR_LAVENDER_BLUSH :: Color.{1, 0.9411765, 0.9607843, 1};
+COLOR_LAWN_GREEN :: Color.{0.4862745, 0.9882353, 0, 1};
+COLOR_LEMON_CHIFFON :: Color.{1, 0.98039216, 0.8039216, 1};
+COLOR_LIGHT_BLUE :: Color.{0.6784314, 0.84705883, 0.9019608, 1};
+COLOR_LIGHT_CORAL :: Color.{0.9411765, 0.5019608, 0.5019608, 1};
+COLOR_LIGHT_CYAN :: Color.{0.8784314, 1, 1, 1};
+COLOR_LIGHT_GOLDENROD :: Color.{0.98039216, 0.98039216, 0.8235294, 1};
 COLOR_LIGHT_GRAY :: Color.{0.827451, 0.827451, 0.827451, 1};
-COLOR_LIGHT_GREEN :: Color.{0.564706, 0.933333, 0.564706, 1};
-COLOR_LIGHT_PINK :: Color.{1, 0.713726, 0.756863, 1};
-COLOR_LIGHT_SALMON :: Color.{1, 0.627451, 0.478431, 1};
-COLOR_LIGHT_SEA_GREEN :: Color.{0.12549, 0.698039, 0.666667, 1};
-COLOR_LIGHT_SKY_BLUE :: Color.{0.529412, 0.807843, 0.980392, 1};
-COLOR_LIGHT_SLATE_GRAY :: Color.{0.466667, 0.533333, 0.6, 1};
-COLOR_LIGHT_STEEL_BLUE :: Color.{0.690196, 0.768627, 0.870588, 1};
-COLOR_LIGHT_YELLOW :: Color.{1, 1, 0.878431, 1};
+COLOR_LIGHT_GREEN :: Color.{0.5647059, 0.93333334, 0.5647059, 1};
+COLOR_LIGHT_PINK :: Color.{1, 0.7137255, 0.75686276, 1};
+COLOR_LIGHT_SALMON :: Color.{1, 0.627451, 0.47843137, 1};
+COLOR_LIGHT_SEA_GREEN :: Color.{0.1254902, 0.69803923, 0.6666667, 1};
+COLOR_LIGHT_SKY_BLUE :: Color.{0.5294118, 0.80784315, 0.98039216, 1};
+COLOR_LIGHT_SLATE_GRAY :: Color.{0.46666667, 0.53333336, 0.6, 1};
+COLOR_LIGHT_STEEL_BLUE :: Color.{0.6901961, 0.76862746, 0.87058824, 1};
+COLOR_LIGHT_YELLOW :: Color.{1, 1, 0.8784314, 1};
 COLOR_LIME :: Color.{0, 1, 0, 1};
-COLOR_LIME_GREEN :: Color.{0.196078, 0.803922, 0.196078, 1};
-COLOR_LINEN :: Color.{0.980392, 0.941176, 0.901961, 1};
+COLOR_LIME_GREEN :: Color.{0.19607843, 0.8039216, 0.19607843, 1};
+COLOR_LINEN :: Color.{0.98039216, 0.9411765, 0.9019608, 1};
 COLOR_MAGENTA :: Color.{1, 0, 1, 1};
-COLOR_MAROON :: Color.{0.690196, 0.188235, 0.376471, 1};
-COLOR_MEDIUM_AQUAMARINE :: Color.{0.4, 0.803922, 0.666667, 1};
-COLOR_MEDIUM_BLUE :: Color.{0, 0, 0.803922, 1};
-COLOR_MEDIUM_ORCHID :: Color.{0.729412, 0.333333, 0.827451, 1};
-COLOR_MEDIUM_PURPLE :: Color.{0.576471, 0.439216, 0.858824, 1};
-COLOR_MEDIUM_SEA_GREEN :: Color.{0.235294, 0.701961, 0.443137, 1};
-COLOR_MEDIUM_SLATE_BLUE :: Color.{0.482353, 0.407843, 0.933333, 1};
-COLOR_MEDIUM_SPRING_GREEN :: Color.{0, 0.980392, 0.603922, 1};
-COLOR_MEDIUM_TURQUOISE :: Color.{0.282353, 0.819608, 0.8, 1};
-COLOR_MEDIUM_VIOLET_RED :: Color.{0.780392, 0.0823529, 0.521569, 1};
-COLOR_MIDNIGHT_BLUE :: Color.{0.0980392, 0.0980392, 0.439216, 1};
-COLOR_MINT_CREAM :: Color.{0.960784, 1, 0.980392, 1};
-COLOR_MISTY_ROSE :: Color.{1, 0.894118, 0.882353, 1};
-COLOR_MOCCASIN :: Color.{1, 0.894118, 0.709804, 1};
-COLOR_NAVAJO_WHITE :: Color.{1, 0.870588, 0.678431, 1};
-COLOR_NAVY_BLUE :: Color.{0, 0, 0.501961, 1};
-COLOR_OLD_LACE :: Color.{0.992157, 0.960784, 0.901961, 1};
-COLOR_OLIVE :: Color.{0.501961, 0.501961, 0, 1};
-COLOR_OLIVE_DRAB :: Color.{0.419608, 0.556863, 0.137255, 1};
-COLOR_ORANGE :: Color.{1, 0.647059, 0, 1};
-COLOR_ORANGE_RED :: Color.{1, 0.270588, 0, 1};
-COLOR_ORCHID :: Color.{0.854902, 0.439216, 0.839216, 1};
-COLOR_PALE_GOLDENROD :: Color.{0.933333, 0.909804, 0.666667, 1};
-COLOR_PALE_GREEN :: Color.{0.596078, 0.984314, 0.596078, 1};
-COLOR_PALE_TURQUOISE :: Color.{0.686275, 0.933333, 0.933333, 1};
-COLOR_PALE_VIOLET_RED :: Color.{0.858824, 0.439216, 0.576471, 1};
-COLOR_PAPAYA_WHIP :: Color.{1, 0.937255, 0.835294, 1};
-COLOR_PEACH_PUFF :: Color.{1, 0.854902, 0.72549, 1};
-COLOR_PERU :: Color.{0.803922, 0.521569, 0.247059, 1};
-COLOR_PINK :: Color.{1, 0.752941, 0.796078, 1};
-COLOR_PLUM :: Color.{0.866667, 0.627451, 0.866667, 1};
-COLOR_POWDER_BLUE :: Color.{0.690196, 0.878431, 0.901961, 1};
-COLOR_PURPLE :: Color.{0.627451, 0.12549, 0.941176, 1};
+COLOR_MAROON :: Color.{0.6901961, 0.1882353, 0.3764706, 1};
+COLOR_MEDIUM_AQUAMARINE :: Color.{0.4, 0.8039216, 0.6666667, 1};
+COLOR_MEDIUM_BLUE :: Color.{0, 0, 0.8039216, 1};
+COLOR_MEDIUM_ORCHID :: Color.{0.7294118, 0.33333334, 0.827451, 1};
+COLOR_MEDIUM_PURPLE :: Color.{0.5764706, 0.4392157, 0.85882354, 1};
+COLOR_MEDIUM_SEA_GREEN :: Color.{0.23529412, 0.7019608, 0.44313726, 1};
+COLOR_MEDIUM_SLATE_BLUE :: Color.{0.48235294, 0.40784314, 0.93333334, 1};
+COLOR_MEDIUM_SPRING_GREEN :: Color.{0, 0.98039216, 0.6039216, 1};
+COLOR_MEDIUM_TURQUOISE :: Color.{0.28235295, 0.81960785, 0.8, 1};
+COLOR_MEDIUM_VIOLET_RED :: Color.{0.78039217, 0.08235294, 0.52156866, 1};
+COLOR_MIDNIGHT_BLUE :: Color.{0.09803922, 0.09803922, 0.4392157, 1};
+COLOR_MINT_CREAM :: Color.{0.9607843, 1, 0.98039216, 1};
+COLOR_MISTY_ROSE :: Color.{1, 0.89411765, 0.88235295, 1};
+COLOR_MOCCASIN :: Color.{1, 0.89411765, 0.70980394, 1};
+COLOR_NAVAJO_WHITE :: Color.{1, 0.87058824, 0.6784314, 1};
+COLOR_NAVY_BLUE :: Color.{0, 0, 0.5019608, 1};
+COLOR_OLD_LACE :: Color.{0.99215686, 0.9607843, 0.9019608, 1};
+COLOR_OLIVE :: Color.{0.5019608, 0.5019608, 0, 1};
+COLOR_OLIVE_DRAB :: Color.{0.41960785, 0.5568628, 0.13725491, 1};
+COLOR_ORANGE :: Color.{1, 0.64705884, 0, 1};
+COLOR_ORANGE_RED :: Color.{1, 0.27058825, 0, 1};
+COLOR_ORCHID :: Color.{0.85490197, 0.4392157, 0.8392157, 1};
+COLOR_PALE_GOLDENROD :: Color.{0.93333334, 0.9098039, 0.6666667, 1};
+COLOR_PALE_GREEN :: Color.{0.59607846, 0.9843137, 0.59607846, 1};
+COLOR_PALE_TURQUOISE :: Color.{0.6862745, 0.93333334, 0.93333334, 1};
+COLOR_PALE_VIOLET_RED :: Color.{0.85882354, 0.4392157, 0.5764706, 1};
+COLOR_PAPAYA_WHIP :: Color.{1, 0.9372549, 0.8352941, 1};
+COLOR_PEACH_PUFF :: Color.{1, 0.85490197, 0.7254902, 1};
+COLOR_PERU :: Color.{0.8039216, 0.52156866, 0.24705882, 1};
+COLOR_PINK :: Color.{1, 0.7529412, 0.79607844, 1};
+COLOR_PLUM :: Color.{0.8666667, 0.627451, 0.8666667, 1};
+COLOR_POWDER_BLUE :: Color.{0.6901961, 0.8784314, 0.9019608, 1};
+COLOR_PURPLE :: Color.{0.627451, 0.1254902, 0.9411765, 1};
 COLOR_REBECCA_PURPLE :: Color.{0.4, 0.2, 0.6, 1};
 COLOR_RED :: Color.{1, 0, 0, 1};
-COLOR_ROSY_BROWN :: Color.{0.737255, 0.560784, 0.560784, 1};
-COLOR_ROYAL_BLUE :: Color.{0.254902, 0.411765, 0.882353, 1};
-COLOR_SADDLE_BROWN :: Color.{0.545098, 0.270588, 0.0745098, 1};
-COLOR_SALMON :: Color.{0.980392, 0.501961, 0.447059, 1};
-COLOR_SANDY_BROWN :: Color.{0.956863, 0.643137, 0.376471, 1};
-COLOR_SEA_GREEN :: Color.{0.180392, 0.545098, 0.341176, 1};
-COLOR_SEASHELL :: Color.{1, 0.960784, 0.933333, 1};
-COLOR_SIENNA :: Color.{0.627451, 0.321569, 0.176471, 1};
-COLOR_SILVER :: Color.{0.752941, 0.752941, 0.752941, 1};
-COLOR_SKY_BLUE :: Color.{0.529412, 0.807843, 0.921569, 1};
-COLOR_SLATE_BLUE :: Color.{0.415686, 0.352941, 0.803922, 1};
-COLOR_SLATE_GRAY :: Color.{0.439216, 0.501961, 0.564706, 1};
-COLOR_SNOW :: Color.{1, 0.980392, 0.980392, 1};
-COLOR_SPRING_GREEN :: Color.{0, 1, 0.498039, 1};
-COLOR_STEEL_BLUE :: Color.{0.27451, 0.509804, 0.705882, 1};
-COLOR_TAN :: Color.{0.823529, 0.705882, 0.54902, 1};
-COLOR_TEAL :: Color.{0, 0.501961, 0.501961, 1};
-COLOR_THISTLE :: Color.{0.847059, 0.74902, 0.847059, 1};
-COLOR_TOMATO :: Color.{1, 0.388235, 0.278431, 1};
+COLOR_ROSY_BROWN :: Color.{0.7372549, 0.56078434, 0.56078434, 1};
+COLOR_ROYAL_BLUE :: Color.{0.25490198, 0.4117647, 0.88235295, 1};
+COLOR_SADDLE_BROWN :: Color.{0.54509807, 0.27058825, 0.07450981, 1};
+COLOR_SALMON :: Color.{0.98039216, 0.5019608, 0.44705883, 1};
+COLOR_SANDY_BROWN :: Color.{0.95686275, 0.6431373, 0.3764706, 1};
+COLOR_SEA_GREEN :: Color.{0.18039216, 0.54509807, 0.34117648, 1};
+COLOR_SEASHELL :: Color.{1, 0.9607843, 0.93333334, 1};
+COLOR_SIENNA :: Color.{0.627451, 0.32156864, 0.1764706, 1};
+COLOR_SILVER :: Color.{0.7529412, 0.7529412, 0.7529412, 1};
+COLOR_SKY_BLUE :: Color.{0.5294118, 0.80784315, 0.92156863, 1};
+COLOR_SLATE_BLUE :: Color.{0.41568628, 0.3529412, 0.8039216, 1};
+COLOR_SLATE_GRAY :: Color.{0.4392157, 0.5019608, 0.5647059, 1};
+COLOR_SNOW :: Color.{1, 0.98039216, 0.98039216, 1};
+COLOR_SPRING_GREEN :: Color.{0, 1, 0.49803922, 1};
+COLOR_STEEL_BLUE :: Color.{0.27450982, 0.50980395, 0.7058824, 1};
+COLOR_TAN :: Color.{0.8235294, 0.7058824, 0.54901963, 1};
+COLOR_TEAL :: Color.{0, 0.5019608, 0.5019608, 1};
+COLOR_THISTLE :: Color.{0.84705883, 0.7490196, 0.84705883, 1};
+COLOR_TOMATO :: Color.{1, 0.3882353, 0.2784314, 1};
 COLOR_TRANSPARENT :: Color.{1, 1, 1, 0};
-COLOR_TURQUOISE :: Color.{0.25098, 0.878431, 0.815686, 1};
-COLOR_VIOLET :: Color.{0.933333, 0.509804, 0.933333, 1};
-COLOR_WEB_GRAY :: Color.{0.501961, 0.501961, 0.501961, 1};
-COLOR_WEB_GREEN :: Color.{0, 0.501961, 0, 1};
-COLOR_WEB_MAROON :: Color.{0.501961, 0, 0, 1};
-COLOR_WEB_PURPLE :: Color.{0.501961, 0, 0.501961, 1};
-COLOR_WHEAT :: Color.{0.960784, 0.870588, 0.701961, 1};
+COLOR_TURQUOISE :: Color.{0.2509804, 0.8784314, 0.8156863, 1};
+COLOR_VIOLET :: Color.{0.93333334, 0.50980395, 0.93333334, 1};
+COLOR_WEB_GRAY :: Color.{0.5019608, 0.5019608, 0.5019608, 1};
+COLOR_WEB_GREEN :: Color.{0, 0.5019608, 0, 1};
+COLOR_WEB_MAROON :: Color.{0.5019608, 0, 0, 1};
+COLOR_WEB_PURPLE :: Color.{0.5019608, 0, 0.5019608, 1};
+COLOR_WHEAT :: Color.{0.9607843, 0.87058824, 0.7019608, 1};
 COLOR_WHITE :: Color.{1, 1, 1, 1};
-COLOR_WHITE_SMOKE :: Color.{0.960784, 0.960784, 0.960784, 1};
+COLOR_WHITE_SMOKE :: Color.{0.9607843, 0.9607843, 0.9607843, 1};
 COLOR_YELLOW :: Color.{1, 1, 0, 1};
-COLOR_YELLOW_GREEN :: Color.{0.603922, 0.803922, 0.196078, 1};
+COLOR_YELLOW_GREEN :: Color.{0.6039216, 0.8039216, 0.19607843, 1};
 
 StringName :: struct {
 	__private: [8]u8;
@@ -5394,6 +5500,46 @@ StringName_replacen :: (using self: *StringName, what: String, forwhat: String) 
 	return ret;
 }
 
+StringName_replace_char :: (using self: *StringName, key: int, with: int) -> String #c_call {
+	method_name := new_string_name("replace_char");
+	defer destroy(*method_name);
+	args : = *void.[*key, *with, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 787537301);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+StringName_replace_chars :: (using self: *StringName, keys: String, with: int) -> String #c_call {
+	method_name := new_string_name("replace_chars");
+	defer destroy(*method_name);
+	args : = *void.[*keys, *with, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3535100402);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+StringName_remove_char :: (using self: *StringName, what: int) -> String #c_call {
+	method_name := new_string_name("remove_char");
+	defer destroy(*method_name);
+	args : = *void.[*what, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 2162347432);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+StringName_remove_chars :: (using self: *StringName, chars: String) -> String #c_call {
+	method_name := new_string_name("remove_chars");
+	defer destroy(*method_name);
+	args : = *void.[*chars, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3134094431);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 StringName_repeat :: (using self: *StringName, count: int) -> String #c_call {
 	method_name := new_string_name("repeat");
 	defer destroy(*method_name);
@@ -5466,6 +5612,16 @@ StringName_to_pascal_case :: (using self: *StringName) -> String #c_call {
 
 StringName_to_snake_case :: (using self: *StringName) -> String #c_call {
 	method_name := new_string_name("to_snake_case");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3942272618);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+StringName_to_kebab_case :: (using self: *StringName) -> String #c_call {
+	method_name := new_string_name("to_kebab_case");
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: String;
@@ -5614,10 +5770,10 @@ StringName_get_basename :: (using self: *StringName) -> String #c_call {
 	return ret;
 }
 
-StringName_path_join :: (using self: *StringName, file: String) -> String #c_call {
+StringName_path_join :: (using self: *StringName, path: String) -> String #c_call {
 	method_name := new_string_name("path_join");
 	defer destroy(*method_name);
-	args : = *void.[*file, ];
+	args : = *void.[*path, ];
 	ret: String;
 	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3134094431);
 	func(self, args.data, *ret, args.count);
@@ -5834,6 +5990,16 @@ StringName_uri_decode :: (using self: *StringName) -> String #c_call {
 	return ret;
 }
 
+StringName_uri_file_decode :: (using self: *StringName) -> String #c_call {
+	method_name := new_string_name("uri_file_decode");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3942272618);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 StringName_c_escape :: (using self: *StringName) -> String #c_call {
 	method_name := new_string_name("c_escape");
 	defer destroy(*method_name);
@@ -5880,6 +6046,26 @@ StringName_validate_filename :: (using self: *StringName) -> String #c_call {
 	args : = *void.[];
 	ret: String;
 	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3942272618);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+StringName_is_valid_ascii_identifier :: (using self: *StringName) -> bool #c_call {
+	method_name := new_string_name("is_valid_ascii_identifier");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3918633141);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+StringName_is_valid_unicode_identifier :: (using self: *StringName) -> bool #c_call {
+	method_name := new_string_name("is_valid_unicode_identifier");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -6094,8 +6280,8 @@ StringName_to_utf32_buffer :: (using self: *StringName) -> PackedByteArray #c_ca
 	return ret;
 }
 
-StringName_hex_decode :: (using self: *StringName) -> PackedByteArray #c_call {
-	method_name := new_string_name("hex_decode");
+StringName_to_wchar_buffer :: (using self: *StringName) -> PackedByteArray #c_call {
+	method_name := new_string_name("to_wchar_buffer");
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedByteArray;
@@ -6104,8 +6290,18 @@ StringName_hex_decode :: (using self: *StringName) -> PackedByteArray #c_call {
 	return ret;
 }
 
-StringName_to_wchar_buffer :: (using self: *StringName) -> PackedByteArray #c_call {
-	method_name := new_string_name("to_wchar_buffer");
+StringName_to_multibyte_char_buffer :: (using self: *StringName, encoding: String) -> PackedByteArray #c_call {
+	method_name := new_string_name("to_multibyte_char_buffer");
+	defer destroy(*method_name);
+	args : = *void.[*encoding, ];
+	ret: PackedByteArray;
+	func := variant_get_ptr_builtin_method(.STRING_NAME, *method_name, 3055765187);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+StringName_hex_decode :: (using self: *StringName) -> PackedByteArray #c_call {
+	method_name := new_string_name("hex_decode");
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedByteArray;
@@ -6398,6 +6594,16 @@ Callable_get_bound_arguments :: (using self: *Callable) -> Array #c_call {
 	return ret;
 }
 
+Callable_get_unbound_arguments_count :: (using self: *Callable) -> int #c_call {
+	method_name := new_string_name("get_unbound_arguments_count");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: int;
+	func := variant_get_ptr_builtin_method(.CALLABLE, *method_name, 3173160232);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 Callable_hash :: (using self: *Callable) -> int #c_call {
 	method_name := new_string_name("hash");
 	defer destroy(*method_name);
@@ -6560,6 +6766,16 @@ Signal_get_connections :: (using self: *Signal) -> Array #c_call {
 	return ret;
 }
 
+Signal_has_connections :: (using self: *Signal) -> bool #c_call {
+	method_name := new_string_name("has_connections");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.SIGNAL, *method_name, 3918633141);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 Signal_emit :: (using self: *Signal) #c_call {
 	method_name := new_string_name("emit");
 	defer destroy(*method_name);
@@ -6600,6 +6816,22 @@ Dictionary_is_empty :: (using self: *Dictionary) -> bool #c_call {
 
 Dictionary_clear :: (using self: *Dictionary) #c_call {
 	method_name := new_string_name("clear");
+	defer destroy(*method_name);
+	args : = *void.[];
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3218959716);
+	func(self, args.data, null, args.count);
+}
+
+Dictionary_assign :: (using self: *Dictionary, dictionary: Dictionary) #c_call {
+	method_name := new_string_name("assign");
+	defer destroy(*method_name);
+	args : = *void.[*dictionary, ];
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3642266950);
+	func(self, args.data, null, args.count);
+}
+
+Dictionary_sort :: (using self: *Dictionary) #c_call {
+	method_name := new_string_name("sort");
 	defer destroy(*method_name);
 	args : = *void.[];
 	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3218959716);
@@ -6704,6 +6936,16 @@ Dictionary_duplicate :: (using self: *Dictionary, deep: bool) -> Dictionary #c_c
 	return ret;
 }
 
+Dictionary_duplicate_deep :: (using self: *Dictionary, deep_subresources_mode: int) -> Dictionary #c_call {
+	method_name := new_string_name("duplicate_deep");
+	defer destroy(*method_name);
+	args : = *void.[*deep_subresources_mode, ];
+	ret: Dictionary;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 2160600714);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 Dictionary_get :: (using self: *Dictionary, key: Variant, default: Variant) -> Variant #c_call {
 	method_name := new_string_name("get");
 	defer destroy(*method_name);
@@ -6720,6 +6962,136 @@ Dictionary_get_or_add :: (using self: *Dictionary, key: Variant, default: Varian
 	args : = *void.[*key, *default, ];
 	ret: Variant;
 	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 1052551076);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_set :: (using self: *Dictionary, key: Variant, value: Variant) -> bool #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*key, *value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 2175348267);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_is_typed :: (using self: *Dictionary) -> bool #c_call {
+	method_name := new_string_name("is_typed");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3918633141);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_is_typed_key :: (using self: *Dictionary) -> bool #c_call {
+	method_name := new_string_name("is_typed_key");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3918633141);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_is_typed_value :: (using self: *Dictionary) -> bool #c_call {
+	method_name := new_string_name("is_typed_value");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3918633141);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_is_same_typed :: (using self: *Dictionary, dictionary: Dictionary) -> bool #c_call {
+	method_name := new_string_name("is_same_typed");
+	defer destroy(*method_name);
+	args : = *void.[*dictionary, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3471775634);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_is_same_typed_key :: (using self: *Dictionary, dictionary: Dictionary) -> bool #c_call {
+	method_name := new_string_name("is_same_typed_key");
+	defer destroy(*method_name);
+	args : = *void.[*dictionary, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3471775634);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_is_same_typed_value :: (using self: *Dictionary, dictionary: Dictionary) -> bool #c_call {
+	method_name := new_string_name("is_same_typed_value");
+	defer destroy(*method_name);
+	args : = *void.[*dictionary, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3471775634);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_get_typed_key_builtin :: (using self: *Dictionary) -> int #c_call {
+	method_name := new_string_name("get_typed_key_builtin");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: int;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3173160232);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_get_typed_value_builtin :: (using self: *Dictionary) -> int #c_call {
+	method_name := new_string_name("get_typed_value_builtin");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: int;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 3173160232);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_get_typed_key_class_name :: (using self: *Dictionary) -> StringName #c_call {
+	method_name := new_string_name("get_typed_key_class_name");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: StringName;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 1825232092);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_get_typed_value_class_name :: (using self: *Dictionary) -> StringName #c_call {
+	method_name := new_string_name("get_typed_value_class_name");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: StringName;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 1825232092);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_get_typed_key_script :: (using self: *Dictionary) -> Variant #c_call {
+	method_name := new_string_name("get_typed_key_script");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: Variant;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 1460142086);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Dictionary_get_typed_value_script :: (using self: *Dictionary) -> Variant #c_call {
+	method_name := new_string_name("get_typed_value_script");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: Variant;
+	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 1460142086);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -6805,6 +7177,24 @@ Array_assign :: (using self: *Array, array: Array) #c_call {
 	defer destroy(*method_name);
 	args : = *void.[*array, ];
 	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 2307260970);
+	func(self, args.data, null, args.count);
+}
+
+Array_get :: (using self: *Array, index: int) -> Variant #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: Variant;
+	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 708700221);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Array_set :: (using self: *Array, index: int, value: Variant) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 3798478031);
 	func(self, args.data, null, args.count);
 }
 
@@ -6924,12 +7314,32 @@ Array_find :: (using self: *Array, what: Variant, from: int) -> int #c_call {
 	return ret;
 }
 
+Array_find_custom :: (using self: *Array, method: Callable, from: int) -> int #c_call {
+	method_name := new_string_name("find_custom");
+	defer destroy(*method_name);
+	args : = *void.[*method, *from, ];
+	ret: int;
+	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 2145562546);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 Array_rfind :: (using self: *Array, what: Variant, from: int) -> int #c_call {
 	method_name := new_string_name("rfind");
 	defer destroy(*method_name);
 	args : = *void.[*what, *from, ];
 	ret: int;
 	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 2336346817);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Array_rfind_custom :: (using self: *Array, method: Callable, from: int) -> int #c_call {
+	method_name := new_string_name("rfind_custom");
+	defer destroy(*method_name);
+	args : = *void.[*method, *from, ];
+	ret: int;
+	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 2145562546);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -7042,6 +7452,16 @@ Array_duplicate :: (using self: *Array, deep: bool) -> Array #c_call {
 	args : = *void.[*deep, ];
 	ret: Array;
 	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 636440122);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+Array_duplicate_deep :: (using self: *Array, deep_subresources_mode: int) -> Array #c_call {
+	method_name := new_string_name("duplicate_deep");
+	defer destroy(*method_name);
+	args : = *void.[*deep_subresources_mode, ];
+	ret: Array;
+	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 1949240801);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -7204,6 +7624,24 @@ destroy :: (self: *PackedByteArray) #no_context {
 }
 
 
+PackedByteArray_get :: (using self: *PackedByteArray, index: int) -> int #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: int;
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 4103005248);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedByteArray_set :: (using self: *PackedByteArray, index: int, value: int) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3638975848);
+	func(self, args.data, null, args.count);
+}
+
 PackedByteArray_size :: (using self: *PackedByteArray) -> int #c_call {
 	method_name := new_string_name("size");
 	defer destroy(*method_name);
@@ -7222,14 +7660,6 @@ PackedByteArray_is_empty :: (using self: *PackedByteArray) -> bool #c_call {
 	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedByteArray_set :: (using self: *PackedByteArray, index: int, value: int) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3638975848);
-	func(self, args.data, null, args.count);
 }
 
 PackedByteArray_push_back :: (using self: *PackedByteArray, value: int) -> bool #c_call {
@@ -7345,7 +7775,7 @@ PackedByteArray_bsearch :: (using self: *PackedByteArray, value: int, before: bo
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3380005890);
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 954237325);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -7355,7 +7785,7 @@ PackedByteArray_duplicate :: (using self: *PackedByteArray) -> PackedByteArray #
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedByteArray;
-	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 851781288);
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 247621236);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -7386,6 +7816,16 @@ PackedByteArray_count :: (using self: *PackedByteArray, value: int) -> int #c_ca
 	args : = *void.[*value, ];
 	ret: int;
 	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 4103005248);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedByteArray_erase :: (using self: *PackedByteArray, value: int) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 694024632);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -7436,6 +7876,16 @@ PackedByteArray_get_string_from_wchar :: (using self: *PackedByteArray) -> Strin
 	args : = *void.[];
 	ret: String;
 	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3942272618);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedByteArray_get_string_from_multibyte_char :: (using self: *PackedByteArray, encoding: String) -> String #c_call {
+	method_name := new_string_name("get_string_from_multibyte_char");
+	defer destroy(*method_name);
+	args : = *void.[*encoding, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3134094431);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -7660,6 +8110,70 @@ PackedByteArray_to_float64_array :: (using self: *PackedByteArray) -> PackedFloa
 	return ret;
 }
 
+PackedByteArray_to_vector2_array :: (using self: *PackedByteArray) -> PackedVector2Array #c_call {
+	method_name := new_string_name("to_vector2_array");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: PackedVector2Array;
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 1660374357);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedByteArray_to_vector3_array :: (using self: *PackedByteArray) -> PackedVector3Array #c_call {
+	method_name := new_string_name("to_vector3_array");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: PackedVector3Array;
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 4171207452);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedByteArray_to_vector4_array :: (using self: *PackedByteArray) -> PackedVector4Array #c_call {
+	method_name := new_string_name("to_vector4_array");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: PackedVector4Array;
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 146203628);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedByteArray_to_color_array :: (using self: *PackedByteArray) -> PackedColorArray #c_call {
+	method_name := new_string_name("to_color_array");
+	defer destroy(*method_name);
+	args : = *void.[];
+	ret: PackedColorArray;
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3072026941);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedByteArray_bswap16 :: (using self: *PackedByteArray, offset: int, count: int) #c_call {
+	method_name := new_string_name("bswap16");
+	defer destroy(*method_name);
+	args : = *void.[*offset, *count, ];
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3638975848);
+	func(self, args.data, null, args.count);
+}
+
+PackedByteArray_bswap32 :: (using self: *PackedByteArray, offset: int, count: int) #c_call {
+	method_name := new_string_name("bswap32");
+	defer destroy(*method_name);
+	args : = *void.[*offset, *count, ];
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3638975848);
+	func(self, args.data, null, args.count);
+}
+
+PackedByteArray_bswap64 :: (using self: *PackedByteArray, offset: int, count: int) #c_call {
+	method_name := new_string_name("bswap64");
+	defer destroy(*method_name);
+	args : = *void.[*offset, *count, ];
+	func := variant_get_ptr_builtin_method(.PACKEDBYTEARRAY, *method_name, 3638975848);
+	func(self, args.data, null, args.count);
+}
+
 PackedByteArray_encode_u8 :: (using self: *PackedByteArray, byte_offset: int, value: int) #c_call {
 	method_name := new_string_name("encode_u8");
 	defer destroy(*method_name);
@@ -7768,6 +8282,24 @@ destroy :: (self: *PackedInt32Array) #no_context {
 }
 
 
+PackedInt32Array_get :: (using self: *PackedInt32Array, index: int) -> int #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: int;
+	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 4103005248);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedInt32Array_set :: (using self: *PackedInt32Array, index: int, value: int) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 3638975848);
+	func(self, args.data, null, args.count);
+}
+
 PackedInt32Array_size :: (using self: *PackedInt32Array) -> int #c_call {
 	method_name := new_string_name("size");
 	defer destroy(*method_name);
@@ -7786,14 +8318,6 @@ PackedInt32Array_is_empty :: (using self: *PackedInt32Array) -> bool #c_call {
 	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedInt32Array_set :: (using self: *PackedInt32Array, index: int, value: int) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 3638975848);
-	func(self, args.data, null, args.count);
 }
 
 PackedInt32Array_push_back :: (using self: *PackedInt32Array, value: int) -> bool #c_call {
@@ -7919,7 +8443,7 @@ PackedInt32Array_bsearch :: (using self: *PackedInt32Array, value: int, before: 
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 3380005890);
+	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 954237325);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -7929,7 +8453,7 @@ PackedInt32Array_duplicate :: (using self: *PackedInt32Array) -> PackedInt32Arra
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedInt32Array;
-	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 1997843129);
+	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 3158844420);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -7964,6 +8488,16 @@ PackedInt32Array_count :: (using self: *PackedInt32Array, value: int) -> int #c_
 	return ret;
 }
 
+PackedInt32Array_erase :: (using self: *PackedInt32Array, value: int) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDINT32ARRAY, *method_name, 694024632);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 PackedInt64Array :: struct {
 	__private: [16]u8;
 }
@@ -7973,6 +8507,24 @@ destroy :: (self: *PackedInt64Array) #no_context {
 	packed_int64_array_destroy(self);
 }
 
+
+PackedInt64Array_get :: (using self: *PackedInt64Array, index: int) -> int #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: int;
+	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 4103005248);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedInt64Array_set :: (using self: *PackedInt64Array, index: int, value: int) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 3638975848);
+	func(self, args.data, null, args.count);
+}
 
 PackedInt64Array_size :: (using self: *PackedInt64Array) -> int #c_call {
 	method_name := new_string_name("size");
@@ -7992,14 +8544,6 @@ PackedInt64Array_is_empty :: (using self: *PackedInt64Array) -> bool #c_call {
 	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedInt64Array_set :: (using self: *PackedInt64Array, index: int, value: int) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 3638975848);
-	func(self, args.data, null, args.count);
 }
 
 PackedInt64Array_push_back :: (using self: *PackedInt64Array, value: int) -> bool #c_call {
@@ -8125,7 +8669,7 @@ PackedInt64Array_bsearch :: (using self: *PackedInt64Array, value: int, before: 
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 3380005890);
+	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 954237325);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8135,7 +8679,7 @@ PackedInt64Array_duplicate :: (using self: *PackedInt64Array) -> PackedInt64Arra
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedInt64Array;
-	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 2376370016);
+	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 1961294120);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8170,6 +8714,16 @@ PackedInt64Array_count :: (using self: *PackedInt64Array, value: int) -> int #c_
 	return ret;
 }
 
+PackedInt64Array_erase :: (using self: *PackedInt64Array, value: int) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDINT64ARRAY, *method_name, 694024632);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 PackedFloat32Array :: struct {
 	__private: [16]u8;
 }
@@ -8179,6 +8733,24 @@ destroy :: (self: *PackedFloat32Array) #no_context {
 	packed_float32_array_destroy(self);
 }
 
+
+PackedFloat32Array_get :: (using self: *PackedFloat32Array, index: int) -> float #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: float;
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 1401583798);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedFloat32Array_set :: (using self: *PackedFloat32Array, index: int, value: float) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 1113000516);
+	func(self, args.data, null, args.count);
+}
 
 PackedFloat32Array_size :: (using self: *PackedFloat32Array) -> int #c_call {
 	method_name := new_string_name("size");
@@ -8198,14 +8770,6 @@ PackedFloat32Array_is_empty :: (using self: *PackedFloat32Array) -> bool #c_call
 	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedFloat32Array_set :: (using self: *PackedFloat32Array, index: int, value: float) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 1113000516);
-	func(self, args.data, null, args.count);
 }
 
 PackedFloat32Array_push_back :: (using self: *PackedFloat32Array, value: float) -> bool #c_call {
@@ -8331,7 +8895,7 @@ PackedFloat32Array_bsearch :: (using self: *PackedFloat32Array, value: float, be
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 1188816338);
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 1175118842);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8341,7 +8905,7 @@ PackedFloat32Array_duplicate :: (using self: *PackedFloat32Array) -> PackedFloat
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedFloat32Array;
-	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 831114784);
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 3575107827);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8376,6 +8940,16 @@ PackedFloat32Array_count :: (using self: *PackedFloat32Array, value: float) -> i
 	return ret;
 }
 
+PackedFloat32Array_erase :: (using self: *PackedFloat32Array, value: float) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT32ARRAY, *method_name, 4094791666);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 PackedFloat64Array :: struct {
 	__private: [16]u8;
 }
@@ -8385,6 +8959,24 @@ destroy :: (self: *PackedFloat64Array) #no_context {
 	packed_float64_array_destroy(self);
 }
 
+
+PackedFloat64Array_get :: (using self: *PackedFloat64Array, index: int) -> float #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: float;
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 1401583798);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedFloat64Array_set :: (using self: *PackedFloat64Array, index: int, value: float) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 1113000516);
+	func(self, args.data, null, args.count);
+}
 
 PackedFloat64Array_size :: (using self: *PackedFloat64Array) -> int #c_call {
 	method_name := new_string_name("size");
@@ -8404,14 +8996,6 @@ PackedFloat64Array_is_empty :: (using self: *PackedFloat64Array) -> bool #c_call
 	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedFloat64Array_set :: (using self: *PackedFloat64Array, index: int, value: float) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 1113000516);
-	func(self, args.data, null, args.count);
 }
 
 PackedFloat64Array_push_back :: (using self: *PackedFloat64Array, value: float) -> bool #c_call {
@@ -8537,7 +9121,7 @@ PackedFloat64Array_bsearch :: (using self: *PackedFloat64Array, value: float, be
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 1188816338);
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 1175118842);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8547,7 +9131,7 @@ PackedFloat64Array_duplicate :: (using self: *PackedFloat64Array) -> PackedFloat
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedFloat64Array;
-	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 949266573);
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 1627308337);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8582,6 +9166,16 @@ PackedFloat64Array_count :: (using self: *PackedFloat64Array, value: float) -> i
 	return ret;
 }
 
+PackedFloat64Array_erase :: (using self: *PackedFloat64Array, value: float) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDFLOAT64ARRAY, *method_name, 4094791666);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 PackedStringArray :: struct {
 	__private: [16]u8;
 }
@@ -8591,6 +9185,24 @@ destroy :: (self: *PackedStringArray) #no_context {
 	packed_string_array_destroy(self);
 }
 
+
+PackedStringArray_get :: (using self: *PackedStringArray, index: int) -> String #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: String;
+	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 2162347432);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedStringArray_set :: (using self: *PackedStringArray, index: int, value: String) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 725585539);
+	func(self, args.data, null, args.count);
+}
 
 PackedStringArray_size :: (using self: *PackedStringArray) -> int #c_call {
 	method_name := new_string_name("size");
@@ -8610,14 +9222,6 @@ PackedStringArray_is_empty :: (using self: *PackedStringArray) -> bool #c_call {
 	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedStringArray_set :: (using self: *PackedStringArray, index: int, value: String) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 725585539);
-	func(self, args.data, null, args.count);
 }
 
 PackedStringArray_push_back :: (using self: *PackedStringArray, value: String) -> bool #c_call {
@@ -8743,7 +9347,7 @@ PackedStringArray_bsearch :: (using self: *PackedStringArray, value: String, bef
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 328976671);
+	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 1171495151);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8753,7 +9357,7 @@ PackedStringArray_duplicate :: (using self: *PackedStringArray) -> PackedStringA
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedStringArray;
-	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 2991231410);
+	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 747180633);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8788,6 +9392,16 @@ PackedStringArray_count :: (using self: *PackedStringArray, value: String) -> in
 	return ret;
 }
 
+PackedStringArray_erase :: (using self: *PackedStringArray, value: String) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDSTRINGARRAY, *method_name, 816187996);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 PackedVector2Array :: struct {
 	__private: [16]u8;
 }
@@ -8797,6 +9411,24 @@ destroy :: (self: *PackedVector2Array) #no_context {
 	packed_vector2_array_destroy(self);
 }
 
+
+PackedVector2Array_get :: (using self: *PackedVector2Array, index: int) -> Vector2 #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: Vector2;
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 2609058838);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedVector2Array_set :: (using self: *PackedVector2Array, index: int, value: Vector2) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 635767250);
+	func(self, args.data, null, args.count);
+}
 
 PackedVector2Array_size :: (using self: *PackedVector2Array) -> int #c_call {
 	method_name := new_string_name("size");
@@ -8816,14 +9448,6 @@ PackedVector2Array_is_empty :: (using self: *PackedVector2Array) -> bool #c_call
 	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedVector2Array_set :: (using self: *PackedVector2Array, index: int, value: Vector2) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 635767250);
-	func(self, args.data, null, args.count);
 }
 
 PackedVector2Array_push_back :: (using self: *PackedVector2Array, value: Vector2) -> bool #c_call {
@@ -8949,7 +9573,7 @@ PackedVector2Array_bsearch :: (using self: *PackedVector2Array, value: Vector2, 
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 3778035805);
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 3341588170);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8959,7 +9583,7 @@ PackedVector2Array_duplicate :: (using self: *PackedVector2Array) -> PackedVecto
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedVector2Array;
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 3763646812);
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 1660374357);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -8994,6 +9618,16 @@ PackedVector2Array_count :: (using self: *PackedVector2Array, value: Vector2) ->
 	return ret;
 }
 
+PackedVector2Array_erase :: (using self: *PackedVector2Array, value: Vector2) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 4188891560);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 PackedVector3Array :: struct {
 	__private: [16]u8;
 }
@@ -9003,6 +9637,24 @@ destroy :: (self: *PackedVector3Array) #no_context {
 	packed_vector3_array_destroy(self);
 }
 
+
+PackedVector3Array_get :: (using self: *PackedVector3Array, index: int) -> Vector3 #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: Vector3;
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 1394941017);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedVector3Array_set :: (using self: *PackedVector3Array, index: int, value: Vector3) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 3975343409);
+	func(self, args.data, null, args.count);
+}
 
 PackedVector3Array_size :: (using self: *PackedVector3Array) -> int #c_call {
 	method_name := new_string_name("size");
@@ -9022,14 +9674,6 @@ PackedVector3Array_is_empty :: (using self: *PackedVector3Array) -> bool #c_call
 	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedVector3Array_set :: (using self: *PackedVector3Array, index: int, value: Vector3) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 3975343409);
-	func(self, args.data, null, args.count);
 }
 
 PackedVector3Array_push_back :: (using self: *PackedVector3Array, value: Vector3) -> bool #c_call {
@@ -9155,7 +9799,7 @@ PackedVector3Array_bsearch :: (using self: *PackedVector3Array, value: Vector3, 
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 219263630);
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 1259277637);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -9165,7 +9809,7 @@ PackedVector3Array_duplicate :: (using self: *PackedVector3Array) -> PackedVecto
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedVector3Array;
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 2754175465);
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 4171207452);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -9200,6 +9844,16 @@ PackedVector3Array_count :: (using self: *PackedVector3Array, value: Vector3) ->
 	return ret;
 }
 
+PackedVector3Array_erase :: (using self: *PackedVector3Array, value: Vector3) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 3295363524);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 PackedColorArray :: struct {
 	__private: [16]u8;
 }
@@ -9209,6 +9863,24 @@ destroy :: (self: *PackedColorArray) #no_context {
 	packed_color_array_destroy(self);
 }
 
+
+PackedColorArray_get :: (using self: *PackedColorArray, index: int) -> Color #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: Color;
+	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 2972831132);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedColorArray_set :: (using self: *PackedColorArray, index: int, value: Color) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 1444096570);
+	func(self, args.data, null, args.count);
+}
 
 PackedColorArray_size :: (using self: *PackedColorArray) -> int #c_call {
 	method_name := new_string_name("size");
@@ -9228,14 +9900,6 @@ PackedColorArray_is_empty :: (using self: *PackedColorArray) -> bool #c_call {
 	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedColorArray_set :: (using self: *PackedColorArray, index: int, value: Color) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 1444096570);
-	func(self, args.data, null, args.count);
 }
 
 PackedColorArray_push_back :: (using self: *PackedColorArray, value: Color) -> bool #c_call {
@@ -9361,7 +10025,7 @@ PackedColorArray_bsearch :: (using self: *PackedColorArray, value: Color, before
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 314143821);
+	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 2639732838);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -9371,7 +10035,7 @@ PackedColorArray_duplicate :: (using self: *PackedColorArray) -> PackedColorArra
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedColorArray;
-	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 1011903421);
+	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 3072026941);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -9406,6 +10070,16 @@ PackedColorArray_count :: (using self: *PackedColorArray, value: Color) -> int #
 	return ret;
 }
 
+PackedColorArray_erase :: (using self: *PackedColorArray, value: Color) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDCOLORARRAY, *method_name, 1007858200);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
 PackedVector4Array :: struct {
 	__private: [16]u8;
 }
@@ -9415,6 +10089,24 @@ destroy :: (self: *PackedVector4Array) #no_context {
 	packed_vector4_array_destroy(self);
 }
 
+
+PackedVector4Array_get :: (using self: *PackedVector4Array, index: int) -> Vector4 #c_call {
+	method_name := new_string_name("get");
+	defer destroy(*method_name);
+	args : = *void.[*index, ];
+	ret: Vector4;
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 1227817084);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedVector4Array_set :: (using self: *PackedVector4Array, index: int, value: Vector4) #c_call {
+	method_name := new_string_name("set");
+	defer destroy(*method_name);
+	args : = *void.[*index, *value, ];
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 1350366223);
+	func(self, args.data, null, args.count);
+}
 
 PackedVector4Array_size :: (using self: *PackedVector4Array) -> int #c_call {
 	method_name := new_string_name("size");
@@ -9434,14 +10126,6 @@ PackedVector4Array_is_empty :: (using self: *PackedVector4Array) -> bool #c_call
 	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 3918633141);
 	func(self, args.data, *ret, args.count);
 	return ret;
-}
-
-PackedVector4Array_set :: (using self: *PackedVector4Array, index: int, value: Vector4) #c_call {
-	method_name := new_string_name("set");
-	defer destroy(*method_name);
-	args : = *void.[*index, *value, ];
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 1350366223);
-	func(self, args.data, null, args.count);
 }
 
 PackedVector4Array_push_back :: (using self: *PackedVector4Array, value: Vector4) -> bool #c_call {
@@ -9567,7 +10251,7 @@ PackedVector4Array_bsearch :: (using self: *PackedVector4Array, value: Vector4, 
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
 	ret: int;
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 735671678);
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 1822067054);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -9577,7 +10261,7 @@ PackedVector4Array_duplicate :: (using self: *PackedVector4Array) -> PackedVecto
 	defer destroy(*method_name);
 	args : = *void.[];
 	ret: PackedVector4Array;
-	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 3186305013);
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 146203628);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
@@ -9608,6 +10292,16 @@ PackedVector4Array_count :: (using self: *PackedVector4Array, value: Vector4) ->
 	args : = *void.[*value, ];
 	ret: int;
 	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 3956594488);
+	func(self, args.data, *ret, args.count);
+	return ret;
+}
+
+PackedVector4Array_erase :: (using self: *PackedVector4Array, value: Vector4) -> bool #c_call {
+	method_name := new_string_name("erase");
+	defer destroy(*method_name);
+	args : = *void.[*value, ];
+	ret: bool;
+	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 3289167688);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
