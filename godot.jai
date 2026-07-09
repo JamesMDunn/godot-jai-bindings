@@ -115,6 +115,19 @@ new_string :: (str: string) -> String #no_context {
     return result;
 }
 
+jai_string_from_gd :: (str: String) -> string {
+  data: [..]u8;
+  defer array_free(data);
+  // first pass to get size of the String
+  data_len := string_to_utf8_chars(*str, null, 0);
+
+  array_resize(*data, data_len);
+  string_to_utf8_chars(*str, data.data, data_len);
+  view := to_string(data.data, data.count);
+  return copy_string(view);
+}
+
+
 // --------
 // Utils
 

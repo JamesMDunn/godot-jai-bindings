@@ -87,6 +87,7 @@ Utility_Function :: struct {
 Argument :: struct {
     name: string;
     type: string;
+    default_value: string;
 }
 
 Builtin_Class :: struct {
@@ -501,6 +502,7 @@ clean_type :: (type: string) -> string {
     if type.count == 0 return "";
 
     if type == {
+        case "StringName"; return "string";
         case "typedarray::Dictionary"; {
             return "Dictionary";
         }
@@ -564,14 +566,23 @@ print_enum :: (b: *String_Builder, e: Enum_Info, indentation: string) {
 }
 
 add_method :: (b: *String_Builder, method: Method, class_name: string, method_body: string = "") {
-
     m_name := clean_name(method.name);
     print_to_builder(b, "%1_%2 :: (using self: *%1", class_name, m_name);
+
+    string_name_args : [..]string;
+
     for method.arguments {
-        // if it_index != 0 {
+        clean_name_arg := clean_name(it.name);
+        if it.type == {
+            case "StringName"; array_add(*string_name_args, clean_name_arg);
+        }
         append(b, ", ");
-        // }
-        print_to_builder(b, "%: %", clean_name(it.name), clean_type(it.type));
+        has_default := it.default_value.count > 0 && (it.type == "bool" || it.type == "int" || it.type == "float");
+        if has_default {
+            print_to_builder(b, "%: % = %", clean_name_arg, clean_type(it.type), it.default_value);
+        } else {
+            print_to_builder(b, "%: %", clean_name_arg, clean_type(it.type));
+        }
     }
     append(b, ")");
     returns := method.return_value.type.count != 0;
@@ -580,25 +591,39 @@ add_method :: (b: *String_Builder, method: Method, class_name: string, method_bo
     }
     append(b, " {\n");
 
+    for string_name_args {
+        print_to_builder(b, "\t%_gd := new_string_name(%);\n\tdefer destroy(*%_gd);\n", it, it, it);
+    }
+
     print_to_builder(b, "\tmethod_name := new_string_name(\"%\");\n\tdefer destroy(*method_name);\n", method.name);
     print_to_builder(b, "\tclass_name := new_string_name(\"%\");\n\tdefer destroy(*class_name);\n", class_name);
     print_to_builder(b, "\tbind := classdb_get_method_bind(*class_name, *method_name, %);\n", method.hash);
 
     append(b, "\targs : = *void.[");
     for method.arguments {
-        print_to_builder(b, "*%, ", clean_name(it.name));
+        name := clean_name(it.name);
+        if it.type == "StringName" {
+            print_to_builder(b, "*%_gd, ", name);
+        } else {
+            print_to_builder(b, "*%, ", clean_name(it.name));
+        }
     }
     append(b, "];\n");
     if returns {
-        print_to_builder(b, "\tret: %;\n", clean_type(method.return_value.type));
-    }
-    print_to_builder(b, "\tobject_method_bind_ptrcall(bind, self.__private, args.data,");
-    
-    if returns  {
-        print_to_builder(b, "*ret);\n"); 
-        append(b, "\treturn ret;\n");
+        if method.return_value.type == {
+            case "StringName";
+                print_to_builder(b, "\tret_gd: StringName;");
+                print_to_builder(b, "\tobject_method_bind_ptrcall(bind, self.__private, args.data, *ret_gd);\n");
+                print_to_builder(b, "\tresult := jai_string_from_stringname(ret_gd);\n");
+                print_to_builder(b, "\tdestroy(*ret_get);\n");
+                print_to_builder(b, "\treturn result;\n");
+            case;
+                print_to_builder(b, "\tret: %;\n", clean_type(method.return_value.type));
+                print_to_builder(b, "\tobject_method_bind_ptrcall(bind, self.__private, args.data, *ret);\n");
+                print_to_builder(b, "\treturn ret;\n");
+        }
     } else {
-        print_to_builder(b, " null);\n");
+        print_to_builder(b, "\tobject_method_bind_ptrcall(bind, self.__private, args.data, null);\n");
     }
     append(b, "}\n");
 }
@@ -612,7 +637,7 @@ add_classes :: (b: *String_Builder, api: Extension_Api) {
         if class.inherits.count > 0 {
             print_to_builder(b, "\tusing #as _base_%: %;\n", class.inherits, class.inherits);
         } else {
-            print_to_builder(b, "\t__private: *void;\n");   
+            print_to_builder(b, "\t__private: *void;\n");
         }
 
         for class.constants {
@@ -647,6 +672,7 @@ clean_format :: (f: string) -> string {
     clean_type :: (type: string, occurences: int) -> string {
 
         if type == {
+            case "StringName"; return "string";
             case "enum::Error"; return "Error";
             case "TextServer::Direction"; return "TextServer.Direction";
             case "uint64_t"; return "u64";

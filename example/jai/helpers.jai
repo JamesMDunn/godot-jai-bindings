@@ -160,7 +160,6 @@ generate_property_methods :: ($type : Type) -> string #compile_time {
       if member.name == join(get_prefix, prop.name) has_get = true;
     }
 
-
     if !has_set {
       print_to_builder(*b, "set_% :: (self: *%, p_%: %) {\n", prop.name, ti.name, prop.name, prop.type);
       print_to_builder(*b, "\tself.% = p_%;\n}\n", prop.name, prop.name);
@@ -217,49 +216,6 @@ generate_accessor_call_wrapper :: (b: *String_Builder, class_name: string, acces
   print_to_builder(b, "\tr_error.error = .OK;\n}\n");
 }
 
-// register_methods:: ($type: Type) {
-//   ti := cast(*Type_Info_Struct)type;
-//   class_name := new_string_name(ti.name);
-//   defer destroy(*class_name);
-//
-//   for member: ti.members {
-//     for member.notes {
-//       if it == "export" {
-//         prop_name := new_string_name(member.name);
-//         set_method_info : ClassMethodInfo;
-//         setter := new_string_name(tprint("set_%", member.name));
-//         defer destroy(*setter);
-//
-//         set_arg_info: PropertyInfo;
-//         //TODO hardcoded variant type
-//         set_arg_info.type = .FLOAT;
-//         arg_name := new_string_name(tprint("p_%", member.name));
-//         defer destroy(*arg_name);
-//         set_arg_info.name = *arg_name;
-//         set_arg_info.class_name = *class_name;
-//         set_arg_info.hint = 6;
-//         set_hint_str := new_string("");
-//         set_arg_info.hint_string = *set_hint_str;
-//         set_arg_info.usage = 6;
-//         defer destroy(*set_hint_str);
-//
-//
-//         set_info: ClassMethodInfo;;
-//         set_info.name = *setter;
-//         set_info.call_func = #insert -> string { return tprint("%_set_%_call_wrapper", ti.name, prop_name); } ;
-//         set_info.ptrcall_func = tprint("%_set_%_ptr_wrapper", class_name, prop_name);
-//
-//
-//         get_method_info : ClassMethodInfo;
-//         defer destroy(*prop_name);
-//
-//         getter := new_string_name(tprint("get_%", member.name));
-//         defer destroy(*getter);
-//
-//       }
-//     }
-//   }
-// }
 
 generate_register_methods :: ($type: Type) -> string #compile_time {
   ti := cast(*Type_Info_Struct) type;
@@ -282,7 +238,7 @@ generate_register_methods :: ($type: Type) -> string #compile_time {
     print_to_builder(*b, "        hint_str := new_string(\"\");        defer destroy(*hint_str);\n");
     print_to_builder(*b, "        arg: PropertyInfo;\n");
     print_to_builder(*b, "        arg_meta: ClassMethodArgumentMetadata = .NONE;\n");
-    print_to_builder(*b, "        arg.type = .FLOAT;\n");                 // TODO: per-type
+    print_to_builder(*b, "        arg.type = .%;\n", jai_type_to_variant(member.type));
     print_to_builder(*b, "        arg.name = *arg_name;\n");
     print_to_builder(*b, "        arg.class_name = *class_name;\n");
     print_to_builder(*b, "        arg.hint_string = *hint_str;\n");
@@ -304,7 +260,7 @@ generate_register_methods :: ($type: Type) -> string #compile_time {
     print_to_builder(*b, "        hint_str := new_string(\"\");       defer destroy(*hint_str);\n");
     print_to_builder(*b, "        ret_name := new_string_name(\"\");       defer destroy(*ret_name);\n");
     print_to_builder(*b, "        ret: PropertyInfo;\n");
-    print_to_builder(*b, "        ret.type = .FLOAT;\n");
+    print_to_builder(*b, "        ret.type = .%;\n", jai_type_to_variant(member.type));
     print_to_builder(*b, "        ret.name = *ret_name;\n");
     print_to_builder(*b, "        ret.class_name = *class_name;\n");
     print_to_builder(*b, "        ret.hint_string = *hint_str;\n");
@@ -337,7 +293,7 @@ register_properties :: ($type: Type) {
       if it == {
         case "export";
           prop_info : PropertyInfo;
-          prop_info.type = .FLOAT;
+          prop_info.type = jai_type_to_variant(member.type);
           prop_name := new_string_name(member.name);
           defer destroy(*prop_name);
           prop_info.name = *prop_name;
@@ -355,7 +311,9 @@ register_properties :: ($type: Type) {
           defer destroy(*getter);
           classdb_register_extension_class_property(_library, *class_name, *prop_info, *setter, *getter);
       case "signal";
-        sig := cast(*Type_Info_Procedure) member.type;
+        value_ptr := *ti.constant_storage[member.offset_into_constant_storage];
+        proc_type := (cast(*Type) value_ptr).*;
+        sig := cast(*Type_Info_Procedure) proc_type;
         arg_count := sig.argument_types.count;
         args: [..]PropertyInfo;
         arg_names: [..]StringName;
@@ -370,9 +328,11 @@ register_properties :: ($type: Type) {
         defer { for * hint_names destroy(it); array_free(hint_names); }
 
         for sig.argument_types {
+          print("argument_types");
+          print("  arg % type-tag %\n", it_index, it.type);
           arg_names[it_index] = new_string_name("");
           hint_names[it_index] = new_string("");
-          args[it_index].type = .INT;
+          args[it_index].type = jai_type_to_variant(it);
           args[it_index].name = *arg_names[it_index];
           args[it_index].class_name = *class_name;
           args[it_index].hint = 0;
@@ -382,6 +342,7 @@ register_properties :: ($type: Type) {
         signal_name := new_string_name(member.name);
         defer destroy(*signal_name);
         data := ifx arg_count > 0 then args.data else null;
+        print("  signal about to register, arg_count %\n", arg_count);
         classdb_register_extension_class_signal(_library, *class_name, *signal_name, data, arg_count);
       }
     }
@@ -431,9 +392,11 @@ generate_ptr_wrapper_code :: (builder : *String_Builder, proc: *Type_Info_Proced
   print_to_builder(builder, "\tpush_context __context {\n");
   append(builder, "\t\t");
   if proc.return_types.count == 1 {
-    print_to_builder(builder,"r_ret = ");
+    append(builder, "(cast(*");
+    print_type_to_builder(builder, proc.return_types[0]);
+    append(builder, ") r_ret).* = ");
   }
-  print_to_builder(builder, "%.%(p_instance", class_name, proc_name); // (cast(*float)args[0]).*);"
+  print_to_builder(builder, "%.%(cast(*%) p_instance", class_name, proc_name, class_name);
   if arg_count > 0 {
     start := 1;
     for start..proc.argument_types.count - 1 {
@@ -460,7 +423,7 @@ generate_call_wrapper_code :: (builder : *String_Builder, proc: *Type_Info_Proce
 
   arg_count := proc.argument_types.count - 1;
 
-  print_to_builder(builder, "%_%_call_wrapper :: (method_userdata: *void, p_instance: ClassInstancePtr, p_args: *ConstTypePtr, p_argument_count: Int, r_ret: VariantPtr, r_error: *CallError) -> void #c_call {\n", class_name, proc_name);
+  print_to_builder(builder, "%_%_call_wrapper :: (method_userdata: *void, p_instance: ClassInstancePtr, p_args: *ConstTypePtr, p_argument_count: Int, r_return: VariantPtr, r_error: *CallError) -> void #c_call {\n", class_name, proc_name);
 
   print_to_builder(builder, "\tif p_argument_count != % {\n", arg_count);
   print_to_builder(builder, "\t\tr_error.error = .ERROR_TOO_FEW_ARGUMENTS; \n");
@@ -505,6 +468,46 @@ generate_call_wrapper_code :: (builder : *String_Builder, proc: *Type_Info_Proce
 
 }
 
+
+jai_type_to_variant :: (ti: *Type_Info) -> VariantType {
+  if ti.type == {
+    case .FLOAT; return .FLOAT;
+    case .INTEGER; return .INT;
+    case .BOOL; return .BOOL;
+    case .STRING; return .STRING;
+  }
+  return .NIL;
+}
+
+
+is_valid :: (node: Node) -> bool {
+  return node.__private != null;
+}
+
+make_node_path :: (path: string) -> NodePath {
+  gstr := new_string(path);
+  defer destroy(*gstr);
+  result : NodePath;
+  con := variant_get_ptr_constructor(.NODE_PATH, 2);
+  args := *void.[*gstr];
+  con(cast(*void) *result, args.data);
+  return result;
+}
+
+get_node :: (self: *$T, path: string) -> Node {
+  np := make_node_path(path);
+  defer destroy(*np);
+  return Node_get_node(self, np);
+}
+
+get_node_as :: ($R: Type, self: *$T, path: string) -> R {
+  node := get_node(self, path);
+  result: R;
+  result.__private = node.__private;
+  return result;
+}
+
+// lookup cast
 as :: ($T: Type, node: *Node) -> *T {
   return cast(*T) object_get_instance_binding(node.__private, _library, *dummy_callbacks);
 }
@@ -576,31 +579,6 @@ emit :: (obj: *$T, signal: string, args: ..Any) {
   array_add(*all, signal_str);
   for args array_add(*all, it);
   call(obj, "emit_signal", ..all);
-  // private_ptr := obj.__private;
-  // name := new_string_name(signal);
-  // defer destroy(*name);
-
-  // variant_args : [..Variant];
-  // variant_ptrs: [..]*Variant;
-
-  // r_error: CallError;
-
-  // array_resize(*variant_args, args.count);
-  // array_resize(*variant_ptrs, args.count);
-
-  // defer array_free(variant_args);
-  // defer array_free(variant_ptrs);
-
-  // for arg: args {
-  //   if arg.type.type == {
-  //     case .FLOAT;   variant_from(*variant_args[it_index], cast(*float64) arg.value_pointer);
-  //     case .INTEGER; variant_from(*variant_args[it_index], cast(*s64) arg.value_pointer);
-  //     case .BOOL;    variant_from(*variant_args[it_index], cast(*bool) arg.value_pointer);
-  //   }
-  //   variant_ptrs[it_index] = *variant_args[it_index];
-  // }
-
-  // Object_emit_signal(private_ptr,
 }
 
 
@@ -608,6 +586,22 @@ emit :: (obj: *$T, signal: string, args: ..Any) {
 
 // handwritten variant overloads
 
+variant_to :: (src: ConstVariantPtr, dst: *string) {
+  gd: String;
+  variant_to_string(cast(TypePtr) *gd, cast(VariantPtr) src);
+  defer destroy(*gd);
+  free (dst.*);
+  dst.* = jai_string_from_gd(gd);
+}
+
+variant_from :: (dst: VariantPtr, src: *string) {
+  new_str := ifx src.data && src.count > 0 then new_string(src.*) else new_string("");
+  defer destroy(*new_str);
+  variant_from_string(cast(UninitializedVariantPtr) dst, cast(TypePtr)*new_str);
+}
+
+
+//String
 variant_to :: (src: ConstVariantPtr, dst: *String) {
   variant_to_string(cast(TypePtr) dst, cast(VariantPtr) src);
 }
@@ -642,10 +636,10 @@ variant_from :: (dst: VariantPtr, src: *s64) {
 
 // bool
 variant_to :: (src: ConstVariantPtr, dst: *bool) {
-  variant_to_float(cast(TypePtr) dst, cast(VariantPtr) src);
+  variant_to_bool(cast(TypePtr) dst, cast(VariantPtr) src);
 }
 variant_from :: (dst: VariantPtr, src: *bool) {
-  variant_from_float(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
+  variant_from_bool(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
 }
 
 

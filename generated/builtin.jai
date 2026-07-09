@@ -6474,7 +6474,7 @@ destroy :: (self: *Callable) #no_context {
 }
 
 
-Callable_create :: (using self: *Callable, variant: Variant, method: StringName) -> Callable #c_call {
+Callable_create :: (using self: *Callable, variant: Variant, method: string) -> Callable #c_call {
 	method_name := new_string_name("create");
 	defer destroy(*method_name);
 	args : = *void.[*variant, *method, ];

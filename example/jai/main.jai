@@ -35,11 +35,14 @@ Player :: struct {
     inventory: *Inventory;
 
     speed: float64; @export;
+    player_name: string; @export;
     hit :: #type (amount: int); @signal
 
-    // get_speed :: (self: *Player) -> float32 {
-    //     return self.speed;
-    // }
+    get_speed :: (self: *Player) -> float64 {
+        print_to_godot("uncomment this to see it wont auto gen this and u can do custom things here");
+        return self.speed;
+    }
+
 
     _enter_tree :: (self: *Player) {
         print_to_godot("Hello from jai!");
@@ -52,15 +55,23 @@ Player :: struct {
 
     _ready :: (self: *Player) {
         print_to_godot(tprint("ready player one. Speed is %", self.speed));
+        // self.player_name = "Jon Snow";
         self.inventory = construct(Inventory);
         self.inventory.size = 8;
         Node_add_child(self, self.inventory, true, .INTERNAL_MODE_DISABLED);
+
+        avatar := get_node_as(Sprite2D, self, "Avatar");
+
+        tex := Sprite2D_get_texture(*avatar);
+        fake_avatar := get_node(self, "Thisdoesntexist");
+
+        if !is_valid(fake_avatar) {
+          print_to_godot("fake node found");
+        }
     }
 
     _input :: (self: *Player, event: InputEvent) {
-        action := new_string_name("ui_accept");
-        defer destroy(*action);
-        if InputEvent_is_action_pressed(*event, action, false, false) && self.inventory {
+        if InputEvent_is_action_pressed(*event, "ui_accept", false) && self.inventory {
             print_to_godot(tprint("inv: %", self.inventory.size));
             Node_queue_free(self.inventory);
             self.inventory = null;

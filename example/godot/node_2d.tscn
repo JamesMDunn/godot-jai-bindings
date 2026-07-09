@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://b8b8fb8mxa3nc"]
 
 [ext_resource type="Script" uid="uid://dhl21ujhig4h2" path="res://test_signal_recieve.gd" id="1_wtcfe"]
+[ext_resource type="Texture2D" uid="uid://ciyanal5aescv" path="res://icon.svg" id="2_0e48y"]
 
 [node name="Node2D" type="Node2D" unique_id=508964796]
 
@@ -9,3 +10,7 @@ script = ExtResource("1_wtcfe")
 
 [node name="Player" type="Player" parent="." unique_id=469106918]
 speed = 22.0
+player_name = "Jon Snow"
+
+[node name="Avatar" type="Sprite2D" parent="Player" unique_id=1212458945]
+texture = ExtResource("2_0e48y")
