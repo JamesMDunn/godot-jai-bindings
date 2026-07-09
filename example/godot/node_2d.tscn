@@ -3,3 +3,4 @@
 [node name="Node2D" type="Node2D" unique_id=508964796]
 
 [node name="Player" type="Player" parent="." unique_id=469106918]
+speed = 22.0

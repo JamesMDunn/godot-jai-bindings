@@ -34,13 +34,13 @@ Player :: struct {
     using #as base: Node2D; @Base // @Base to mark this member as its' base class
     inventory: *Inventory;
 
-    speed: float32; @export;
+    speed: float64; @export;
 
     // get_speed :: (self: *Player) -> float32 {
     //     return self.speed;
     // }
 
-    
+
     hit :: (self: *Player) {
 
     } @signal
@@ -49,8 +49,13 @@ Player :: struct {
         print_to_godot("Hello from jai!");
     }
 
+    set_speed :: (self: *Player, p_speed: float64) {
+        print_to_godot(tprint("set_speed on % to %", cast(*void) self, p_speed));
+        self.speed = p_speed;
+    }
+
     _ready :: (self: *Player) {
-        print_to_godot("ready player one");
+        print_to_godot(tprint("ready player one. Speed is %", self.speed));
         self.inventory = construct(Inventory);
         self.inventory.size = 8;
         Node_add_child(self, self.inventory, true, .INTERNAL_MODE_DISABLED);
@@ -59,7 +64,7 @@ Player :: struct {
     _input :: (self: *Player, event: InputEvent) {
         action := new_string_name("ui_accept");
         defer destroy(*action);
-        if InputEvent_is_action_pressed(*event, action, false, false) && self.inventory {  
+        if InputEvent_is_action_pressed(*event, action, false, false) && self.inventory {
             print_to_godot(tprint("inv: %", self.inventory.size));
             Node_queue_free(self.inventory);
             self.inventory = null;
@@ -70,12 +75,23 @@ Player :: struct {
 
 
 Inventory :: struct {
-    using #as base : Node2D; @Base
-    size : u8;
+  using #as base : Node2D; @Base
+  size : u8;
 
-    _ready :: (self: *Inventory) {
-        print_to_godot("ready players inventory");
-    }
+_ready :: (self: *Inventory) {
+  // direct call
+  print_to_godot("ready players inventory");
+  parent := Node_get_parent(self);
+  player := as(Player, *parent);
+  speed := player.speed;
+  print_to_godot(tprint("parent speed = %", speed));
+
+  // godot call
+  speed_variant := call(player, "get_speed");
+  speed2: float64;
+  variant_to(*speed_variant, *speed2);
+  print_to_godot(tprint("parent speed from gdcall = %", speed2));
+  }
 }
 
 

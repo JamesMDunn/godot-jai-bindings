@@ -227,11 +227,17 @@ add_variant_constructors :: (b: *String_Builder, api: Extension_Api) {
         print_to_builder(b, "variant_from_% : (result: UninitializedVariantPtr, from: TypePtr) -> void #c_call;\n", to_lower_copy(name));
     }
 
+    for 0..GD.VariantType.VARIANT_MAX {
+        name := enum_value_to_name(cast(GD.VariantType)it);
+        print_to_builder(b, "variant_to_% : (result: TypePtr, from: VariantPtr) -> void #c_call;\n", to_lower_copy(name));
+    }
+
     append(b, "\n");
     append(b, "load_variant_constructors :: () {\n");
     for (GD.VariantType.NIL + 1)..(GD.VariantType.VARIANT_MAX - 1) {
         name := enum_value_to_name(cast(GD.VariantType)it);
         print_to_builder(b, "\tvariant_from_% = get_variant_from_type_constructor(.%);\n", to_lower_copy(name), name);
+        print_to_builder(b, "\tvariant_to_% = get_variant_to_type_constructor(.%);\n", to_lower_copy(name), name);
     }
     append(b, "}\n\n");
 
