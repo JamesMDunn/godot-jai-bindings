@@ -35,15 +35,11 @@ Player :: struct {
     inventory: *Inventory;
 
     speed: float64; @export;
+    hit :: #type (amount: int); @signal
 
     // get_speed :: (self: *Player) -> float32 {
     //     return self.speed;
     // }
-
-
-    hit :: (self: *Player) {
-
-    } @signal
 
     _enter_tree :: (self: *Player) {
         print_to_godot("Hello from jai!");
@@ -91,6 +87,8 @@ _ready :: (self: *Inventory) {
   speed2: float64;
   variant_to(*speed_variant, *speed2);
   print_to_godot(tprint("parent speed from gdcall = %", speed2));
+
+  emit(player, "hit", 21);
   }
 }
 

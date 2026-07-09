@@ -332,31 +332,59 @@ register_properties :: ($type: Type) {
   ti := cast(*Type_Info_Struct)type;
   class_name := new_string_name(ti.name);
   defer destroy(*class_name);
-
   for member: ti.members {
-  for member.notes {
-    if it == "export" {
-    prop_info : PropertyInfo;
-    prop_info.type = .FLOAT;
-    prop_name := new_string_name(member.name);
-    defer destroy(*prop_name);
-    prop_info.name = *prop_name;
-    prop_info.class_name = *class_name;
-    prop_info.hint = 0;
+    for member.notes {
+      if it == {
+        case "export";
+          prop_info : PropertyInfo;
+          prop_info.type = .FLOAT;
+          prop_name := new_string_name(member.name);
+          defer destroy(*prop_name);
+          prop_info.name = *prop_name;
+          prop_info.class_name = *class_name;
+          prop_info.hint = 0;
 
-    hint_str := new_string("");
-    prop_info.hint_string = *hint_str;
-    defer destroy(*hint_str);
-    prop_info.usage = 6;
+          hint_str := new_string("");
+          prop_info.hint_string = *hint_str;
+          defer destroy(*hint_str);
+          prop_info.usage = 6;
 
-    setter := new_string_name(tprint("set_%", member.name));
-    defer destroy(*setter);
-    getter := new_string_name(tprint("get_%", member.name));
-    defer destroy(*getter);
+          setter := new_string_name(tprint("set_%", member.name));
+          defer destroy(*setter);
+          getter := new_string_name(tprint("get_%", member.name));
+          defer destroy(*getter);
+          classdb_register_extension_class_property(_library, *class_name, *prop_info, *setter, *getter);
+      case "signal";
+        sig := cast(*Type_Info_Procedure) member.type;
+        arg_count := sig.argument_types.count;
+        args: [..]PropertyInfo;
+        arg_names: [..]StringName;
+        hint_names: [..]String;
 
-    classdb_register_extension_class_property(_library, *class_name, *prop_info, *setter, *getter);
+        array_resize(*args, arg_count);
+        array_resize(*arg_names, arg_count);
+        array_resize(*hint_names, arg_count);
+
+        defer array_free(args);
+        defer { for * arg_names destroy(it); array_free(arg_names); }
+        defer { for * hint_names destroy(it); array_free(hint_names); }
+
+        for sig.argument_types {
+          arg_names[it_index] = new_string_name("");
+          hint_names[it_index] = new_string("");
+          args[it_index].type = .INT;
+          args[it_index].name = *arg_names[it_index];
+          args[it_index].class_name = *class_name;
+          args[it_index].hint = 0;
+          args[it_index].hint_string = *hint_names[it_index];
+        }
+
+        signal_name := new_string_name(member.name);
+        defer destroy(*signal_name);
+        data := ifx arg_count > 0 then args.data else null;
+        classdb_register_extension_class_signal(_library, *class_name, *signal_name, data, arg_count);
+      }
     }
-  }
   }
 }
 
@@ -485,7 +513,11 @@ call :: (obj: *$T, method: string, args: ..Any) -> Variant {
   private_ptr := obj.__private;
   variant_args: [..]Variant;
   variant_ptrs: [..]*Variant;
+  gd_string_buffer: [..]String;
+  defer { for * gd_string_buffer destroy(it); array_free(gd_string_buffer); }
+
   method_str := new_string_name(method);
+
   defer destroy(*method_str);
 
   obj_variant: Variant;
@@ -500,17 +532,29 @@ call :: (obj: *$T, method: string, args: ..Any) -> Variant {
   defer array_free(variant_args);
   defer array_free(variant_ptrs);
 
+
   for arg: args {
     if arg.type.type == {
 		  case .FLOAT;
-		   variant_from(*variant_args[it_index], cast(*float64)arg.value_pointer);
-		   variant_ptrs[it_index] = *variant_args[it_index];
+		    variant_from(*variant_args[it_index], cast(*float64)arg.value_pointer);
+		    variant_ptrs[it_index] = *variant_args[it_index];
       case .INTEGER;
         variant_from(*variant_args[it_index], cast(*s64)arg.value_pointer);
         variant_ptrs[it_index] = *variant_args[it_index];
       case .BOOL;
         variant_from(*variant_args[it_index], cast(*bool)arg.value_pointer);
         variant_ptrs[it_index] = *variant_args[it_index];
+      case .STRING;
+        jai_str := (cast(*string)arg.value_pointer).*;
+        array_add(*gd_string_buffer, new_string(jai_str));
+        gd := *gd_string_buffer[gd_string_buffer.count - 1];
+        variant_from(*variant_args[it_index], gd);
+        variant_ptrs[it_index] = *variant_args[it_index];
+      case .STRUCT;
+        if arg.type == type_info(StringName) {
+          variant_from(*variant_args[it_index], cast(*StringName)arg.value_pointer);
+          variant_ptrs[it_index] = *variant_args[it_index];
+        }
     }
   }
 
@@ -521,7 +565,63 @@ call :: (obj: *$T, method: string, args: ..Any) -> Variant {
 call_internal :: (obj: VariantPtr, p_method: ConstStringNamePtr, p_args: *ConstVariantPtr, p_argument_count: Int, r_return: UninitializedVariantPtr, r_error: *CallError) {
   variant_call(obj, p_method, p_args, p_argument_count, r_return, r_error);
 }
+
+
+
+emit :: (obj: *$T, signal: string, args: ..Any) {
+  all : [..]Any;
+  signal_str := new_string_name(signal);
+  defer destroy(*signal_str);
+  defer array_free(all);
+  array_add(*all, signal_str);
+  for args array_add(*all, it);
+  call(obj, "emit_signal", ..all);
+  // private_ptr := obj.__private;
+  // name := new_string_name(signal);
+  // defer destroy(*name);
+
+  // variant_args : [..Variant];
+  // variant_ptrs: [..]*Variant;
+
+  // r_error: CallError;
+
+  // array_resize(*variant_args, args.count);
+  // array_resize(*variant_ptrs, args.count);
+
+  // defer array_free(variant_args);
+  // defer array_free(variant_ptrs);
+
+  // for arg: args {
+  //   if arg.type.type == {
+  //     case .FLOAT;   variant_from(*variant_args[it_index], cast(*float64) arg.value_pointer);
+  //     case .INTEGER; variant_from(*variant_args[it_index], cast(*s64) arg.value_pointer);
+  //     case .BOOL;    variant_from(*variant_args[it_index], cast(*bool) arg.value_pointer);
+  //   }
+  //   variant_ptrs[it_index] = *variant_args[it_index];
+  // }
+
+  // Object_emit_signal(private_ptr,
+}
+
+
+
+
 // handwritten variant overloads
+
+variant_to :: (src: ConstVariantPtr, dst: *String) {
+  variant_to_string(cast(TypePtr) dst, cast(VariantPtr) src);
+}
+variant_from :: (dst: VariantPtr, src: *String) {
+  variant_from_string(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
+}
+
+// StringName
+variant_to :: (src: ConstVariantPtr, dst: *StringName) {
+  variant_to_string_name(cast(TypePtr) dst, cast(VariantPtr) src);
+}
+variant_from :: (dst: VariantPtr, src: *StringName) {
+  variant_from_string_name(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
+}
 
 // floats
 variant_to :: (src: ConstVariantPtr, dst: *float64) {
@@ -533,10 +633,10 @@ variant_from :: (dst: VariantPtr, src: *float64) {
 
 // ints
 variant_to :: (src: ConstVariantPtr, dst: *s64) {
-  variant_to_float(cast(TypePtr) dst, cast(VariantPtr) src);
+  variant_to_int(cast(TypePtr) dst, cast(VariantPtr) src);
 }
 variant_from :: (dst: VariantPtr, src: *s64) {
-  variant_from_float(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
+  variant_from_int(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
 }
 
 
