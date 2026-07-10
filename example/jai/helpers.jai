@@ -1,7 +1,16 @@
 #import "Compiler";
 #import "String";
 
-register_class :: ($type: Type) {
+
+Register_Options :: struct {
+  is_abstract: bool = false;
+  is_runtime: bool = false;
+  is_exposed: bool = true;
+  is_virtual: bool = false;
+}
+
+
+register_class :: ($type: Type, options := Register_Options.{}) {
 
   // Has to be done in this order or boiler plate wont see our wrappers
   #insert #run insert_method_wrappers(type);
@@ -16,10 +25,10 @@ register_class :: ($type: Type) {
   defer destroy(*parent_name);
 
   create_info := ClassCreationInfo6.{
-    is_virtual = xx false,
-    is_abstract = xx false,
-    is_exposed = xx true,
-    is_runtime = xx true,
+    is_virtual = xx options.is_virtual,
+    is_abstract = xx options.is_abstract,
+    is_exposed = xx options.is_exposed,
+    is_runtime = xx options.is_runtime,
     set_func = null,
     get_func = null,
     get_property_list_func = null,
@@ -28,7 +37,7 @@ register_class :: ($type: Type) {
     property_get_revert_func = null,
     validate_property_func = null,
     notification_func = null,
-    to_string_func = null, // GDExample_to_string,
+    to_string_func = null,
     reference_func = null,
     unreference_func = null,
     create_instance_func = _create,
@@ -327,7 +336,7 @@ construct :: ($T: Type) -> *T {
   class_sn := new_string_name((cast(*Type_Info_Struct) T).name);
   defer destroy(*class_sn);
   obj := classdb_construct_object(*class_sn);
-  return cast(*T) object_get_instance_binding(obj, _library, *dummy_callbacks);
+  return cast(*T) object_get_instance_binding(obj, _library, *binding_callbacks);
 }
 
 

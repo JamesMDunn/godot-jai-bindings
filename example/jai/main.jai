@@ -19,11 +19,7 @@ jai_entry :: (p_get_proc_address: InterfaceGetProcAddress, p_library: ClassLibra
     return 1;
 }
 
-gm_singleton: GameManager;
 
-GameManager_get :: () -> GameManager {
-    return get_singleton(GameManager, "GameManager");
-}
 
 initialize :: (data: *void, level: InitializationLevel) #c_call {
     push_context cast(*#Context)data {
@@ -34,18 +30,23 @@ initialize :: (data: *void, level: InitializationLevel) #c_call {
         register_class(GameManager);
 
         engine := get_singleton(Engine, "Engine");
-
-        gm_singleton = construct(GameManager);
-
-        Engine_register_singleton(*engine, "GameManager", gm_singleton);
+        gm := construct(GameManager);
+        Engine_register_singleton(*engine, "GameManager", gm);
     }
 }
 
 deinitialize :: (data: *void, level: InitializationLevel) #c_call {
     push_context cast(*#Context)data {
+        if level != .INITIALIZATION_SCENE return;
+
+        engine := get_singleton(Engine, "Engine");
+        Engine_unregister_singleton(*engine, "GameManager");
     }
 }
 
+GameManager_get :: () -> GameManager {
+    return get_singleton(GameManager, "GameManager");
+}
 
 
 GameManager :: struct {
@@ -59,7 +60,7 @@ GameManager :: struct {
 
 
 Player :: struct {
-    using #as base: Node2D; @Base // @Base to mark this member as its' base class
+    using #as base: Node2D; @Base
     inventory: *Inventory;
 
     speed: float64; @export;
@@ -70,9 +71,8 @@ Player :: struct {
     hit :: #type (amount: int); @signal
 
 
-
     get_speed :: (self: *Player) -> float64 {
-        print_to_godot("uncomment this to see it wont auto gen this and u can do custom things here");
+        print_to_godot("uncomment this to see it wont auto gen this and you can do custom things here");
         return self.speed;
     }
 
@@ -88,6 +88,11 @@ Player :: struct {
 
     _ready :: (self: *Player) {
 
+        // casting examples
+        area_node := get_node_as(Area2D, self, "Area2D");
+        obj := cast_to(Object, *area_node);
+        back := cast_checked(Area2D, *obj);
+
         // get singleton test
         gm := GameManager_get();
         ensure_in_tree(*gm);
@@ -100,6 +105,11 @@ Player :: struct {
         print_to_godot(tprint("connect result = %", err));
         Timer_start(*self.timer);
 
+
+        set_prop(self, "speed", cast(float64) 42.0);
+        back_speed := get_prop(float64, self, "speed");
+        print_to_godot(tprint("round-trip: set 42.0, got %", back_speed));
+
         a: Vector2 = .{1, 2};
         print_to_godot(tprint("custom pos set to %", self.pos));
 
@@ -108,7 +118,6 @@ Player :: struct {
 
 
         print_to_godot(tprint("ready player one. Speed is %", self.speed));
-        // print("% %\n", size_of(Vector2), size_of(math.Vector2));
         // self.player_name = "Jon Snow";
         self.inventory = construct(Inventory);
         self.inventory.size = 8;
@@ -120,7 +129,7 @@ Player :: struct {
         print_to_godot(tprint("sprite pos = %, %", avatar_pos.x, avatar_pos.y));
 
         tex := Sprite2D_get_texture(*avatar);
-        fake_avatar := get_node(self, "Thisdoesntexist");
+        fake_avatar := get_node(self, "This doesnt exist");
 
         if !is_valid(fake_avatar) {
           print_to_godot("fake node found");

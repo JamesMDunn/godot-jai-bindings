@@ -8,42 +8,6 @@ register_library :: (lib: ClassLibraryPtr) {
     _library = lib;
 }
 
-INITIALIZATION_CODE :: #string __END
-_library: ClassLibraryPtr;
-__context : #Context;
-
-#program_export
-jai_entry :: (p_get_proc_address: InterfaceGetProcAddress, p_library: ClassLibraryPtr, r_initialization: *Initialization) -> Bool #c_call {
-    r_initialization.userdata = *__context;
-    r_initialization.initialize = initialize;
-    r_initialization.deinitialize = deinitialize;
-    _library = p_library;
-    push_context __context {
-        load_interface_functions(p_get_proc_address);
-        load_all_methods();
-        load_all_utility_functions();
-        print_to_godot("Init!");
-    }
-    return 1;
-}
-
-initialize :: (data: *void, level: InitializationLevel) #c_call {
-    #if INIT_FUNC != null {
-        push_context cast(*Context)data {
-            INIT_FUNC(level);
-        }
-    }
-}
-
-deinitialize :: (data: *void, level: InitializationLevel) #c_call {
-    #if DEINIT_FUNC != null {
-        push_context cast(*Context)data {
-            DEINIT_FUNC(level);
-        }
-    }
-}
-__END
-
 // --------
 // fn ptr loading
 
@@ -70,37 +34,6 @@ load_single_utility_func :: (name: string, hash: int) -> PtrUtilityFunction {
 // Conversion
 Basic :: #import "Basic";
 
-// @TODO: #modify to validate input
-// to_variant :: (val: $T) -> Variant #c_call {
-//     result : Variant = ---;
-//     #if T == {
-//         case *String; {
-//             variant_from_string(*result, val);
-//         }
-//         case *StringName; {
-//             variant_from_string_name(*result, val);
-//         }
-//         case ConstStringNamePtr; {
-//             variant_from_string_name(*result, val);
-//         }
-//         case; {
-//             #assert false;
-//         }
-//     }
-//     return result;
-    // #insert #run -> string {
-    //     ti := cast(*Type_Info_Struct)type_info(T);
-    //     Basic.log("%", ti.name);
-    //     snake_case := to_snake_case(ti.name);
-    //     builder: String_Builder;
-
-    //     append(*builder, "result: Variant = ---;\n");
-    //     print_to_builder(*builder, "variant_from_%(*result, val);\n", snake_case);
-    //     append(*builder, "return result;\n");
-
-    //     return builder_to_string(*builder);
-    // };
-// }
 
 new_string_name :: (str: string) -> StringName #no_context {
     result: StringName;
@@ -143,45 +76,11 @@ print_to_godot :: (str: string) #c_call {
     }
 }
 
-_set :: (p_instance: ClassInstancePtr, p_name: ConstStringNamePtr, p_value: ConstVariantPtr) -> Bool #c_call {
-    print_to_godot("set");
-    return 0;
+
+unref :: (obj: *$T) -> bool {
+  freed := RefCounted_unreference(obj);
+  return freed;
 }
-
-_get :: (p_instance: ClassInstancePtr, p_name: ConstStringNamePtr, r_ret: VariantPtr) -> Bool #c_call {
-    print_to_godot("get");
-    return 0;
-}
-
-_get_rid :: (p_instance: ClassInstancePtr) -> u64 #c_call {
-    print_to_godot("get_rid");
-    return 0;
-}
-
-prop_list :: PropertyInfo.[];
-
-_get_property_list :: (p_instance: ClassInstancePtr, r_count: *u32) -> *PropertyInfo #c_call {
-    print_to_godot("get_property_list");
-    r_count.* = prop_list.count;
-    return prop_list.data;
-}
-
-_free_property_list :: (p_instance: ClassInstancePtr, p_list: *PropertyInfo, p_count: u32) #c_call {
-    print_to_godot("_free_property_list");
-}
-
-
-GDExample_to_string :: (instance: *void, r_is_valid: *Bool, p_out: StringPtr) -> void #c_call {
-    print_to_godot("to_string");
-    name := "GDExample";
-    string_new_with_utf8_chars_and_len(p_out, name.data, name.count);
-    r_is_valid.* = xx true;
-}
-
-get :: (object: *Object, member: string) -> float {
-
-}
-
 
 
 // Any
@@ -295,13 +194,43 @@ get_node_as :: ($R: Type, self: *$T, path: string) -> R {
   return result;
 }
 
-// lookup cast
+// lookup cast for jai instances
 as :: ($T: Type, node: *Object) -> *T {
-  return cast(*T) object_get_instance_binding(node.__private, _library, *dummy_callbacks);
+  return cast(*T) object_get_instance_binding(node.__private, _library, *binding_callbacks);
+}
+
+// downcast meant for godot objects
+cast_to :: ($R: Type, obj: *$T) -> R {
+    result: R;
+    result.__private = obj.__private;
+    return result;
+}
+
+cast_checked :: ($R: Type, obj: *$T) -> R {
+    result: R;
+    class_name := (cast(*Type_Info_Struct) R).name;
+    if Object_is_class(obj, class_name) {
+        result.__private = obj.__private;
+    }
+    return result;
+}
+
+get_prop :: ($T: Type, obj: *Object, property: string) -> T {
+    // returns a variant
+    v := Object_get(obj, property);
+    result: T;
+    // unwrap variant
+    variant_to(cast(ConstVariantPtr)*v, *result);
+    return result;
+}
+
+set_prop :: (obj: *Object, property: string, value: $T) {
+    v: Variant;
+    variant_from(*v, *value);
+    Object_set(obj, property, v);
 }
 
 call :: (obj: *$T, method: string, args: ..Any) -> Variant {
-
   variant_args: [..]Variant;
   variant_ptrs: [..]*Variant;
   gd_string_buffer: [..]String;
@@ -514,7 +443,7 @@ _create :: (data: *void, p_notify_postinitialize: Bool) -> *void #c_call {
   name := new_string_name("%1");
   defer destroy(*name);
   object_set_instance(result.%3.__private, *name, result);
-  object_set_instance_binding(result.%3.__private, _library, result, *dummy_callbacks);
+  object_set_instance_binding(result.%3.__private, _library, result, *binding_callbacks);
   return result.%3.__private;
 };
 __END
@@ -529,23 +458,19 @@ __END
 VIRTUALS :: string.["_process", "_enter_tree", "_ready", "_physics_process", "_unhandled_input", "_input"];
 
 
-dummy_callbacks :: InstanceBindingCallbacks.{
-  create_callback = (p_token: *void, p_instance: *void) -> *void #c_call {
-    return null;
-  },
-  free_callback = (p_token: *void, p_instance: *void, p_binding: *void) #c_call {
 
-  },
-  reference_callback = (p_token: *void, p_binding: *void, p_reference: Bool) -> Bool #c_call {
-    return xx true;
-  },
+
+binding_callbacks :: InstanceBindingCallbacks.{
+    create_callback = (p_token: *void, p_instance: *void) -> *void #c_call {
+        return null;
+    },
+    free_callback = (p_token: *void, p_instance: *void, p_binding: *void) #c_call {
+    },
+    reference_callback = (p_token: *void, p_binding: *void, p_reference: Bool) -> Bool #c_call {
+        return xx true;
+    },
 };
 
-
-unref :: (obj: *$T) -> bool {
-  freed := RefCounted_unreference(obj);
-  return freed;
-}
 
 
 #import "Compiler";
