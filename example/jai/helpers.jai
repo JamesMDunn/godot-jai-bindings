@@ -29,11 +29,24 @@ class_boilerplate :: ($type: Type) -> string #compile_time {
 }
 
 
-construct :: ($type: Type) -> *type {
-  class_sn := new_string_name((cast(*Type_Info_Struct) type).name);
+construct :: ($T: Type) -> *T {
+  class_sn := new_string_name((cast(*Type_Info_Struct) T).name);
   defer destroy(*class_sn);
   obj := classdb_construct_object(*class_sn);
-  return cast(*type) object_get_instance_binding(obj, _library, *dummy_callbacks);
+  return cast(*T) object_get_instance_binding(obj, _library, *dummy_callbacks);
+}
+
+// construct_ref :: ($T: Type) -> *T {
+//   result := construct(T);
+//   print_to_godot(tprint("after construct: %", RefCounted_get_reference_count(result)));
+//   RefCounted_init_ref(result);
+//   print_to_godot(tprint("after reference: %", RefCounted_get_reference_count(result)));
+//   return result;
+// }
+
+unref :: (obj: *$T) -> bool {
+  freed := RefCounted_unreference(obj);
+  return freed;
 }
 
 CREATE_FUNC :: #string __END
@@ -475,6 +488,10 @@ jai_type_to_variant :: (ti: *Type_Info) -> VariantType {
     case .INTEGER; return .INT;
     case .BOOL; return .BOOL;
     case .STRING; return .STRING;
+    case .STRUCT;
+      if ti == type_info(StringName)  return .STRING_NAME;
+      if ti == type_info(Vector2) return .VECTOR2;
+      if ti == type_info(Vector3) return .VECTOR3;
   }
   return .NIL;
 }
@@ -525,6 +542,8 @@ call :: (obj: *$T, method: string, args: ..Any) -> Variant {
 
   obj_variant: Variant;
   variant_from_object(cast(UninitializedVariantPtr)*obj_variant, cast(TypePtr)*private_ptr);
+
+  defer variant_destroy(cast(VariantPtr) *obj_variant);
 
   r_variant: Variant;
   r_error: CallError;
@@ -642,5 +661,21 @@ variant_from :: (dst: VariantPtr, src: *bool) {
   variant_from_bool(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
 }
 
+
+// Vector2
+variant_to :: (src: ConstVariantPtr, dst: *Vector2) {
+    variant_to_vector2(cast(TypePtr) dst, cast(VariantPtr) src);
+}
+variant_from :: (dst: VariantPtr, src: *Vector2) {
+    variant_from_vector2(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
+}
+
+// Vector3
+variant_to :: (src: ConstVariantPtr, dst: *Vector3) {
+    variant_to_vector3(cast(TypePtr) dst, cast(VariantPtr) src);
+}
+variant_from :: (dst: VariantPtr, src: *Vector3) {
+    variant_from_vector3(cast(UninitializedVariantPtr) dst, cast(TypePtr) src);
+}
 
 

@@ -1,7 +1,9 @@
 #import "Basic";
 
 #import "godot-jai-bindings";
+#import "Math";
 #load "helpers.jai";
+
 
 // Initialization code (could be automated)
 
@@ -22,6 +24,7 @@ initialize :: (data: *void, level: InitializationLevel) #c_call {
         if level != .INITIALIZATION_SCENE return;
         register_class(Player);
         register_class(Inventory);
+        register_class(Item);
     }
 }
 
@@ -36,6 +39,8 @@ Player :: struct {
 
     speed: float64; @export;
     player_name: string; @export;
+    pos: Vector2; @export
+
     hit :: #type (amount: int); @signal
 
     get_speed :: (self: *Player) -> float64 {
@@ -54,13 +59,24 @@ Player :: struct {
     }
 
     _ready :: (self: *Player) {
+        a: Vector2 = .{1, 2};
+        print_to_godot(tprint("custom pos set to %", self.pos));
+
+        c := self.pos + a;
+        print_to_godot(tprint("custom pos addition overload from math %", c));
+
+
         print_to_godot(tprint("ready player one. Speed is %", self.speed));
+        // print("% %\n", size_of(Vector2), size_of(math.Vector2));
         // self.player_name = "Jon Snow";
         self.inventory = construct(Inventory);
         self.inventory.size = 8;
         Node_add_child(self, self.inventory, true, .INTERNAL_MODE_DISABLED);
 
         avatar := get_node_as(Sprite2D, self, "Avatar");
+
+        avatar_pos := Node2D_get_global_position(*avatar);
+        print_to_godot(tprint("sprite pos = %, %", avatar_pos.x, avatar_pos.y));
 
         tex := Sprite2D_get_texture(*avatar);
         fake_avatar := get_node(self, "Thisdoesntexist");
@@ -75,6 +91,19 @@ Player :: struct {
             print_to_godot(tprint("inv: %", self.inventory.size));
             Node_queue_free(self.inventory);
             self.inventory = null;
+
+            item := construct(Item);
+            print_to_godot(tprint("after construct: %", RefCounted_get_reference_count(item)));
+            item.item_name = "Sword";
+            name_variant := call(item, "get_item_name");
+            gd_name: string;
+            variant_to(*name_variant, *gd_name);
+            print_to_godot(tprint("item name via godot = %", gd_name));
+            print_to_godot(tprint("before unref: %", RefCounted_get_reference_count(item)));
+            freed := unref(item);
+
+            print_to_godot(tprint("freed:  %", freed));
+            print_to_godot(tprint("freed: %, count after: %", freed, RefCounted_get_reference_count(item)));
         }
     }
 
@@ -103,6 +132,10 @@ _ready :: (self: *Inventory) {
   }
 }
 
+Item :: struct {
+  using #as base: Resource; @Base
+  item_name : string; @export;
+}
 
 to_variant :: (val: float) -> Variant {
     result: Variant = ---;

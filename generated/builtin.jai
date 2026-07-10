@@ -1168,7 +1168,7 @@ String_humanize_size :: (using self: *String, size: int) -> String #c_call {
 	return ret;
 }
 
-Vector2 :: struct {
+GD_Vector2 :: struct {
 	x: float;
 	y: float;
 
@@ -1178,7 +1178,7 @@ Vector2 :: struct {
 	}
 }
 
-Vector2_angle :: (using self: *Vector2) -> float #c_call {
+GD_Vector2_angle :: (using self: *GD_Vector2) -> float #c_call {
 	method_name := new_string_name("angle");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1188,7 +1188,7 @@ Vector2_angle :: (using self: *Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_angle_to :: (using self: *Vector2, to: Vector2) -> float #c_call {
+GD_Vector2_angle_to :: (using self: *GD_Vector2, to: GD_Vector2) -> float #c_call {
 	method_name := new_string_name("angle_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -1198,7 +1198,7 @@ Vector2_angle_to :: (using self: *Vector2, to: Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_angle_to_point :: (using self: *Vector2, to: Vector2) -> float #c_call {
+GD_Vector2_angle_to_point :: (using self: *GD_Vector2, to: GD_Vector2) -> float #c_call {
 	method_name := new_string_name("angle_to_point");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -1208,17 +1208,17 @@ Vector2_angle_to_point :: (using self: *Vector2, to: Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_direction_to :: (using self: *Vector2, to: Vector2) -> Vector2 #c_call {
+GD_Vector2_direction_to :: (using self: *GD_Vector2, to: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("direction_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_distance_to :: (using self: *Vector2, to: Vector2) -> float #c_call {
+GD_Vector2_distance_to :: (using self: *GD_Vector2, to: GD_Vector2) -> float #c_call {
 	method_name := new_string_name("distance_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -1228,7 +1228,7 @@ Vector2_distance_to :: (using self: *Vector2, to: Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_distance_squared_to :: (using self: *Vector2, to: Vector2) -> float #c_call {
+GD_Vector2_distance_squared_to :: (using self: *GD_Vector2, to: GD_Vector2) -> float #c_call {
 	method_name := new_string_name("distance_squared_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -1238,7 +1238,7 @@ Vector2_distance_squared_to :: (using self: *Vector2, to: Vector2) -> float #c_c
 	return ret;
 }
 
-Vector2_length :: (using self: *Vector2) -> float #c_call {
+GD_Vector2_length :: (using self: *GD_Vector2) -> float #c_call {
 	method_name := new_string_name("length");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1248,7 +1248,7 @@ Vector2_length :: (using self: *Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_length_squared :: (using self: *Vector2) -> float #c_call {
+GD_Vector2_length_squared :: (using self: *GD_Vector2) -> float #c_call {
 	method_name := new_string_name("length_squared");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1258,27 +1258,27 @@ Vector2_length_squared :: (using self: *Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_limit_length :: (using self: *Vector2, length: float) -> Vector2 #c_call {
+GD_Vector2_limit_length :: (using self: *GD_Vector2, length: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("limit_length");
 	defer destroy(*method_name);
 	args : = *void.[*length, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2544004089);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_normalized :: (using self: *Vector2) -> Vector2 #c_call {
+GD_Vector2_normalized :: (using self: *GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_is_normalized :: (using self: *Vector2) -> bool #c_call {
+GD_Vector2_is_normalized :: (using self: *GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("is_normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1288,7 +1288,7 @@ Vector2_is_normalized :: (using self: *Vector2) -> bool #c_call {
 	return ret;
 }
 
-Vector2_is_equal_approx :: (using self: *Vector2, to: Vector2) -> bool #c_call {
+GD_Vector2_is_equal_approx :: (using self: *GD_Vector2, to: GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("is_equal_approx");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -1298,7 +1298,7 @@ Vector2_is_equal_approx :: (using self: *Vector2, to: Vector2) -> bool #c_call {
 	return ret;
 }
 
-Vector2_is_zero_approx :: (using self: *Vector2) -> bool #c_call {
+GD_Vector2_is_zero_approx :: (using self: *GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("is_zero_approx");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1308,7 +1308,7 @@ Vector2_is_zero_approx :: (using self: *Vector2) -> bool #c_call {
 	return ret;
 }
 
-Vector2_is_finite :: (using self: *Vector2) -> bool #c_call {
+GD_Vector2_is_finite :: (using self: *GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("is_finite");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1318,97 +1318,97 @@ Vector2_is_finite :: (using self: *Vector2) -> bool #c_call {
 	return ret;
 }
 
-Vector2_posmod :: (using self: *Vector2, mod: float) -> Vector2 #c_call {
+GD_Vector2_posmod :: (using self: *GD_Vector2, mod: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("posmod");
 	defer destroy(*method_name);
 	args : = *void.[*mod, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2544004089);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_posmodv :: (using self: *Vector2, modv: Vector2) -> Vector2 #c_call {
+GD_Vector2_posmodv :: (using self: *GD_Vector2, modv: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("posmodv");
 	defer destroy(*method_name);
 	args : = *void.[*modv, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_project :: (using self: *Vector2, b: Vector2) -> Vector2 #c_call {
+GD_Vector2_project :: (using self: *GD_Vector2, b: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("project");
 	defer destroy(*method_name);
 	args : = *void.[*b, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_lerp :: (using self: *Vector2, to: Vector2, weight: float) -> Vector2 #c_call {
+GD_Vector2_lerp :: (using self: *GD_Vector2, to: GD_Vector2, weight: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("lerp");
 	defer destroy(*method_name);
 	args : = *void.[*to, *weight, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 4250033116);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_slerp :: (using self: *Vector2, to: Vector2, weight: float) -> Vector2 #c_call {
+GD_Vector2_slerp :: (using self: *GD_Vector2, to: GD_Vector2, weight: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("slerp");
 	defer destroy(*method_name);
 	args : = *void.[*to, *weight, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 4250033116);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_cubic_interpolate :: (using self: *Vector2, b: Vector2, pre_a: Vector2, post_b: Vector2, weight: float) -> Vector2 #c_call {
+GD_Vector2_cubic_interpolate :: (using self: *GD_Vector2, b: GD_Vector2, pre_a: GD_Vector2, post_b: GD_Vector2, weight: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("cubic_interpolate");
 	defer destroy(*method_name);
 	args : = *void.[*b, *pre_a, *post_b, *weight, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 193522989);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_cubic_interpolate_in_time :: (using self: *Vector2, b: Vector2, pre_a: Vector2, post_b: Vector2, weight: float, b_t: float, pre_a_t: float, post_b_t: float) -> Vector2 #c_call {
+GD_Vector2_cubic_interpolate_in_time :: (using self: *GD_Vector2, b: GD_Vector2, pre_a: GD_Vector2, post_b: GD_Vector2, weight: float, b_t: float, pre_a_t: float, post_b_t: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("cubic_interpolate_in_time");
 	defer destroy(*method_name);
 	args : = *void.[*b, *pre_a, *post_b, *weight, *b_t, *pre_a_t, *post_b_t, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 1957055074);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_bezier_interpolate :: (using self: *Vector2, control_1: Vector2, control_2: Vector2, end: Vector2, t: float) -> Vector2 #c_call {
+GD_Vector2_bezier_interpolate :: (using self: *GD_Vector2, control_1: GD_Vector2, control_2: GD_Vector2, end: GD_Vector2, t: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("bezier_interpolate");
 	defer destroy(*method_name);
 	args : = *void.[*control_1, *control_2, *end, *t, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 193522989);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_bezier_derivative :: (using self: *Vector2, control_1: Vector2, control_2: Vector2, end: Vector2, t: float) -> Vector2 #c_call {
+GD_Vector2_bezier_derivative :: (using self: *GD_Vector2, control_1: GD_Vector2, control_2: GD_Vector2, end: GD_Vector2, t: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("bezier_derivative");
 	defer destroy(*method_name);
 	args : = *void.[*control_1, *control_2, *end, *t, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 193522989);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_max_axis_index :: (using self: *Vector2) -> int #c_call {
+GD_Vector2_max_axis_index :: (using self: *GD_Vector2) -> int #c_call {
 	method_name := new_string_name("max_axis_index");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1418,7 +1418,7 @@ Vector2_max_axis_index :: (using self: *Vector2) -> int #c_call {
 	return ret;
 }
 
-Vector2_min_axis_index :: (using self: *Vector2) -> int #c_call {
+GD_Vector2_min_axis_index :: (using self: *GD_Vector2) -> int #c_call {
 	method_name := new_string_name("min_axis_index");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1428,67 +1428,67 @@ Vector2_min_axis_index :: (using self: *Vector2) -> int #c_call {
 	return ret;
 }
 
-Vector2_move_toward :: (using self: *Vector2, to: Vector2, delta: float) -> Vector2 #c_call {
+GD_Vector2_move_toward :: (using self: *GD_Vector2, to: GD_Vector2, delta: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("move_toward");
 	defer destroy(*method_name);
 	args : = *void.[*to, *delta, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 4250033116);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_rotated :: (using self: *Vector2, angle: float) -> Vector2 #c_call {
+GD_Vector2_rotated :: (using self: *GD_Vector2, angle: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("rotated");
 	defer destroy(*method_name);
 	args : = *void.[*angle, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2544004089);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_orthogonal :: (using self: *Vector2) -> Vector2 #c_call {
+GD_Vector2_orthogonal :: (using self: *GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("orthogonal");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_floor :: (using self: *Vector2) -> Vector2 #c_call {
+GD_Vector2_floor :: (using self: *GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("floor");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_ceil :: (using self: *Vector2) -> Vector2 #c_call {
+GD_Vector2_ceil :: (using self: *GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("ceil");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_round :: (using self: *Vector2) -> Vector2 #c_call {
+GD_Vector2_round :: (using self: *GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("round");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_aspect :: (using self: *Vector2) -> float #c_call {
+GD_Vector2_aspect :: (using self: *GD_Vector2) -> float #c_call {
 	method_name := new_string_name("aspect");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -1498,7 +1498,7 @@ Vector2_aspect :: (using self: *Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_dot :: (using self: *Vector2, with: Vector2) -> float #c_call {
+GD_Vector2_dot :: (using self: *GD_Vector2, with: GD_Vector2) -> float #c_call {
 	method_name := new_string_name("dot");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -1508,37 +1508,37 @@ Vector2_dot :: (using self: *Vector2, with: Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_slide :: (using self: *Vector2, n: Vector2) -> Vector2 #c_call {
+GD_Vector2_slide :: (using self: *GD_Vector2, n: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("slide");
 	defer destroy(*method_name);
 	args : = *void.[*n, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_bounce :: (using self: *Vector2, n: Vector2) -> Vector2 #c_call {
+GD_Vector2_bounce :: (using self: *GD_Vector2, n: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("bounce");
 	defer destroy(*method_name);
 	args : = *void.[*n, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_reflect :: (using self: *Vector2, line: Vector2) -> Vector2 #c_call {
+GD_Vector2_reflect :: (using self: *GD_Vector2, line: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("reflect");
 	defer destroy(*method_name);
 	args : = *void.[*line, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_cross :: (using self: *Vector2, with: Vector2) -> float #c_call {
+GD_Vector2_cross :: (using self: *GD_Vector2, with: GD_Vector2) -> float #c_call {
 	method_name := new_string_name("cross");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -1548,111 +1548,111 @@ Vector2_cross :: (using self: *Vector2, with: Vector2) -> float #c_call {
 	return ret;
 }
 
-Vector2_abs :: (using self: *Vector2) -> Vector2 #c_call {
+GD_Vector2_abs :: (using self: *GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("abs");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_sign :: (using self: *Vector2) -> Vector2 #c_call {
+GD_Vector2_sign :: (using self: *GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("sign");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_clamp :: (using self: *Vector2, min: Vector2, max: Vector2) -> Vector2 #c_call {
+GD_Vector2_clamp :: (using self: *GD_Vector2, min: GD_Vector2, max: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("clamp");
 	defer destroy(*method_name);
 	args : = *void.[*min, *max, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 318031021);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_clampf :: (using self: *Vector2, min: float, max: float) -> Vector2 #c_call {
+GD_Vector2_clampf :: (using self: *GD_Vector2, min: float, max: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("clampf");
 	defer destroy(*method_name);
 	args : = *void.[*min, *max, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 3464402636);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_snapped :: (using self: *Vector2, step: Vector2) -> Vector2 #c_call {
+GD_Vector2_snapped :: (using self: *GD_Vector2, step: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("snapped");
 	defer destroy(*method_name);
 	args : = *void.[*step, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_snappedf :: (using self: *Vector2, step: float) -> Vector2 #c_call {
+GD_Vector2_snappedf :: (using self: *GD_Vector2, step: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("snappedf");
 	defer destroy(*method_name);
 	args : = *void.[*step, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2544004089);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_min :: (using self: *Vector2, with: Vector2) -> Vector2 #c_call {
+GD_Vector2_min :: (using self: *GD_Vector2, with: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("min");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_minf :: (using self: *Vector2, with: float) -> Vector2 #c_call {
+GD_Vector2_minf :: (using self: *GD_Vector2, with: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("minf");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2544004089);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_max :: (using self: *Vector2, with: Vector2) -> Vector2 #c_call {
+GD_Vector2_max :: (using self: *GD_Vector2, with: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("max");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_maxf :: (using self: *Vector2, with: float) -> Vector2 #c_call {
+GD_Vector2_maxf :: (using self: *GD_Vector2, with: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("maxf");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 2544004089);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector2_from_angle :: (using self: *Vector2, angle: float) -> Vector2 #c_call {
+GD_Vector2_from_angle :: (using self: *GD_Vector2, angle: float) -> GD_Vector2 #c_call {
 	method_name := new_string_name("from_angle");
 	defer destroy(*method_name);
 	args : = *void.[*angle, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR2, *method_name, 889263119);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -1860,11 +1860,11 @@ Rect2 :: struct {
 	size: Vector2;
 }
 
-Rect2_get_center :: (using self: *Rect2) -> Vector2 #c_call {
+Rect2_get_center :: (using self: *Rect2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("get_center");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.RECT2, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -1890,7 +1890,7 @@ Rect2_has_area :: (using self: *Rect2) -> bool #c_call {
 	return ret;
 }
 
-Rect2_has_point :: (using self: *Rect2, point: Vector2) -> bool #c_call {
+Rect2_has_point :: (using self: *Rect2, point: GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("has_point");
 	defer destroy(*method_name);
 	args : = *void.[*point, ];
@@ -1960,7 +1960,7 @@ Rect2_merge :: (using self: *Rect2, b: Rect2) -> Rect2 #c_call {
 	return ret;
 }
 
-Rect2_expand :: (using self: *Rect2, to: Vector2) -> Rect2 #c_call {
+Rect2_expand :: (using self: *Rect2, to: GD_Vector2) -> Rect2 #c_call {
 	method_name := new_string_name("expand");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -1970,11 +1970,11 @@ Rect2_expand :: (using self: *Rect2, to: Vector2) -> Rect2 #c_call {
 	return ret;
 }
 
-Rect2_get_support :: (using self: *Rect2, direction: Vector2) -> Vector2 #c_call {
+Rect2_get_support :: (using self: *Rect2, direction: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("get_support");
 	defer destroy(*method_name);
 	args : = *void.[*direction, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.RECT2, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -2155,7 +2155,7 @@ Rect2i_abs :: (using self: *Rect2i) -> Rect2i #c_call {
 	return ret;
 }
 
-Vector3 :: struct {
+GD_Vector3 :: struct {
 	x: float;
 	y: float;
 	z: float;
@@ -2167,7 +2167,7 @@ Vector3 :: struct {
 	}
 }
 
-Vector3_min_axis_index :: (using self: *Vector3) -> int #c_call {
+GD_Vector3_min_axis_index :: (using self: *GD_Vector3) -> int #c_call {
 	method_name := new_string_name("min_axis_index");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -2177,7 +2177,7 @@ Vector3_min_axis_index :: (using self: *Vector3) -> int #c_call {
 	return ret;
 }
 
-Vector3_max_axis_index :: (using self: *Vector3) -> int #c_call {
+GD_Vector3_max_axis_index :: (using self: *GD_Vector3) -> int #c_call {
 	method_name := new_string_name("max_axis_index");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -2187,7 +2187,7 @@ Vector3_max_axis_index :: (using self: *Vector3) -> int #c_call {
 	return ret;
 }
 
-Vector3_angle_to :: (using self: *Vector3, to: Vector3) -> float #c_call {
+GD_Vector3_angle_to :: (using self: *GD_Vector3, to: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("angle_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -2197,7 +2197,7 @@ Vector3_angle_to :: (using self: *Vector3, to: Vector3) -> float #c_call {
 	return ret;
 }
 
-Vector3_signed_angle_to :: (using self: *Vector3, to: Vector3, axis: Vector3) -> float #c_call {
+GD_Vector3_signed_angle_to :: (using self: *GD_Vector3, to: GD_Vector3, axis: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("signed_angle_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, *axis, ];
@@ -2207,17 +2207,17 @@ Vector3_signed_angle_to :: (using self: *Vector3, to: Vector3, axis: Vector3) ->
 	return ret;
 }
 
-Vector3_direction_to :: (using self: *Vector3, to: Vector3) -> Vector3 #c_call {
+GD_Vector3_direction_to :: (using self: *GD_Vector3, to: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("direction_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_distance_to :: (using self: *Vector3, to: Vector3) -> float #c_call {
+GD_Vector3_distance_to :: (using self: *GD_Vector3, to: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("distance_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -2227,7 +2227,7 @@ Vector3_distance_to :: (using self: *Vector3, to: Vector3) -> float #c_call {
 	return ret;
 }
 
-Vector3_distance_squared_to :: (using self: *Vector3, to: Vector3) -> float #c_call {
+GD_Vector3_distance_squared_to :: (using self: *GD_Vector3, to: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("distance_squared_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -2237,7 +2237,7 @@ Vector3_distance_squared_to :: (using self: *Vector3, to: Vector3) -> float #c_c
 	return ret;
 }
 
-Vector3_length :: (using self: *Vector3) -> float #c_call {
+GD_Vector3_length :: (using self: *GD_Vector3) -> float #c_call {
 	method_name := new_string_name("length");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -2247,7 +2247,7 @@ Vector3_length :: (using self: *Vector3) -> float #c_call {
 	return ret;
 }
 
-Vector3_length_squared :: (using self: *Vector3) -> float #c_call {
+GD_Vector3_length_squared :: (using self: *GD_Vector3) -> float #c_call {
 	method_name := new_string_name("length_squared");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -2257,27 +2257,27 @@ Vector3_length_squared :: (using self: *Vector3) -> float #c_call {
 	return ret;
 }
 
-Vector3_limit_length :: (using self: *Vector3, length: float) -> Vector3 #c_call {
+GD_Vector3_limit_length :: (using self: *GD_Vector3, length: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("limit_length");
 	defer destroy(*method_name);
 	args : = *void.[*length, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 514930144);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_normalized :: (using self: *Vector3) -> Vector3 #c_call {
+GD_Vector3_normalized :: (using self: *GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_is_normalized :: (using self: *Vector3) -> bool #c_call {
+GD_Vector3_is_normalized :: (using self: *GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("is_normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -2287,7 +2287,7 @@ Vector3_is_normalized :: (using self: *Vector3) -> bool #c_call {
 	return ret;
 }
 
-Vector3_is_equal_approx :: (using self: *Vector3, to: Vector3) -> bool #c_call {
+GD_Vector3_is_equal_approx :: (using self: *GD_Vector3, to: GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("is_equal_approx");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -2297,7 +2297,7 @@ Vector3_is_equal_approx :: (using self: *Vector3, to: Vector3) -> bool #c_call {
 	return ret;
 }
 
-Vector3_is_zero_approx :: (using self: *Vector3) -> bool #c_call {
+GD_Vector3_is_zero_approx :: (using self: *GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("is_zero_approx");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -2307,7 +2307,7 @@ Vector3_is_zero_approx :: (using self: *Vector3) -> bool #c_call {
 	return ret;
 }
 
-Vector3_is_finite :: (using self: *Vector3) -> bool #c_call {
+GD_Vector3_is_finite :: (using self: *GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("is_finite");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -2317,137 +2317,137 @@ Vector3_is_finite :: (using self: *Vector3) -> bool #c_call {
 	return ret;
 }
 
-Vector3_inverse :: (using self: *Vector3) -> Vector3 #c_call {
+GD_Vector3_inverse :: (using self: *GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("inverse");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_clamp :: (using self: *Vector3, min: Vector3, max: Vector3) -> Vector3 #c_call {
+GD_Vector3_clamp :: (using self: *GD_Vector3, min: GD_Vector3, max: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("clamp");
 	defer destroy(*method_name);
 	args : = *void.[*min, *max, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 4145107892);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_clampf :: (using self: *Vector3, min: float, max: float) -> Vector3 #c_call {
+GD_Vector3_clampf :: (using self: *GD_Vector3, min: float, max: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("clampf");
 	defer destroy(*method_name);
 	args : = *void.[*min, *max, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2329594628);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_snapped :: (using self: *Vector3, step: Vector3) -> Vector3 #c_call {
+GD_Vector3_snapped :: (using self: *GD_Vector3, step: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("snapped");
 	defer destroy(*method_name);
 	args : = *void.[*step, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_snappedf :: (using self: *Vector3, step: float) -> Vector3 #c_call {
+GD_Vector3_snappedf :: (using self: *GD_Vector3, step: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("snappedf");
 	defer destroy(*method_name);
 	args : = *void.[*step, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 514930144);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_rotated :: (using self: *Vector3, axis: Vector3, angle: float) -> Vector3 #c_call {
+GD_Vector3_rotated :: (using self: *GD_Vector3, axis: GD_Vector3, angle: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("rotated");
 	defer destroy(*method_name);
 	args : = *void.[*axis, *angle, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1682608829);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_lerp :: (using self: *Vector3, to: Vector3, weight: float) -> Vector3 #c_call {
+GD_Vector3_lerp :: (using self: *GD_Vector3, to: GD_Vector3, weight: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("lerp");
 	defer destroy(*method_name);
 	args : = *void.[*to, *weight, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1682608829);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_slerp :: (using self: *Vector3, to: Vector3, weight: float) -> Vector3 #c_call {
+GD_Vector3_slerp :: (using self: *GD_Vector3, to: GD_Vector3, weight: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("slerp");
 	defer destroy(*method_name);
 	args : = *void.[*to, *weight, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1682608829);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_cubic_interpolate :: (using self: *Vector3, b: Vector3, pre_a: Vector3, post_b: Vector3, weight: float) -> Vector3 #c_call {
+GD_Vector3_cubic_interpolate :: (using self: *GD_Vector3, b: GD_Vector3, pre_a: GD_Vector3, post_b: GD_Vector3, weight: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("cubic_interpolate");
 	defer destroy(*method_name);
 	args : = *void.[*b, *pre_a, *post_b, *weight, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2597922253);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_cubic_interpolate_in_time :: (using self: *Vector3, b: Vector3, pre_a: Vector3, post_b: Vector3, weight: float, b_t: float, pre_a_t: float, post_b_t: float) -> Vector3 #c_call {
+GD_Vector3_cubic_interpolate_in_time :: (using self: *GD_Vector3, b: GD_Vector3, pre_a: GD_Vector3, post_b: GD_Vector3, weight: float, b_t: float, pre_a_t: float, post_b_t: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("cubic_interpolate_in_time");
 	defer destroy(*method_name);
 	args : = *void.[*b, *pre_a, *post_b, *weight, *b_t, *pre_a_t, *post_b_t, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 3256682901);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_bezier_interpolate :: (using self: *Vector3, control_1: Vector3, control_2: Vector3, end: Vector3, t: float) -> Vector3 #c_call {
+GD_Vector3_bezier_interpolate :: (using self: *GD_Vector3, control_1: GD_Vector3, control_2: GD_Vector3, end: GD_Vector3, t: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("bezier_interpolate");
 	defer destroy(*method_name);
 	args : = *void.[*control_1, *control_2, *end, *t, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2597922253);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_bezier_derivative :: (using self: *Vector3, control_1: Vector3, control_2: Vector3, end: Vector3, t: float) -> Vector3 #c_call {
+GD_Vector3_bezier_derivative :: (using self: *GD_Vector3, control_1: GD_Vector3, control_2: GD_Vector3, end: GD_Vector3, t: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("bezier_derivative");
 	defer destroy(*method_name);
 	args : = *void.[*control_1, *control_2, *end, *t, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2597922253);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_move_toward :: (using self: *Vector3, to: Vector3, delta: float) -> Vector3 #c_call {
+GD_Vector3_move_toward :: (using self: *GD_Vector3, to: GD_Vector3, delta: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("move_toward");
 	defer destroy(*method_name);
 	args : = *void.[*to, *delta, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1682608829);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_dot :: (using self: *Vector3, with: Vector3) -> float #c_call {
+GD_Vector3_dot :: (using self: *GD_Vector3, with: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("dot");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -2457,17 +2457,17 @@ Vector3_dot :: (using self: *Vector3, with: Vector3) -> float #c_call {
 	return ret;
 }
 
-Vector3_cross :: (using self: *Vector3, with: Vector3) -> Vector3 #c_call {
+GD_Vector3_cross :: (using self: *GD_Vector3, with: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("cross");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_outer :: (using self: *Vector3, with: Vector3) -> Basis #c_call {
+GD_Vector3_outer :: (using self: *GD_Vector3, with: GD_Vector3) -> Basis #c_call {
 	method_name := new_string_name("outer");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -2477,171 +2477,171 @@ Vector3_outer :: (using self: *Vector3, with: Vector3) -> Basis #c_call {
 	return ret;
 }
 
-Vector3_abs :: (using self: *Vector3) -> Vector3 #c_call {
+GD_Vector3_abs :: (using self: *GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("abs");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_floor :: (using self: *Vector3) -> Vector3 #c_call {
+GD_Vector3_floor :: (using self: *GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("floor");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_ceil :: (using self: *Vector3) -> Vector3 #c_call {
+GD_Vector3_ceil :: (using self: *GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("ceil");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_round :: (using self: *Vector3) -> Vector3 #c_call {
+GD_Vector3_round :: (using self: *GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("round");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_posmod :: (using self: *Vector3, mod: float) -> Vector3 #c_call {
+GD_Vector3_posmod :: (using self: *GD_Vector3, mod: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("posmod");
 	defer destroy(*method_name);
 	args : = *void.[*mod, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 514930144);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_posmodv :: (using self: *Vector3, modv: Vector3) -> Vector3 #c_call {
+GD_Vector3_posmodv :: (using self: *GD_Vector3, modv: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("posmodv");
 	defer destroy(*method_name);
 	args : = *void.[*modv, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_project :: (using self: *Vector3, b: Vector3) -> Vector3 #c_call {
+GD_Vector3_project :: (using self: *GD_Vector3, b: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("project");
 	defer destroy(*method_name);
 	args : = *void.[*b, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_slide :: (using self: *Vector3, n: Vector3) -> Vector3 #c_call {
+GD_Vector3_slide :: (using self: *GD_Vector3, n: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("slide");
 	defer destroy(*method_name);
 	args : = *void.[*n, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_bounce :: (using self: *Vector3, n: Vector3) -> Vector3 #c_call {
+GD_Vector3_bounce :: (using self: *GD_Vector3, n: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("bounce");
 	defer destroy(*method_name);
 	args : = *void.[*n, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_reflect :: (using self: *Vector3, n: Vector3) -> Vector3 #c_call {
+GD_Vector3_reflect :: (using self: *GD_Vector3, n: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("reflect");
 	defer destroy(*method_name);
 	args : = *void.[*n, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_sign :: (using self: *Vector3) -> Vector3 #c_call {
+GD_Vector3_sign :: (using self: *GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("sign");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_octahedron_encode :: (using self: *Vector3) -> Vector2 #c_call {
+GD_Vector3_octahedron_encode :: (using self: *GD_Vector3) -> GD_Vector2 #c_call {
 	method_name := new_string_name("octahedron_encode");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_min :: (using self: *Vector3, with: Vector3) -> Vector3 #c_call {
+GD_Vector3_min :: (using self: *GD_Vector3, with: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("min");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_minf :: (using self: *Vector3, with: float) -> Vector3 #c_call {
+GD_Vector3_minf :: (using self: *GD_Vector3, with: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("minf");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 514930144);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_max :: (using self: *Vector3, with: Vector3) -> Vector3 #c_call {
+GD_Vector3_max :: (using self: *GD_Vector3, with: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("max");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_maxf :: (using self: *Vector3, with: float) -> Vector3 #c_call {
+GD_Vector3_maxf :: (using self: *GD_Vector3, with: float) -> GD_Vector3 #c_call {
 	method_name := new_string_name("maxf");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 514930144);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector3_octahedron_decode :: (using self: *Vector3, uv: Vector2) -> Vector3 #c_call {
+GD_Vector3_octahedron_decode :: (using self: *GD_Vector3, uv: GD_Vector2) -> GD_Vector3 #c_call {
 	method_name := new_string_name("octahedron_decode");
 	defer destroy(*method_name);
 	args : = *void.[*uv, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.VECTOR3, *method_name, 3991820552);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -2882,21 +2882,21 @@ Transform2D_get_rotation :: (using self: *Transform2D) -> float #c_call {
 	return ret;
 }
 
-Transform2D_get_origin :: (using self: *Transform2D) -> Vector2 #c_call {
+Transform2D_get_origin :: (using self: *Transform2D) -> GD_Vector2 #c_call {
 	method_name := new_string_name("get_origin");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.TRANSFORM2D, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Transform2D_get_scale :: (using self: *Transform2D) -> Vector2 #c_call {
+Transform2D_get_scale :: (using self: *Transform2D) -> GD_Vector2 #c_call {
 	method_name := new_string_name("get_scale");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.TRANSFORM2D, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -2942,7 +2942,7 @@ Transform2D_rotated_local :: (using self: *Transform2D, angle: float) -> Transfo
 	return ret;
 }
 
-Transform2D_scaled :: (using self: *Transform2D, scale: Vector2) -> Transform2D #c_call {
+Transform2D_scaled :: (using self: *Transform2D, scale: GD_Vector2) -> Transform2D #c_call {
 	method_name := new_string_name("scaled");
 	defer destroy(*method_name);
 	args : = *void.[*scale, ];
@@ -2952,7 +2952,7 @@ Transform2D_scaled :: (using self: *Transform2D, scale: Vector2) -> Transform2D 
 	return ret;
 }
 
-Transform2D_scaled_local :: (using self: *Transform2D, scale: Vector2) -> Transform2D #c_call {
+Transform2D_scaled_local :: (using self: *Transform2D, scale: GD_Vector2) -> Transform2D #c_call {
 	method_name := new_string_name("scaled_local");
 	defer destroy(*method_name);
 	args : = *void.[*scale, ];
@@ -2962,7 +2962,7 @@ Transform2D_scaled_local :: (using self: *Transform2D, scale: Vector2) -> Transf
 	return ret;
 }
 
-Transform2D_translated :: (using self: *Transform2D, offset: Vector2) -> Transform2D #c_call {
+Transform2D_translated :: (using self: *Transform2D, offset: GD_Vector2) -> Transform2D #c_call {
 	method_name := new_string_name("translated");
 	defer destroy(*method_name);
 	args : = *void.[*offset, ];
@@ -2972,7 +2972,7 @@ Transform2D_translated :: (using self: *Transform2D, offset: Vector2) -> Transfo
 	return ret;
 }
 
-Transform2D_translated_local :: (using self: *Transform2D, offset: Vector2) -> Transform2D #c_call {
+Transform2D_translated_local :: (using self: *Transform2D, offset: GD_Vector2) -> Transform2D #c_call {
 	method_name := new_string_name("translated_local");
 	defer destroy(*method_name);
 	args : = *void.[*offset, ];
@@ -2992,21 +2992,21 @@ Transform2D_determinant :: (using self: *Transform2D) -> float #c_call {
 	return ret;
 }
 
-Transform2D_basis_xform :: (using self: *Transform2D, v: Vector2) -> Vector2 #c_call {
+Transform2D_basis_xform :: (using self: *Transform2D, v: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("basis_xform");
 	defer destroy(*method_name);
 	args : = *void.[*v, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.TRANSFORM2D, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Transform2D_basis_xform_inv :: (using self: *Transform2D, v: Vector2) -> Vector2 #c_call {
+Transform2D_basis_xform_inv :: (using self: *Transform2D, v: GD_Vector2) -> GD_Vector2 #c_call {
 	method_name := new_string_name("basis_xform_inv");
 	defer destroy(*method_name);
 	args : = *void.[*v, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.TRANSFORM2D, *method_name, 2026743667);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -3052,7 +3052,7 @@ Transform2D_is_finite :: (using self: *Transform2D) -> bool #c_call {
 	return ret;
 }
 
-Transform2D_looking_at :: (using self: *Transform2D, target: Vector2) -> Transform2D #c_call {
+Transform2D_looking_at :: (using self: *Transform2D, target: GD_Vector2) -> Transform2D #c_call {
 	method_name := new_string_name("looking_at");
 	defer destroy(*method_name);
 	args : = *void.[*target, ];
@@ -3066,7 +3066,7 @@ TRANSFORM2D_IDENTITY :: Transform2D.{.{1, 0}, .{0, 1}, .{0, 0}};
 TRANSFORM2D_FLIP_X :: Transform2D.{.{-1, 0}, .{0, 1}, .{0, 0}};
 TRANSFORM2D_FLIP_Y :: Transform2D.{.{1, 0}, .{0, -1}, .{0, 0}};
 
-Vector4 :: struct {
+GD_Vector4 :: struct {
 	x: float;
 	y: float;
 	z: float;
@@ -3080,7 +3080,7 @@ Vector4 :: struct {
 	}
 }
 
-Vector4_min_axis_index :: (using self: *Vector4) -> int #c_call {
+GD_Vector4_min_axis_index :: (using self: *GD_Vector4) -> int #c_call {
 	method_name := new_string_name("min_axis_index");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3090,7 +3090,7 @@ Vector4_min_axis_index :: (using self: *Vector4) -> int #c_call {
 	return ret;
 }
 
-Vector4_max_axis_index :: (using self: *Vector4) -> int #c_call {
+GD_Vector4_max_axis_index :: (using self: *GD_Vector4) -> int #c_call {
 	method_name := new_string_name("max_axis_index");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3100,7 +3100,7 @@ Vector4_max_axis_index :: (using self: *Vector4) -> int #c_call {
 	return ret;
 }
 
-Vector4_length :: (using self: *Vector4) -> float #c_call {
+GD_Vector4_length :: (using self: *GD_Vector4) -> float #c_call {
 	method_name := new_string_name("length");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3110,7 +3110,7 @@ Vector4_length :: (using self: *Vector4) -> float #c_call {
 	return ret;
 }
 
-Vector4_length_squared :: (using self: *Vector4) -> float #c_call {
+GD_Vector4_length_squared :: (using self: *GD_Vector4) -> float #c_call {
 	method_name := new_string_name("length_squared");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3120,157 +3120,157 @@ Vector4_length_squared :: (using self: *Vector4) -> float #c_call {
 	return ret;
 }
 
-Vector4_abs :: (using self: *Vector4) -> Vector4 #c_call {
+GD_Vector4_abs :: (using self: *GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("abs");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 80860099);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_sign :: (using self: *Vector4) -> Vector4 #c_call {
+GD_Vector4_sign :: (using self: *GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("sign");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 80860099);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_floor :: (using self: *Vector4) -> Vector4 #c_call {
+GD_Vector4_floor :: (using self: *GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("floor");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 80860099);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_ceil :: (using self: *Vector4) -> Vector4 #c_call {
+GD_Vector4_ceil :: (using self: *GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("ceil");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 80860099);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_round :: (using self: *Vector4) -> Vector4 #c_call {
+GD_Vector4_round :: (using self: *GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("round");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 80860099);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_lerp :: (using self: *Vector4, to: Vector4, weight: float) -> Vector4 #c_call {
+GD_Vector4_lerp :: (using self: *GD_Vector4, to: GD_Vector4, weight: float) -> GD_Vector4 #c_call {
 	method_name := new_string_name("lerp");
 	defer destroy(*method_name);
 	args : = *void.[*to, *weight, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 2329757942);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_cubic_interpolate :: (using self: *Vector4, b: Vector4, pre_a: Vector4, post_b: Vector4, weight: float) -> Vector4 #c_call {
+GD_Vector4_cubic_interpolate :: (using self: *GD_Vector4, b: GD_Vector4, pre_a: GD_Vector4, post_b: GD_Vector4, weight: float) -> GD_Vector4 #c_call {
 	method_name := new_string_name("cubic_interpolate");
 	defer destroy(*method_name);
 	args : = *void.[*b, *pre_a, *post_b, *weight, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 726768410);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_cubic_interpolate_in_time :: (using self: *Vector4, b: Vector4, pre_a: Vector4, post_b: Vector4, weight: float, b_t: float, pre_a_t: float, post_b_t: float) -> Vector4 #c_call {
+GD_Vector4_cubic_interpolate_in_time :: (using self: *GD_Vector4, b: GD_Vector4, pre_a: GD_Vector4, post_b: GD_Vector4, weight: float, b_t: float, pre_a_t: float, post_b_t: float) -> GD_Vector4 #c_call {
 	method_name := new_string_name("cubic_interpolate_in_time");
 	defer destroy(*method_name);
 	args : = *void.[*b, *pre_a, *post_b, *weight, *b_t, *pre_a_t, *post_b_t, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 681631873);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_posmod :: (using self: *Vector4, mod: float) -> Vector4 #c_call {
+GD_Vector4_posmod :: (using self: *GD_Vector4, mod: float) -> GD_Vector4 #c_call {
 	method_name := new_string_name("posmod");
 	defer destroy(*method_name);
 	args : = *void.[*mod, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 3129671720);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_posmodv :: (using self: *Vector4, modv: Vector4) -> Vector4 #c_call {
+GD_Vector4_posmodv :: (using self: *GD_Vector4, modv: GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("posmodv");
 	defer destroy(*method_name);
 	args : = *void.[*modv, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 2031281584);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_snapped :: (using self: *Vector4, step: Vector4) -> Vector4 #c_call {
+GD_Vector4_snapped :: (using self: *GD_Vector4, step: GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("snapped");
 	defer destroy(*method_name);
 	args : = *void.[*step, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 2031281584);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_snappedf :: (using self: *Vector4, step: float) -> Vector4 #c_call {
+GD_Vector4_snappedf :: (using self: *GD_Vector4, step: float) -> GD_Vector4 #c_call {
 	method_name := new_string_name("snappedf");
 	defer destroy(*method_name);
 	args : = *void.[*step, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 3129671720);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_clamp :: (using self: *Vector4, min: Vector4, max: Vector4) -> Vector4 #c_call {
+GD_Vector4_clamp :: (using self: *GD_Vector4, min: GD_Vector4, max: GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("clamp");
 	defer destroy(*method_name);
 	args : = *void.[*min, *max, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 823915692);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_clampf :: (using self: *Vector4, min: float, max: float) -> Vector4 #c_call {
+GD_Vector4_clampf :: (using self: *GD_Vector4, min: float, max: float) -> GD_Vector4 #c_call {
 	method_name := new_string_name("clampf");
 	defer destroy(*method_name);
 	args : = *void.[*min, *max, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 4072091586);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_normalized :: (using self: *Vector4) -> Vector4 #c_call {
+GD_Vector4_normalized :: (using self: *GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 80860099);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_is_normalized :: (using self: *Vector4) -> bool #c_call {
+GD_Vector4_is_normalized :: (using self: *GD_Vector4) -> bool #c_call {
 	method_name := new_string_name("is_normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3280,17 +3280,17 @@ Vector4_is_normalized :: (using self: *Vector4) -> bool #c_call {
 	return ret;
 }
 
-Vector4_direction_to :: (using self: *Vector4, to: Vector4) -> Vector4 #c_call {
+GD_Vector4_direction_to :: (using self: *GD_Vector4, to: GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("direction_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 2031281584);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_distance_to :: (using self: *Vector4, to: Vector4) -> float #c_call {
+GD_Vector4_distance_to :: (using self: *GD_Vector4, to: GD_Vector4) -> float #c_call {
 	method_name := new_string_name("distance_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -3300,7 +3300,7 @@ Vector4_distance_to :: (using self: *Vector4, to: Vector4) -> float #c_call {
 	return ret;
 }
 
-Vector4_distance_squared_to :: (using self: *Vector4, to: Vector4) -> float #c_call {
+GD_Vector4_distance_squared_to :: (using self: *GD_Vector4, to: GD_Vector4) -> float #c_call {
 	method_name := new_string_name("distance_squared_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -3310,7 +3310,7 @@ Vector4_distance_squared_to :: (using self: *Vector4, to: Vector4) -> float #c_c
 	return ret;
 }
 
-Vector4_dot :: (using self: *Vector4, with: Vector4) -> float #c_call {
+GD_Vector4_dot :: (using self: *GD_Vector4, with: GD_Vector4) -> float #c_call {
 	method_name := new_string_name("dot");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -3320,17 +3320,17 @@ Vector4_dot :: (using self: *Vector4, with: Vector4) -> float #c_call {
 	return ret;
 }
 
-Vector4_inverse :: (using self: *Vector4) -> Vector4 #c_call {
+GD_Vector4_inverse :: (using self: *GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("inverse");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 80860099);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_is_equal_approx :: (using self: *Vector4, to: Vector4) -> bool #c_call {
+GD_Vector4_is_equal_approx :: (using self: *GD_Vector4, to: GD_Vector4) -> bool #c_call {
 	method_name := new_string_name("is_equal_approx");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -3340,7 +3340,7 @@ Vector4_is_equal_approx :: (using self: *Vector4, to: Vector4) -> bool #c_call {
 	return ret;
 }
 
-Vector4_is_zero_approx :: (using self: *Vector4) -> bool #c_call {
+GD_Vector4_is_zero_approx :: (using self: *GD_Vector4) -> bool #c_call {
 	method_name := new_string_name("is_zero_approx");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3350,7 +3350,7 @@ Vector4_is_zero_approx :: (using self: *Vector4) -> bool #c_call {
 	return ret;
 }
 
-Vector4_is_finite :: (using self: *Vector4) -> bool #c_call {
+GD_Vector4_is_finite :: (using self: *GD_Vector4) -> bool #c_call {
 	method_name := new_string_name("is_finite");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3360,41 +3360,41 @@ Vector4_is_finite :: (using self: *Vector4) -> bool #c_call {
 	return ret;
 }
 
-Vector4_min :: (using self: *Vector4, with: Vector4) -> Vector4 #c_call {
+GD_Vector4_min :: (using self: *GD_Vector4, with: GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("min");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 2031281584);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_minf :: (using self: *Vector4, with: float) -> Vector4 #c_call {
+GD_Vector4_minf :: (using self: *GD_Vector4, with: float) -> GD_Vector4 #c_call {
 	method_name := new_string_name("minf");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 3129671720);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_max :: (using self: *Vector4, with: Vector4) -> Vector4 #c_call {
+GD_Vector4_max :: (using self: *GD_Vector4, with: GD_Vector4) -> GD_Vector4 #c_call {
 	method_name := new_string_name("max");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 2031281584);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Vector4_maxf :: (using self: *Vector4, with: float) -> Vector4 #c_call {
+GD_Vector4_maxf :: (using self: *GD_Vector4, with: float) -> GD_Vector4 #c_call {
 	method_name := new_string_name("maxf");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.VECTOR4, *method_name, 3129671720);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -3583,32 +3583,32 @@ VECTOR4I_ONE :: Vector4i.{1, 1, 1, 1};
 VECTOR4I_MIN :: Vector4i.{-2147483648, -2147483648, -2147483648, -2147483648};
 VECTOR4I_MAX :: Vector4i.{2147483647, 2147483647, 2147483647, 2147483647};
 
-Plane :: struct {
+GD_Plane :: struct {
 	normal: Vector3;
 	d: float;
 }
 
-Plane_normalized :: (using self: *Plane) -> Plane #c_call {
+GD_Plane_normalized :: (using self: *GD_Plane) -> GD_Plane #c_call {
 	method_name := new_string_name("normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Plane;
+	ret: GD_Plane;
 	func := variant_get_ptr_builtin_method(.PLANE, *method_name, 1051796340);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Plane_get_center :: (using self: *Plane) -> Vector3 #c_call {
+GD_Plane_get_center :: (using self: *GD_Plane) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_center");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.PLANE, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Plane_is_equal_approx :: (using self: *Plane, to_plane: Plane) -> bool #c_call {
+GD_Plane_is_equal_approx :: (using self: *GD_Plane, to_plane: GD_Plane) -> bool #c_call {
 	method_name := new_string_name("is_equal_approx");
 	defer destroy(*method_name);
 	args : = *void.[*to_plane, ];
@@ -3618,7 +3618,7 @@ Plane_is_equal_approx :: (using self: *Plane, to_plane: Plane) -> bool #c_call {
 	return ret;
 }
 
-Plane_is_finite :: (using self: *Plane) -> bool #c_call {
+GD_Plane_is_finite :: (using self: *GD_Plane) -> bool #c_call {
 	method_name := new_string_name("is_finite");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3628,7 +3628,7 @@ Plane_is_finite :: (using self: *Plane) -> bool #c_call {
 	return ret;
 }
 
-Plane_is_point_over :: (using self: *Plane, point: Vector3) -> bool #c_call {
+GD_Plane_is_point_over :: (using self: *GD_Plane, point: GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("is_point_over");
 	defer destroy(*method_name);
 	args : = *void.[*point, ];
@@ -3638,7 +3638,7 @@ Plane_is_point_over :: (using self: *Plane, point: Vector3) -> bool #c_call {
 	return ret;
 }
 
-Plane_distance_to :: (using self: *Plane, point: Vector3) -> float #c_call {
+GD_Plane_distance_to :: (using self: *GD_Plane, point: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("distance_to");
 	defer destroy(*method_name);
 	args : = *void.[*point, ];
@@ -3648,7 +3648,7 @@ Plane_distance_to :: (using self: *Plane, point: Vector3) -> float #c_call {
 	return ret;
 }
 
-Plane_has_point :: (using self: *Plane, point: Vector3, tolerance: float) -> bool #c_call {
+GD_Plane_has_point :: (using self: *GD_Plane, point: GD_Vector3, tolerance: float) -> bool #c_call {
 	method_name := new_string_name("has_point");
 	defer destroy(*method_name);
 	args : = *void.[*point, *tolerance, ];
@@ -3658,17 +3658,17 @@ Plane_has_point :: (using self: *Plane, point: Vector3, tolerance: float) -> boo
 	return ret;
 }
 
-Plane_project :: (using self: *Plane, point: Vector3) -> Vector3 #c_call {
+GD_Plane_project :: (using self: *GD_Plane, point: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("project");
 	defer destroy(*method_name);
 	args : = *void.[*point, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.PLANE, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Plane_intersect_3 :: (using self: *Plane, b: Plane, c: Plane) -> Variant #c_call {
+GD_Plane_intersect_3 :: (using self: *GD_Plane, b: GD_Plane, c: GD_Plane) -> Variant #c_call {
 	method_name := new_string_name("intersect_3");
 	defer destroy(*method_name);
 	args : = *void.[*b, *c, ];
@@ -3678,7 +3678,7 @@ Plane_intersect_3 :: (using self: *Plane, b: Plane, c: Plane) -> Variant #c_call
 	return ret;
 }
 
-Plane_intersects_ray :: (using self: *Plane, from: Vector3, dir: Vector3) -> Variant #c_call {
+GD_Plane_intersects_ray :: (using self: *GD_Plane, from: GD_Vector3, dir: GD_Vector3) -> Variant #c_call {
 	method_name := new_string_name("intersects_ray");
 	defer destroy(*method_name);
 	args : = *void.[*from, *dir, ];
@@ -3688,7 +3688,7 @@ Plane_intersects_ray :: (using self: *Plane, from: Vector3, dir: Vector3) -> Var
 	return ret;
 }
 
-Plane_intersects_segment :: (using self: *Plane, from: Vector3, to: Vector3) -> Variant #c_call {
+GD_Plane_intersects_segment :: (using self: *GD_Plane, from: GD_Vector3, to: GD_Vector3) -> Variant #c_call {
 	method_name := new_string_name("intersects_segment");
 	defer destroy(*method_name);
 	args : = *void.[*from, *to, ];
@@ -3698,18 +3698,18 @@ Plane_intersects_segment :: (using self: *Plane, from: Vector3, to: Vector3) -> 
 	return ret;
 }
 
-PLANE_PLANE_YZ :: Plane.{.{1, 0, 0}, 0};
-PLANE_PLANE_XZ :: Plane.{.{0, 1, 0}, 0};
-PLANE_PLANE_XY :: Plane.{.{0, 0, 1}, 0};
+PLANE_PLANE_YZ :: GD_Plane.{.{1, 0, 0}, 0};
+PLANE_PLANE_XZ :: GD_Plane.{.{0, 1, 0}, 0};
+PLANE_PLANE_XY :: GD_Plane.{.{0, 0, 1}, 0};
 
-Quaternion :: struct {
+GD_Quaternion :: struct {
 	x: float;
 	y: float;
 	z: float;
 	w: float;
 }
 
-Quaternion_length :: (using self: *Quaternion) -> float #c_call {
+GD_Quaternion_length :: (using self: *GD_Quaternion) -> float #c_call {
 	method_name := new_string_name("length");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3719,7 +3719,7 @@ Quaternion_length :: (using self: *Quaternion) -> float #c_call {
 	return ret;
 }
 
-Quaternion_length_squared :: (using self: *Quaternion) -> float #c_call {
+GD_Quaternion_length_squared :: (using self: *GD_Quaternion) -> float #c_call {
 	method_name := new_string_name("length_squared");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3729,17 +3729,17 @@ Quaternion_length_squared :: (using self: *Quaternion) -> float #c_call {
 	return ret;
 }
 
-Quaternion_normalized :: (using self: *Quaternion) -> Quaternion #c_call {
+GD_Quaternion_normalized :: (using self: *GD_Quaternion) -> GD_Quaternion #c_call {
 	method_name := new_string_name("normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 4274879941);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_is_normalized :: (using self: *Quaternion) -> bool #c_call {
+GD_Quaternion_is_normalized :: (using self: *GD_Quaternion) -> bool #c_call {
 	method_name := new_string_name("is_normalized");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3749,7 +3749,7 @@ Quaternion_is_normalized :: (using self: *Quaternion) -> bool #c_call {
 	return ret;
 }
 
-Quaternion_is_equal_approx :: (using self: *Quaternion, to: Quaternion) -> bool #c_call {
+GD_Quaternion_is_equal_approx :: (using self: *GD_Quaternion, to: GD_Quaternion) -> bool #c_call {
 	method_name := new_string_name("is_equal_approx");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -3759,7 +3759,7 @@ Quaternion_is_equal_approx :: (using self: *Quaternion, to: Quaternion) -> bool 
 	return ret;
 }
 
-Quaternion_is_finite :: (using self: *Quaternion) -> bool #c_call {
+GD_Quaternion_is_finite :: (using self: *GD_Quaternion) -> bool #c_call {
 	method_name := new_string_name("is_finite");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3769,37 +3769,37 @@ Quaternion_is_finite :: (using self: *Quaternion) -> bool #c_call {
 	return ret;
 }
 
-Quaternion_inverse :: (using self: *Quaternion) -> Quaternion #c_call {
+GD_Quaternion_inverse :: (using self: *GD_Quaternion) -> GD_Quaternion #c_call {
 	method_name := new_string_name("inverse");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 4274879941);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_log :: (using self: *Quaternion) -> Quaternion #c_call {
+GD_Quaternion_log :: (using self: *GD_Quaternion) -> GD_Quaternion #c_call {
 	method_name := new_string_name("log");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 4274879941);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_exp :: (using self: *Quaternion) -> Quaternion #c_call {
+GD_Quaternion_exp :: (using self: *GD_Quaternion) -> GD_Quaternion #c_call {
 	method_name := new_string_name("exp");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 4274879941);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_angle_to :: (using self: *Quaternion, to: Quaternion) -> float #c_call {
+GD_Quaternion_angle_to :: (using self: *GD_Quaternion, to: GD_Quaternion) -> float #c_call {
 	method_name := new_string_name("angle_to");
 	defer destroy(*method_name);
 	args : = *void.[*to, ];
@@ -3809,7 +3809,7 @@ Quaternion_angle_to :: (using self: *Quaternion, to: Quaternion) -> float #c_cal
 	return ret;
 }
 
-Quaternion_dot :: (using self: *Quaternion, with: Quaternion) -> float #c_call {
+GD_Quaternion_dot :: (using self: *GD_Quaternion, with: GD_Quaternion) -> float #c_call {
 	method_name := new_string_name("dot");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -3819,77 +3819,77 @@ Quaternion_dot :: (using self: *Quaternion, with: Quaternion) -> float #c_call {
 	return ret;
 }
 
-Quaternion_slerp :: (using self: *Quaternion, to: Quaternion, weight: float) -> Quaternion #c_call {
+GD_Quaternion_slerp :: (using self: *GD_Quaternion, to: GD_Quaternion, weight: float) -> GD_Quaternion #c_call {
 	method_name := new_string_name("slerp");
 	defer destroy(*method_name);
 	args : = *void.[*to, *weight, ];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 1773590316);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_slerpni :: (using self: *Quaternion, to: Quaternion, weight: float) -> Quaternion #c_call {
+GD_Quaternion_slerpni :: (using self: *GD_Quaternion, to: GD_Quaternion, weight: float) -> GD_Quaternion #c_call {
 	method_name := new_string_name("slerpni");
 	defer destroy(*method_name);
 	args : = *void.[*to, *weight, ];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 1773590316);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_spherical_cubic_interpolate :: (using self: *Quaternion, b: Quaternion, pre_a: Quaternion, post_b: Quaternion, weight: float) -> Quaternion #c_call {
+GD_Quaternion_spherical_cubic_interpolate :: (using self: *GD_Quaternion, b: GD_Quaternion, pre_a: GD_Quaternion, post_b: GD_Quaternion, weight: float) -> GD_Quaternion #c_call {
 	method_name := new_string_name("spherical_cubic_interpolate");
 	defer destroy(*method_name);
 	args : = *void.[*b, *pre_a, *post_b, *weight, ];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 2150967576);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_spherical_cubic_interpolate_in_time :: (using self: *Quaternion, b: Quaternion, pre_a: Quaternion, post_b: Quaternion, weight: float, b_t: float, pre_a_t: float, post_b_t: float) -> Quaternion #c_call {
+GD_Quaternion_spherical_cubic_interpolate_in_time :: (using self: *GD_Quaternion, b: GD_Quaternion, pre_a: GD_Quaternion, post_b: GD_Quaternion, weight: float, b_t: float, pre_a_t: float, post_b_t: float) -> GD_Quaternion #c_call {
 	method_name := new_string_name("spherical_cubic_interpolate_in_time");
 	defer destroy(*method_name);
 	args : = *void.[*b, *pre_a, *post_b, *weight, *b_t, *pre_a_t, *post_b_t, ];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 1436023539);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_get_euler :: (using self: *Quaternion, order: int) -> Vector3 #c_call {
+GD_Quaternion_get_euler :: (using self: *GD_Quaternion, order: int) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_euler");
 	defer destroy(*method_name);
 	args : = *void.[*order, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 1394941017);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_from_euler :: (using self: *Quaternion, euler: Vector3) -> Quaternion #c_call {
+GD_Quaternion_from_euler :: (using self: *GD_Quaternion, euler: GD_Vector3) -> GD_Quaternion #c_call {
 	method_name := new_string_name("from_euler");
 	defer destroy(*method_name);
 	args : = *void.[*euler, ];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 4053467903);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_get_axis :: (using self: *Quaternion) -> Vector3 #c_call {
+GD_Quaternion_get_axis :: (using self: *GD_Quaternion) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_axis");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.QUATERNION, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Quaternion_get_angle :: (using self: *Quaternion) -> float #c_call {
+GD_Quaternion_get_angle :: (using self: *GD_Quaternion) -> float #c_call {
 	method_name := new_string_name("get_angle");
 	defer destroy(*method_name);
 	args : = *void.[];
@@ -3916,11 +3916,11 @@ AABB_abs :: (using self: *AABB) -> AABB #c_call {
 	return ret;
 }
 
-AABB_get_center :: (using self: *AABB) -> Vector3 #c_call {
+AABB_get_center :: (using self: *AABB) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_center");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.AABB, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -3956,7 +3956,7 @@ AABB_has_surface :: (using self: *AABB) -> bool #c_call {
 	return ret;
 }
 
-AABB_has_point :: (using self: *AABB, point: Vector3) -> bool #c_call {
+AABB_has_point :: (using self: *AABB, point: GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("has_point");
 	defer destroy(*method_name);
 	args : = *void.[*point, ];
@@ -4006,7 +4006,7 @@ AABB_encloses :: (using self: *AABB, with: AABB) -> bool #c_call {
 	return ret;
 }
 
-AABB_intersects_plane :: (using self: *AABB, plane: Plane) -> bool #c_call {
+AABB_intersects_plane :: (using self: *AABB, plane: GD_Plane) -> bool #c_call {
 	method_name := new_string_name("intersects_plane");
 	defer destroy(*method_name);
 	args : = *void.[*plane, ];
@@ -4036,7 +4036,7 @@ AABB_merge :: (using self: *AABB, with: AABB) -> AABB #c_call {
 	return ret;
 }
 
-AABB_expand :: (using self: *AABB, to_point: Vector3) -> AABB #c_call {
+AABB_expand :: (using self: *AABB, to_point: GD_Vector3) -> AABB #c_call {
 	method_name := new_string_name("expand");
 	defer destroy(*method_name);
 	args : = *void.[*to_point, ];
@@ -4056,21 +4056,21 @@ AABB_grow :: (using self: *AABB, by: float) -> AABB #c_call {
 	return ret;
 }
 
-AABB_get_support :: (using self: *AABB, direction: Vector3) -> Vector3 #c_call {
+AABB_get_support :: (using self: *AABB, direction: GD_Vector3) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_support");
 	defer destroy(*method_name);
 	args : = *void.[*direction, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.AABB, *method_name, 2923479887);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-AABB_get_longest_axis :: (using self: *AABB) -> Vector3 #c_call {
+AABB_get_longest_axis :: (using self: *AABB) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_longest_axis");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.AABB, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -4096,11 +4096,11 @@ AABB_get_longest_axis_size :: (using self: *AABB) -> float #c_call {
 	return ret;
 }
 
-AABB_get_shortest_axis :: (using self: *AABB) -> Vector3 #c_call {
+AABB_get_shortest_axis :: (using self: *AABB) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_shortest_axis");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.AABB, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -4126,17 +4126,17 @@ AABB_get_shortest_axis_size :: (using self: *AABB) -> float #c_call {
 	return ret;
 }
 
-AABB_get_endpoint :: (using self: *AABB, idx: int) -> Vector3 #c_call {
+AABB_get_endpoint :: (using self: *AABB, idx: int) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_endpoint");
 	defer destroy(*method_name);
 	args : = *void.[*idx, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.AABB, *method_name, 1394941017);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-AABB_intersects_segment :: (using self: *AABB, from: Vector3, to: Vector3) -> Variant #c_call {
+AABB_intersects_segment :: (using self: *AABB, from: GD_Vector3, to: GD_Vector3) -> Variant #c_call {
 	method_name := new_string_name("intersects_segment");
 	defer destroy(*method_name);
 	args : = *void.[*from, *to, ];
@@ -4146,7 +4146,7 @@ AABB_intersects_segment :: (using self: *AABB, from: Vector3, to: Vector3) -> Va
 	return ret;
 }
 
-AABB_intersects_ray :: (using self: *AABB, from: Vector3, dir: Vector3) -> Variant #c_call {
+AABB_intersects_ray :: (using self: *AABB, from: GD_Vector3, dir: GD_Vector3) -> Variant #c_call {
 	method_name := new_string_name("intersects_ray");
 	defer destroy(*method_name);
 	args : = *void.[*from, *dir, ];
@@ -4202,7 +4202,7 @@ Basis_determinant :: (using self: *Basis) -> float #c_call {
 	return ret;
 }
 
-Basis_rotated :: (using self: *Basis, axis: Vector3, angle: float) -> Basis #c_call {
+Basis_rotated :: (using self: *Basis, axis: GD_Vector3, angle: float) -> Basis #c_call {
 	method_name := new_string_name("rotated");
 	defer destroy(*method_name);
 	args : = *void.[*axis, *angle, ];
@@ -4212,7 +4212,7 @@ Basis_rotated :: (using self: *Basis, axis: Vector3, angle: float) -> Basis #c_c
 	return ret;
 }
 
-Basis_scaled :: (using self: *Basis, scale: Vector3) -> Basis #c_call {
+Basis_scaled :: (using self: *Basis, scale: GD_Vector3) -> Basis #c_call {
 	method_name := new_string_name("scaled");
 	defer destroy(*method_name);
 	args : = *void.[*scale, ];
@@ -4222,7 +4222,7 @@ Basis_scaled :: (using self: *Basis, scale: Vector3) -> Basis #c_call {
 	return ret;
 }
 
-Basis_scaled_local :: (using self: *Basis, scale: Vector3) -> Basis #c_call {
+Basis_scaled_local :: (using self: *Basis, scale: GD_Vector3) -> Basis #c_call {
 	method_name := new_string_name("scaled_local");
 	defer destroy(*method_name);
 	args : = *void.[*scale, ];
@@ -4232,27 +4232,27 @@ Basis_scaled_local :: (using self: *Basis, scale: Vector3) -> Basis #c_call {
 	return ret;
 }
 
-Basis_get_scale :: (using self: *Basis) -> Vector3 #c_call {
+Basis_get_scale :: (using self: *Basis) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_scale");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.BASIS, *method_name, 1776574132);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Basis_get_euler :: (using self: *Basis, order: int) -> Vector3 #c_call {
+Basis_get_euler :: (using self: *Basis, order: int) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get_euler");
 	defer destroy(*method_name);
 	args : = *void.[*order, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.BASIS, *method_name, 1394941017);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Basis_tdotx :: (using self: *Basis, with: Vector3) -> float #c_call {
+Basis_tdotx :: (using self: *Basis, with: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("tdotx");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -4262,7 +4262,7 @@ Basis_tdotx :: (using self: *Basis, with: Vector3) -> float #c_call {
 	return ret;
 }
 
-Basis_tdoty :: (using self: *Basis, with: Vector3) -> float #c_call {
+Basis_tdoty :: (using self: *Basis, with: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("tdoty");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -4272,7 +4272,7 @@ Basis_tdoty :: (using self: *Basis, with: Vector3) -> float #c_call {
 	return ret;
 }
 
-Basis_tdotz :: (using self: *Basis, with: Vector3) -> float #c_call {
+Basis_tdotz :: (using self: *Basis, with: GD_Vector3) -> float #c_call {
 	method_name := new_string_name("tdotz");
 	defer destroy(*method_name);
 	args : = *void.[*with, ];
@@ -4332,17 +4332,17 @@ Basis_is_orthonormal :: (using self: *Basis) -> bool #c_call {
 	return ret;
 }
 
-Basis_get_rotation_quaternion :: (using self: *Basis) -> Quaternion #c_call {
+Basis_get_rotation_quaternion :: (using self: *Basis) -> GD_Quaternion #c_call {
 	method_name := new_string_name("get_rotation_quaternion");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Quaternion;
+	ret: GD_Quaternion;
 	func := variant_get_ptr_builtin_method(.BASIS, *method_name, 4274879941);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Basis_looking_at :: (using self: *Basis, target: Vector3, up: Vector3, use_model_front: bool) -> Basis #c_call {
+Basis_looking_at :: (using self: *Basis, target: GD_Vector3, up: GD_Vector3, use_model_front: bool) -> Basis #c_call {
 	method_name := new_string_name("looking_at");
 	defer destroy(*method_name);
 	args : = *void.[*target, *up, *use_model_front, ];
@@ -4352,7 +4352,7 @@ Basis_looking_at :: (using self: *Basis, target: Vector3, up: Vector3, use_model
 	return ret;
 }
 
-Basis_from_scale :: (using self: *Basis, scale: Vector3) -> Basis #c_call {
+Basis_from_scale :: (using self: *Basis, scale: GD_Vector3) -> Basis #c_call {
 	method_name := new_string_name("from_scale");
 	defer destroy(*method_name);
 	args : = *void.[*scale, ];
@@ -4362,7 +4362,7 @@ Basis_from_scale :: (using self: *Basis, scale: Vector3) -> Basis #c_call {
 	return ret;
 }
 
-Basis_from_euler :: (using self: *Basis, euler: Vector3, order: int) -> Basis #c_call {
+Basis_from_euler :: (using self: *Basis, euler: GD_Vector3, order: int) -> Basis #c_call {
 	method_name := new_string_name("from_euler");
 	defer destroy(*method_name);
 	args : = *void.[*euler, *order, ];
@@ -4412,7 +4412,7 @@ Transform3D_orthonormalized :: (using self: *Transform3D) -> Transform3D #c_call
 	return ret;
 }
 
-Transform3D_rotated :: (using self: *Transform3D, axis: Vector3, angle: float) -> Transform3D #c_call {
+Transform3D_rotated :: (using self: *Transform3D, axis: GD_Vector3, angle: float) -> Transform3D #c_call {
 	method_name := new_string_name("rotated");
 	defer destroy(*method_name);
 	args : = *void.[*axis, *angle, ];
@@ -4422,7 +4422,7 @@ Transform3D_rotated :: (using self: *Transform3D, axis: Vector3, angle: float) -
 	return ret;
 }
 
-Transform3D_rotated_local :: (using self: *Transform3D, axis: Vector3, angle: float) -> Transform3D #c_call {
+Transform3D_rotated_local :: (using self: *Transform3D, axis: GD_Vector3, angle: float) -> Transform3D #c_call {
 	method_name := new_string_name("rotated_local");
 	defer destroy(*method_name);
 	args : = *void.[*axis, *angle, ];
@@ -4432,7 +4432,7 @@ Transform3D_rotated_local :: (using self: *Transform3D, axis: Vector3, angle: fl
 	return ret;
 }
 
-Transform3D_scaled :: (using self: *Transform3D, scale: Vector3) -> Transform3D #c_call {
+Transform3D_scaled :: (using self: *Transform3D, scale: GD_Vector3) -> Transform3D #c_call {
 	method_name := new_string_name("scaled");
 	defer destroy(*method_name);
 	args : = *void.[*scale, ];
@@ -4442,7 +4442,7 @@ Transform3D_scaled :: (using self: *Transform3D, scale: Vector3) -> Transform3D 
 	return ret;
 }
 
-Transform3D_scaled_local :: (using self: *Transform3D, scale: Vector3) -> Transform3D #c_call {
+Transform3D_scaled_local :: (using self: *Transform3D, scale: GD_Vector3) -> Transform3D #c_call {
 	method_name := new_string_name("scaled_local");
 	defer destroy(*method_name);
 	args : = *void.[*scale, ];
@@ -4452,7 +4452,7 @@ Transform3D_scaled_local :: (using self: *Transform3D, scale: Vector3) -> Transf
 	return ret;
 }
 
-Transform3D_translated :: (using self: *Transform3D, offset: Vector3) -> Transform3D #c_call {
+Transform3D_translated :: (using self: *Transform3D, offset: GD_Vector3) -> Transform3D #c_call {
 	method_name := new_string_name("translated");
 	defer destroy(*method_name);
 	args : = *void.[*offset, ];
@@ -4462,7 +4462,7 @@ Transform3D_translated :: (using self: *Transform3D, offset: Vector3) -> Transfo
 	return ret;
 }
 
-Transform3D_translated_local :: (using self: *Transform3D, offset: Vector3) -> Transform3D #c_call {
+Transform3D_translated_local :: (using self: *Transform3D, offset: GD_Vector3) -> Transform3D #c_call {
 	method_name := new_string_name("translated_local");
 	defer destroy(*method_name);
 	args : = *void.[*offset, ];
@@ -4472,7 +4472,7 @@ Transform3D_translated_local :: (using self: *Transform3D, offset: Vector3) -> T
 	return ret;
 }
 
-Transform3D_looking_at :: (using self: *Transform3D, target: Vector3, up: Vector3, use_model_front: bool) -> Transform3D #c_call {
+Transform3D_looking_at :: (using self: *Transform3D, target: GD_Vector3, up: GD_Vector3, use_model_front: bool) -> Transform3D #c_call {
 	method_name := new_string_name("looking_at");
 	defer destroy(*method_name);
 	args : = *void.[*target, *up, *use_model_front, ];
@@ -4613,7 +4613,7 @@ Projection_create_frustum :: (using self: *Projection, left: float, right: float
 	return ret;
 }
 
-Projection_create_frustum_aspect :: (using self: *Projection, size: float, aspect: float, offset: Vector2, z_near: float, z_far: float, flip_fov: bool) -> Projection #c_call {
+Projection_create_frustum_aspect :: (using self: *Projection, size: float, aspect: float, offset: GD_Vector2, z_near: float, z_far: float, flip_fov: bool) -> Projection #c_call {
 	method_name := new_string_name("create_frustum_aspect");
 	defer destroy(*method_name);
 	args : = *void.[*size, *aspect, *offset, *z_near, *z_far, *flip_fov, ];
@@ -4653,11 +4653,11 @@ Projection_perspective_znear_adjusted :: (using self: *Projection, new_znear: fl
 	return ret;
 }
 
-Projection_get_projection_plane :: (using self: *Projection, plane: int) -> Plane #c_call {
+Projection_get_projection_plane :: (using self: *Projection, plane: int) -> GD_Plane #c_call {
 	method_name := new_string_name("get_projection_plane");
 	defer destroy(*method_name);
 	args : = *void.[*plane, ];
-	ret: Plane;
+	ret: GD_Plane;
 	func := variant_get_ptr_builtin_method(.PROJECTION, *method_name, 1551184160);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -4673,7 +4673,7 @@ Projection_flipped_y :: (using self: *Projection) -> Projection #c_call {
 	return ret;
 }
 
-Projection_jitter_offseted :: (using self: *Projection, offset: Vector2) -> Projection #c_call {
+Projection_jitter_offseted :: (using self: *Projection, offset: GD_Vector2) -> Projection #c_call {
 	method_name := new_string_name("jitter_offseted");
 	defer destroy(*method_name);
 	args : = *void.[*offset, ];
@@ -4743,21 +4743,21 @@ Projection_is_orthogonal :: (using self: *Projection) -> bool #c_call {
 	return ret;
 }
 
-Projection_get_viewport_half_extents :: (using self: *Projection) -> Vector2 #c_call {
+Projection_get_viewport_half_extents :: (using self: *Projection) -> GD_Vector2 #c_call {
 	method_name := new_string_name("get_viewport_half_extents");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.PROJECTION, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Projection_get_far_plane_half_extents :: (using self: *Projection) -> Vector2 #c_call {
+Projection_get_far_plane_half_extents :: (using self: *Projection) -> GD_Vector2 #c_call {
 	method_name := new_string_name("get_far_plane_half_extents");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.PROJECTION, *method_name, 2428350749);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -6350,11 +6350,11 @@ NodePath_get_name_count :: (using self: *NodePath) -> int #c_call {
 	return ret;
 }
 
-NodePath_get_name :: (using self: *NodePath, idx: int) -> StringName #c_call {
+NodePath_get_name :: (using self: *NodePath, idx: int) -> string #c_call {
 	method_name := new_string_name("get_name");
 	defer destroy(*method_name);
 	args : = *void.[*idx, ];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.NODEPATH, *method_name, 2948586938);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -6380,31 +6380,31 @@ NodePath_hash :: (using self: *NodePath) -> int #c_call {
 	return ret;
 }
 
-NodePath_get_subname :: (using self: *NodePath, idx: int) -> StringName #c_call {
+NodePath_get_subname :: (using self: *NodePath, idx: int) -> string #c_call {
 	method_name := new_string_name("get_subname");
 	defer destroy(*method_name);
 	args : = *void.[*idx, ];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.NODEPATH, *method_name, 2948586938);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-NodePath_get_concatenated_names :: (using self: *NodePath) -> StringName #c_call {
+NodePath_get_concatenated_names :: (using self: *NodePath) -> string #c_call {
 	method_name := new_string_name("get_concatenated_names");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.NODEPATH, *method_name, 1825232092);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-NodePath_get_concatenated_subnames :: (using self: *NodePath) -> StringName #c_call {
+NodePath_get_concatenated_subnames :: (using self: *NodePath) -> string #c_call {
 	method_name := new_string_name("get_concatenated_subnames");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.NODEPATH, *method_name, 1825232092);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -6554,11 +6554,11 @@ Callable_get_object_id :: (using self: *Callable) -> int #c_call {
 	return ret;
 }
 
-Callable_get_method :: (using self: *Callable) -> StringName #c_call {
+Callable_get_method :: (using self: *Callable) -> string #c_call {
 	method_name := new_string_name("get_method");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.CALLABLE, *method_name, 1825232092);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -6718,11 +6718,11 @@ Signal_get_object_id :: (using self: *Signal) -> int #c_call {
 	return ret;
 }
 
-Signal_get_name :: (using self: *Signal) -> StringName #c_call {
+Signal_get_name :: (using self: *Signal) -> string #c_call {
 	method_name := new_string_name("get_name");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.SIGNAL, *method_name, 1825232092);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -7056,21 +7056,21 @@ Dictionary_get_typed_value_builtin :: (using self: *Dictionary) -> int #c_call {
 	return ret;
 }
 
-Dictionary_get_typed_key_class_name :: (using self: *Dictionary) -> StringName #c_call {
+Dictionary_get_typed_key_class_name :: (using self: *Dictionary) -> string #c_call {
 	method_name := new_string_name("get_typed_key_class_name");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 1825232092);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-Dictionary_get_typed_value_class_name :: (using self: *Dictionary) -> StringName #c_call {
+Dictionary_get_typed_value_class_name :: (using self: *Dictionary) -> string #c_call {
 	method_name := new_string_name("get_typed_value_class_name");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.DICTIONARY, *method_name, 1825232092);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -7576,11 +7576,11 @@ Array_get_typed_builtin :: (using self: *Array) -> int #c_call {
 	return ret;
 }
 
-Array_get_typed_class_name :: (using self: *Array) -> StringName #c_call {
+Array_get_typed_class_name :: (using self: *Array) -> string #c_call {
 	method_name := new_string_name("get_typed_class_name");
 	defer destroy(*method_name);
 	args : = *void.[];
-	ret: StringName;
+	ret: string;
 	func := variant_get_ptr_builtin_method(.ARRAY, *method_name, 1825232092);
 	func(self, args.data, *ret, args.count);
 	return ret;
@@ -9412,17 +9412,17 @@ destroy :: (self: *PackedVector2Array) #no_context {
 }
 
 
-PackedVector2Array_get :: (using self: *PackedVector2Array, index: int) -> Vector2 #c_call {
+PackedVector2Array_get :: (using self: *PackedVector2Array, index: int) -> GD_Vector2 #c_call {
 	method_name := new_string_name("get");
 	defer destroy(*method_name);
 	args : = *void.[*index, ];
-	ret: Vector2;
+	ret: GD_Vector2;
 	func := variant_get_ptr_builtin_method(.PACKEDVECTOR2ARRAY, *method_name, 2609058838);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-PackedVector2Array_set :: (using self: *PackedVector2Array, index: int, value: Vector2) #c_call {
+PackedVector2Array_set :: (using self: *PackedVector2Array, index: int, value: GD_Vector2) #c_call {
 	method_name := new_string_name("set");
 	defer destroy(*method_name);
 	args : = *void.[*index, *value, ];
@@ -9450,7 +9450,7 @@ PackedVector2Array_is_empty :: (using self: *PackedVector2Array) -> bool #c_call
 	return ret;
 }
 
-PackedVector2Array_push_back :: (using self: *PackedVector2Array, value: Vector2) -> bool #c_call {
+PackedVector2Array_push_back :: (using self: *PackedVector2Array, value: GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("push_back");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9460,7 +9460,7 @@ PackedVector2Array_push_back :: (using self: *PackedVector2Array, value: Vector2
 	return ret;
 }
 
-PackedVector2Array_append :: (using self: *PackedVector2Array, value: Vector2) -> bool #c_call {
+PackedVector2Array_append :: (using self: *PackedVector2Array, value: GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("append");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9486,7 +9486,7 @@ PackedVector2Array_remove_at :: (using self: *PackedVector2Array, index: int) #c
 	func(self, args.data, null, args.count);
 }
 
-PackedVector2Array_insert :: (using self: *PackedVector2Array, at_index: int, value: Vector2) -> int #c_call {
+PackedVector2Array_insert :: (using self: *PackedVector2Array, at_index: int, value: GD_Vector2) -> int #c_call {
 	method_name := new_string_name("insert");
 	defer destroy(*method_name);
 	args : = *void.[*at_index, *value, ];
@@ -9496,7 +9496,7 @@ PackedVector2Array_insert :: (using self: *PackedVector2Array, at_index: int, va
 	return ret;
 }
 
-PackedVector2Array_fill :: (using self: *PackedVector2Array, value: Vector2) #c_call {
+PackedVector2Array_fill :: (using self: *PackedVector2Array, value: GD_Vector2) #c_call {
 	method_name := new_string_name("fill");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9522,7 +9522,7 @@ PackedVector2Array_clear :: (using self: *PackedVector2Array) #c_call {
 	func(self, args.data, null, args.count);
 }
 
-PackedVector2Array_has :: (using self: *PackedVector2Array, value: Vector2) -> bool #c_call {
+PackedVector2Array_has :: (using self: *PackedVector2Array, value: GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("has");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9568,7 +9568,7 @@ PackedVector2Array_sort :: (using self: *PackedVector2Array) #c_call {
 	func(self, args.data, null, args.count);
 }
 
-PackedVector2Array_bsearch :: (using self: *PackedVector2Array, value: Vector2, before: bool) -> int #c_call {
+PackedVector2Array_bsearch :: (using self: *PackedVector2Array, value: GD_Vector2, before: bool) -> int #c_call {
 	method_name := new_string_name("bsearch");
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
@@ -9588,7 +9588,7 @@ PackedVector2Array_duplicate :: (using self: *PackedVector2Array) -> PackedVecto
 	return ret;
 }
 
-PackedVector2Array_find :: (using self: *PackedVector2Array, value: Vector2, from: int) -> int #c_call {
+PackedVector2Array_find :: (using self: *PackedVector2Array, value: GD_Vector2, from: int) -> int #c_call {
 	method_name := new_string_name("find");
 	defer destroy(*method_name);
 	args : = *void.[*value, *from, ];
@@ -9598,7 +9598,7 @@ PackedVector2Array_find :: (using self: *PackedVector2Array, value: Vector2, fro
 	return ret;
 }
 
-PackedVector2Array_rfind :: (using self: *PackedVector2Array, value: Vector2, from: int) -> int #c_call {
+PackedVector2Array_rfind :: (using self: *PackedVector2Array, value: GD_Vector2, from: int) -> int #c_call {
 	method_name := new_string_name("rfind");
 	defer destroy(*method_name);
 	args : = *void.[*value, *from, ];
@@ -9608,7 +9608,7 @@ PackedVector2Array_rfind :: (using self: *PackedVector2Array, value: Vector2, fr
 	return ret;
 }
 
-PackedVector2Array_count :: (using self: *PackedVector2Array, value: Vector2) -> int #c_call {
+PackedVector2Array_count :: (using self: *PackedVector2Array, value: GD_Vector2) -> int #c_call {
 	method_name := new_string_name("count");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9618,7 +9618,7 @@ PackedVector2Array_count :: (using self: *PackedVector2Array, value: Vector2) ->
 	return ret;
 }
 
-PackedVector2Array_erase :: (using self: *PackedVector2Array, value: Vector2) -> bool #c_call {
+PackedVector2Array_erase :: (using self: *PackedVector2Array, value: GD_Vector2) -> bool #c_call {
 	method_name := new_string_name("erase");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9638,17 +9638,17 @@ destroy :: (self: *PackedVector3Array) #no_context {
 }
 
 
-PackedVector3Array_get :: (using self: *PackedVector3Array, index: int) -> Vector3 #c_call {
+PackedVector3Array_get :: (using self: *PackedVector3Array, index: int) -> GD_Vector3 #c_call {
 	method_name := new_string_name("get");
 	defer destroy(*method_name);
 	args : = *void.[*index, ];
-	ret: Vector3;
+	ret: GD_Vector3;
 	func := variant_get_ptr_builtin_method(.PACKEDVECTOR3ARRAY, *method_name, 1394941017);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-PackedVector3Array_set :: (using self: *PackedVector3Array, index: int, value: Vector3) #c_call {
+PackedVector3Array_set :: (using self: *PackedVector3Array, index: int, value: GD_Vector3) #c_call {
 	method_name := new_string_name("set");
 	defer destroy(*method_name);
 	args : = *void.[*index, *value, ];
@@ -9676,7 +9676,7 @@ PackedVector3Array_is_empty :: (using self: *PackedVector3Array) -> bool #c_call
 	return ret;
 }
 
-PackedVector3Array_push_back :: (using self: *PackedVector3Array, value: Vector3) -> bool #c_call {
+PackedVector3Array_push_back :: (using self: *PackedVector3Array, value: GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("push_back");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9686,7 +9686,7 @@ PackedVector3Array_push_back :: (using self: *PackedVector3Array, value: Vector3
 	return ret;
 }
 
-PackedVector3Array_append :: (using self: *PackedVector3Array, value: Vector3) -> bool #c_call {
+PackedVector3Array_append :: (using self: *PackedVector3Array, value: GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("append");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9712,7 +9712,7 @@ PackedVector3Array_remove_at :: (using self: *PackedVector3Array, index: int) #c
 	func(self, args.data, null, args.count);
 }
 
-PackedVector3Array_insert :: (using self: *PackedVector3Array, at_index: int, value: Vector3) -> int #c_call {
+PackedVector3Array_insert :: (using self: *PackedVector3Array, at_index: int, value: GD_Vector3) -> int #c_call {
 	method_name := new_string_name("insert");
 	defer destroy(*method_name);
 	args : = *void.[*at_index, *value, ];
@@ -9722,7 +9722,7 @@ PackedVector3Array_insert :: (using self: *PackedVector3Array, at_index: int, va
 	return ret;
 }
 
-PackedVector3Array_fill :: (using self: *PackedVector3Array, value: Vector3) #c_call {
+PackedVector3Array_fill :: (using self: *PackedVector3Array, value: GD_Vector3) #c_call {
 	method_name := new_string_name("fill");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9748,7 +9748,7 @@ PackedVector3Array_clear :: (using self: *PackedVector3Array) #c_call {
 	func(self, args.data, null, args.count);
 }
 
-PackedVector3Array_has :: (using self: *PackedVector3Array, value: Vector3) -> bool #c_call {
+PackedVector3Array_has :: (using self: *PackedVector3Array, value: GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("has");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9794,7 +9794,7 @@ PackedVector3Array_sort :: (using self: *PackedVector3Array) #c_call {
 	func(self, args.data, null, args.count);
 }
 
-PackedVector3Array_bsearch :: (using self: *PackedVector3Array, value: Vector3, before: bool) -> int #c_call {
+PackedVector3Array_bsearch :: (using self: *PackedVector3Array, value: GD_Vector3, before: bool) -> int #c_call {
 	method_name := new_string_name("bsearch");
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
@@ -9814,7 +9814,7 @@ PackedVector3Array_duplicate :: (using self: *PackedVector3Array) -> PackedVecto
 	return ret;
 }
 
-PackedVector3Array_find :: (using self: *PackedVector3Array, value: Vector3, from: int) -> int #c_call {
+PackedVector3Array_find :: (using self: *PackedVector3Array, value: GD_Vector3, from: int) -> int #c_call {
 	method_name := new_string_name("find");
 	defer destroy(*method_name);
 	args : = *void.[*value, *from, ];
@@ -9824,7 +9824,7 @@ PackedVector3Array_find :: (using self: *PackedVector3Array, value: Vector3, fro
 	return ret;
 }
 
-PackedVector3Array_rfind :: (using self: *PackedVector3Array, value: Vector3, from: int) -> int #c_call {
+PackedVector3Array_rfind :: (using self: *PackedVector3Array, value: GD_Vector3, from: int) -> int #c_call {
 	method_name := new_string_name("rfind");
 	defer destroy(*method_name);
 	args : = *void.[*value, *from, ];
@@ -9834,7 +9834,7 @@ PackedVector3Array_rfind :: (using self: *PackedVector3Array, value: Vector3, fr
 	return ret;
 }
 
-PackedVector3Array_count :: (using self: *PackedVector3Array, value: Vector3) -> int #c_call {
+PackedVector3Array_count :: (using self: *PackedVector3Array, value: GD_Vector3) -> int #c_call {
 	method_name := new_string_name("count");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -9844,7 +9844,7 @@ PackedVector3Array_count :: (using self: *PackedVector3Array, value: Vector3) ->
 	return ret;
 }
 
-PackedVector3Array_erase :: (using self: *PackedVector3Array, value: Vector3) -> bool #c_call {
+PackedVector3Array_erase :: (using self: *PackedVector3Array, value: GD_Vector3) -> bool #c_call {
 	method_name := new_string_name("erase");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -10090,17 +10090,17 @@ destroy :: (self: *PackedVector4Array) #no_context {
 }
 
 
-PackedVector4Array_get :: (using self: *PackedVector4Array, index: int) -> Vector4 #c_call {
+PackedVector4Array_get :: (using self: *PackedVector4Array, index: int) -> GD_Vector4 #c_call {
 	method_name := new_string_name("get");
 	defer destroy(*method_name);
 	args : = *void.[*index, ];
-	ret: Vector4;
+	ret: GD_Vector4;
 	func := variant_get_ptr_builtin_method(.PACKEDVECTOR4ARRAY, *method_name, 1227817084);
 	func(self, args.data, *ret, args.count);
 	return ret;
 }
 
-PackedVector4Array_set :: (using self: *PackedVector4Array, index: int, value: Vector4) #c_call {
+PackedVector4Array_set :: (using self: *PackedVector4Array, index: int, value: GD_Vector4) #c_call {
 	method_name := new_string_name("set");
 	defer destroy(*method_name);
 	args : = *void.[*index, *value, ];
@@ -10128,7 +10128,7 @@ PackedVector4Array_is_empty :: (using self: *PackedVector4Array) -> bool #c_call
 	return ret;
 }
 
-PackedVector4Array_push_back :: (using self: *PackedVector4Array, value: Vector4) -> bool #c_call {
+PackedVector4Array_push_back :: (using self: *PackedVector4Array, value: GD_Vector4) -> bool #c_call {
 	method_name := new_string_name("push_back");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -10138,7 +10138,7 @@ PackedVector4Array_push_back :: (using self: *PackedVector4Array, value: Vector4
 	return ret;
 }
 
-PackedVector4Array_append :: (using self: *PackedVector4Array, value: Vector4) -> bool #c_call {
+PackedVector4Array_append :: (using self: *PackedVector4Array, value: GD_Vector4) -> bool #c_call {
 	method_name := new_string_name("append");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -10164,7 +10164,7 @@ PackedVector4Array_remove_at :: (using self: *PackedVector4Array, index: int) #c
 	func(self, args.data, null, args.count);
 }
 
-PackedVector4Array_insert :: (using self: *PackedVector4Array, at_index: int, value: Vector4) -> int #c_call {
+PackedVector4Array_insert :: (using self: *PackedVector4Array, at_index: int, value: GD_Vector4) -> int #c_call {
 	method_name := new_string_name("insert");
 	defer destroy(*method_name);
 	args : = *void.[*at_index, *value, ];
@@ -10174,7 +10174,7 @@ PackedVector4Array_insert :: (using self: *PackedVector4Array, at_index: int, va
 	return ret;
 }
 
-PackedVector4Array_fill :: (using self: *PackedVector4Array, value: Vector4) #c_call {
+PackedVector4Array_fill :: (using self: *PackedVector4Array, value: GD_Vector4) #c_call {
 	method_name := new_string_name("fill");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -10200,7 +10200,7 @@ PackedVector4Array_clear :: (using self: *PackedVector4Array) #c_call {
 	func(self, args.data, null, args.count);
 }
 
-PackedVector4Array_has :: (using self: *PackedVector4Array, value: Vector4) -> bool #c_call {
+PackedVector4Array_has :: (using self: *PackedVector4Array, value: GD_Vector4) -> bool #c_call {
 	method_name := new_string_name("has");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -10246,7 +10246,7 @@ PackedVector4Array_sort :: (using self: *PackedVector4Array) #c_call {
 	func(self, args.data, null, args.count);
 }
 
-PackedVector4Array_bsearch :: (using self: *PackedVector4Array, value: Vector4, before: bool) -> int #c_call {
+PackedVector4Array_bsearch :: (using self: *PackedVector4Array, value: GD_Vector4, before: bool) -> int #c_call {
 	method_name := new_string_name("bsearch");
 	defer destroy(*method_name);
 	args : = *void.[*value, *before, ];
@@ -10266,7 +10266,7 @@ PackedVector4Array_duplicate :: (using self: *PackedVector4Array) -> PackedVecto
 	return ret;
 }
 
-PackedVector4Array_find :: (using self: *PackedVector4Array, value: Vector4, from: int) -> int #c_call {
+PackedVector4Array_find :: (using self: *PackedVector4Array, value: GD_Vector4, from: int) -> int #c_call {
 	method_name := new_string_name("find");
 	defer destroy(*method_name);
 	args : = *void.[*value, *from, ];
@@ -10276,7 +10276,7 @@ PackedVector4Array_find :: (using self: *PackedVector4Array, value: Vector4, fro
 	return ret;
 }
 
-PackedVector4Array_rfind :: (using self: *PackedVector4Array, value: Vector4, from: int) -> int #c_call {
+PackedVector4Array_rfind :: (using self: *PackedVector4Array, value: GD_Vector4, from: int) -> int #c_call {
 	method_name := new_string_name("rfind");
 	defer destroy(*method_name);
 	args : = *void.[*value, *from, ];
@@ -10286,7 +10286,7 @@ PackedVector4Array_rfind :: (using self: *PackedVector4Array, value: Vector4, fr
 	return ret;
 }
 
-PackedVector4Array_count :: (using self: *PackedVector4Array, value: Vector4) -> int #c_call {
+PackedVector4Array_count :: (using self: *PackedVector4Array, value: GD_Vector4) -> int #c_call {
 	method_name := new_string_name("count");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];
@@ -10296,7 +10296,7 @@ PackedVector4Array_count :: (using self: *PackedVector4Array, value: Vector4) ->
 	return ret;
 }
 
-PackedVector4Array_erase :: (using self: *PackedVector4Array, value: Vector4) -> bool #c_call {
+PackedVector4Array_erase :: (using self: *PackedVector4Array, value: GD_Vector4) -> bool #c_call {
 	method_name := new_string_name("erase");
 	defer destroy(*method_name);
 	args : = *void.[*value, ];

@@ -384,7 +384,7 @@ type_to_variant_type :: (type_name: string) -> string {
 add_method :: (b: *String_Builder, method: Builtin_Method, class_name: string) {
     m_name := clean_name(method.name);
     returns := method.return_type != "void" && method.return_type.count != 0;
-    print_to_builder(b, "%1_%2 :: (using self: *%1", class_name, m_name);
+    print_to_builder(b, "%1_%2 :: (using self: *%1", clean_definition(class_name), m_name);
     for method.arguments {
         // if it_index != 0 {
         append(b, ", ");
@@ -393,7 +393,7 @@ add_method :: (b: *String_Builder, method: Builtin_Method, class_name: string) {
     }
     append(b, ")");
     if returns {
-        print_to_builder(b, " -> %", method.return_type);
+        print_to_builder(b, " -> %", clean_type(method.return_type));
     }
     append(b, " #c_call {\n");
     print_to_builder(b, "\tmethod_name := new_string_name(\"%\");\n\tdefer destroy(*method_name);\n", method.name);
@@ -403,7 +403,7 @@ add_method :: (b: *String_Builder, method: Builtin_Method, class_name: string) {
     }
     append(b, "];\n");
     if returns {
-        print_to_builder(b, "\tret: %;\n", method.return_type);
+        print_to_builder(b, "\tret: %;\n", clean_type(method.return_type));
     }
     print_to_builder(b, "\tfunc := variant_get_ptr_builtin_method(.%, *method_name, %);\n", type_to_variant_type(class_name), method.hash);
     print_to_builder(b, "\tfunc(self, args.data, %, args.count);\n", ifx returns then "*ret" else "null");
@@ -426,7 +426,7 @@ add_builtin_classes :: (b: *String_Builder, api: Extension_Api) {
         has_class, class := find_class(it.name, api.builtin_classes);
         has_offset, offset := find_offsets(it.name, offsets);
 
-        print_to_builder(b, "% :: struct {\n", it.name);
+        print_to_builder(b, "% :: struct {\n", clean_definition(it.name));
 
         if !has_offset {
             print_to_builder(b, "\t__private: [%]u8;\n", it.size);
@@ -471,9 +471,9 @@ add_builtin_classes :: (b: *String_Builder, api: Extension_Api) {
                     case "BASIS_FLIP_X";         append(b, "BASIS_FLIP_X :: Basis.{.{-1, 0, 0}, .{0, 1, 0}, .{0, 0, 1}};\n");
                     case "BASIS_FLIP_Y";         append(b, "BASIS_FLIP_Y :: Basis.{.{1, 0, 0}, .{0, -1, 0}, .{0, 0, 1}};\n");
                     case "BASIS_FLIP_Z";         append(b, "BASIS_FLIP_Z :: Basis.{.{1, 0, 0}, .{0, 1, 0}, .{0, 0, -1}};\n");
-                    case "PLANE_PLANE_YZ";       append(b, "PLANE_PLANE_YZ :: Plane.{.{1, 0, 0}, 0};\n");
-                    case "PLANE_PLANE_XZ";       append(b, "PLANE_PLANE_XZ :: Plane.{.{0, 1, 0}, 0};\n");
-                    case "PLANE_PLANE_XY";       append(b, "PLANE_PLANE_XY :: Plane.{.{0, 0, 1}, 0};\n");
+                    case "PLANE_PLANE_YZ";       append(b, "PLANE_PLANE_YZ :: GD_Plane.{.{1, 0, 0}, 0};\n");
+                    case "PLANE_PLANE_XZ";       append(b, "PLANE_PLANE_XZ :: GD_Plane.{.{0, 1, 0}, 0};\n");
+                    case "PLANE_PLANE_XY";       append(b, "PLANE_PLANE_XY :: GD_Plane.{.{0, 0, 1}, 0};\n");
                     case "TRANSFORM2D_IDENTITY"; append(b, "TRANSFORM2D_IDENTITY :: Transform2D.{.{1, 0}, .{0, 1}, .{0, 0}};\n");
                     case "TRANSFORM2D_FLIP_X";   append(b, "TRANSFORM2D_FLIP_X :: Transform2D.{.{-1, 0}, .{0, 1}, .{0, 0}};\n");
                     case "TRANSFORM2D_FLIP_Y";   append(b, "TRANSFORM2D_FLIP_Y :: Transform2D.{.{1, 0}, .{0, -1}, .{0, 0}};\n");
@@ -497,7 +497,7 @@ add_builtin_classes :: (b: *String_Builder, api: Extension_Api) {
 
 // --------
 // Classes
-
+// used to clean the type of something.
 clean_type :: (type: string) -> string {
     if type.count == 0 return "";
 
@@ -509,6 +509,16 @@ clean_type :: (type: string) -> string {
         case "enum::Variant.Type"; {
             return "VariantType";
         }
+
+        // adjust for Math collisions
+        case "Vector2"; return "GD_Vector2";
+        case "enum::Vector2.Axis"; return "GD_Vector2.Axis";
+        case "Vector3"; return "GD_Vector3";
+        case "enum::Vector3.Axis"; return "GD_Vector3.Axis";
+        case "Vector4"; return "GD_Vector4";
+        case "enum::Vector4.Axis"; return "GD_Vector4.Axis";
+        case "Plane"; return "GD_Plane";
+        case "Quaternion"; return "GD_Quaternion";
     }
 
     result := type;
@@ -534,6 +544,8 @@ clean_type :: (type: string) -> string {
     return result;
 }
 
+
+// used to clean name of props or arguments
 clean_name :: (name: string) -> string {
     if name == {
         case "context"; return "_context";
@@ -545,6 +557,28 @@ clean_name :: (name: string) -> string {
         case "string"; return "_string";
         case "bool"; return "_bool";
         case "RID"; return "rid";
+
+
+        // adjust for Math collisions
+        case "Vector2"; return "GD_Vector2";
+        case "Vector3"; return "GD_Vector3";
+        case "Vector4"; return "GD_Vector4";
+        case "Plane"; return "GD_Plane";
+        case "Quaternion"; return "GD_Quaternion";
+    }
+
+    return name;
+}
+
+// When a var, struct, etc is defined
+clean_definition :: (name: string) -> string {
+    if name == {
+        // adjust for Math collisions
+        case "Vector2"; return "GD_Vector2";
+        case "Vector3"; return "GD_Vector3";
+        case "Vector4"; return "GD_Vector4";
+        case "Plane"; return "GD_Plane";
+        case "Quaternion"; return "GD_Quaternion";
     }
 
     return name;
@@ -567,6 +601,7 @@ print_enum :: (b: *String_Builder, e: Enum_Info, indentation: string) {
 
 add_method :: (b: *String_Builder, method: Method, class_name: string, method_body: string = "") {
     m_name := clean_name(method.name);
+    print_to_builder(b, "%_%_bind: *MethodBindPtr = null;\n", class_name, m_name);
     print_to_builder(b, "%1_%2 :: (using self: *%1", class_name, m_name);
 
     string_name_args : [..]string;
@@ -591,13 +626,17 @@ add_method :: (b: *String_Builder, method: Method, class_name: string, method_bo
     }
     append(b, " {\n");
 
+
+    print_to_builder(b, "\tif !%_%_bind {\n", class_name, m_name);
+
+    print_to_builder(b, "\t\tmethod_name := new_string_name(\"%\");\n\t\tdefer destroy(*method_name);\n", method.name);
+    print_to_builder(b, "\t\tclass_name := new_string_name(\"%\");\n\t\tdefer destroy(*class_name);\n", class_name);
+    print_to_builder(b, "\t\t%_%_bind = classdb_get_method_bind(*class_name, *method_name, %);\n", class_name, m_name, method.hash);
+    append(b, "\t}\n");
+
     for string_name_args {
         print_to_builder(b, "\t%_gd := new_string_name(%);\n\tdefer destroy(*%_gd);\n", it, it, it);
     }
-
-    print_to_builder(b, "\tmethod_name := new_string_name(\"%\");\n\tdefer destroy(*method_name);\n", method.name);
-    print_to_builder(b, "\tclass_name := new_string_name(\"%\");\n\tdefer destroy(*class_name);\n", class_name);
-    print_to_builder(b, "\tbind := classdb_get_method_bind(*class_name, *method_name, %);\n", method.hash);
 
     append(b, "\targs : = *void.[");
     for method.arguments {
@@ -613,17 +652,17 @@ add_method :: (b: *String_Builder, method: Method, class_name: string, method_bo
         if method.return_value.type == {
             case "StringName";
                 print_to_builder(b, "\tret_gd: StringName;");
-                print_to_builder(b, "\tobject_method_bind_ptrcall(bind, self.__private, args.data, *ret_gd);\n");
+                print_to_builder(b, "\tobject_method_bind_ptrcall(%_%_bind, self.__private, args.data, *ret_gd);\n", class_name, m_name);
                 print_to_builder(b, "\tresult := jai_string_from_stringname(ret_gd);\n");
                 print_to_builder(b, "\tdestroy(*ret_get);\n");
                 print_to_builder(b, "\treturn result;\n");
             case;
                 print_to_builder(b, "\tret: %;\n", clean_type(method.return_value.type));
-                print_to_builder(b, "\tobject_method_bind_ptrcall(bind, self.__private, args.data, *ret);\n");
+                print_to_builder(b, "\tobject_method_bind_ptrcall(%_%_bind, self.__private, args.data, *ret);\n", class_name, m_name);
                 print_to_builder(b, "\treturn ret;\n");
         }
     } else {
-        print_to_builder(b, "\tobject_method_bind_ptrcall(bind, self.__private, args.data, null);\n");
+        print_to_builder(b, "\tobject_method_bind_ptrcall(%_%_bind, self.__private, args.data, null);\n", class_name, m_name);
     }
     append(b, "}\n");
 }

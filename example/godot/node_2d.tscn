@@ -11,6 +11,8 @@ script = ExtResource("1_wtcfe")
 [node name="Player" type="Player" parent="." unique_id=469106918]
 speed = 22.0
 player_name = "Jon Snow"
+pos = Vector2(5, 67)
+position = Vector2(363, 124)
 
 [node name="Avatar" type="Sprite2D" parent="Player" unique_id=1212458945]
 texture = ExtResource("2_0e48y")
