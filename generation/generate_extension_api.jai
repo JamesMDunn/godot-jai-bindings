@@ -381,24 +381,54 @@ type_to_variant_type :: (type_name: string) -> string {
     }
 }
 
+
+
 add_method :: (b: *String_Builder, method: Builtin_Method, class_name: string) {
     m_name := clean_name(method.name);
     returns := method.return_type != "void" && method.return_type.count != 0;
-    print_to_builder(b, "%1_%2 :: (using self: *%1", clean_definition(class_name), m_name);
+    is_static := method.is_static;
+
+    string_name_args : [..]string;
+
+    if is_static {
+        print_to_builder(b, "%1_%2 :: (", clean_definition(class_name), m_name);
+    } else {
+        print_to_builder(b, "%1_%2 :: (using self: *%1", clean_definition(class_name), m_name);
+    }
+
     for method.arguments {
-        // if it_index != 0 {
-        append(b, ", ");
-        // }
-        print_to_builder(b, "%: %", clean_name(it.name), clean_type(it.type));
+        clean_name_arg := clean_name(it.name);
+        if it.type == {
+            case "StringName"; array_add(*string_name_args, clean_name_arg);
+        }
+
+        if it_index == 0 && !is_static {
+            append(b, ", ");
+        }
+        print_to_builder(b, "%: %", clean_name_arg, clean_type(it.type));
+        if it_index != method.arguments.count - 1 {
+            append(b, ", ");
+        }
     }
     append(b, ")");
     if returns {
         print_to_builder(b, " -> %", clean_type(method.return_type));
     }
+
     append(b, " #c_call {\n");
     print_to_builder(b, "\tmethod_name := new_string_name(\"%\");\n\tdefer destroy(*method_name);\n", method.name);
+
+    for string_name_args {
+        print_to_builder(b, "\t%_gd := new_string_name(%);\n\tdefer destroy(*%_gd);\n", it, it, it);
+    }
+
     append(b, "\targs : = *void.[");
     for method.arguments {
+        if it.type == {
+            case "StringName";
+                print_to_builder(b, "*%_gd, ", it.name);
+                continue;
+        }
         print_to_builder(b, "*%, ", it.name);
     }
     append(b, "];\n");
@@ -406,7 +436,13 @@ add_method :: (b: *String_Builder, method: Builtin_Method, class_name: string) {
         print_to_builder(b, "\tret: %;\n", clean_type(method.return_type));
     }
     print_to_builder(b, "\tfunc := variant_get_ptr_builtin_method(.%, *method_name, %);\n", type_to_variant_type(class_name), method.hash);
-    print_to_builder(b, "\tfunc(self, args.data, %, args.count);\n", ifx returns then "*ret" else "null");
+
+    if is_static {
+        print_to_builder(b, "\tfunc(null, args.data, %, args.count);\n", ifx returns then "*ret" else "null");
+    } else {
+        print_to_builder(b, "\tfunc(self, args.data, %, args.count);\n", ifx returns then "*ret" else "null");
+    }
+
     if returns {
         append(b, "\treturn ret;\n");
     }
@@ -510,6 +546,8 @@ clean_type :: (type: string) -> string {
             return "VariantType";
         }
 
+        case "float"; return "float64";
+
         // adjust for Math collisions
         case "Vector2"; return "GD_Vector2";
         case "enum::Vector2.Axis"; return "GD_Vector2.Axis";
@@ -602,6 +640,12 @@ print_enum :: (b: *String_Builder, e: Enum_Info, indentation: string) {
 add_method :: (b: *String_Builder, method: Method, class_name: string, method_body: string = "") {
     m_name := clean_name(method.name);
     print_to_builder(b, "%_%_bind: *MethodBindPtr = null;\n", class_name, m_name);
+
+    if method.is_vararg {
+        add_vararg_method(b, method, class_name, m_name);
+        return;
+    }
+
     print_to_builder(b, "%1_%2 :: (using self: *%1", class_name, m_name);
 
     string_name_args : [..]string;
@@ -663,6 +707,53 @@ add_method :: (b: *String_Builder, method: Method, class_name: string, method_bo
         }
     } else {
         print_to_builder(b, "\tobject_method_bind_ptrcall(%_%_bind, self.__private, args.data, null);\n", class_name, m_name);
+    }
+    append(b, "}\n");
+}
+
+add_vararg_method :: (b: *String_Builder, method: Method, class_name: string, m_name: string) {
+    returns := method.return_value.type.count != 0;
+    print_to_builder(b, "%1_%2 :: (using self: *%1", class_name, m_name);
+    for method.arguments {
+        print_to_builder(b, ", %: %", clean_name(it.name), clean_type(it.type));
+    }
+    append(b, ", args: ..Any)");
+    if returns  {
+        print_to_builder(b, " -> %", clean_type(method.return_value.type));
+    }
+    append(b, " {\n");
+    print_to_builder(b, "\tif !%_%_bind {\n", class_name, m_name);
+    print_to_builder(b, "\t\tmethod_name := new_string_name(\"%\");\n\t\tdefer destroy(*method_name);\n", method.name);
+    print_to_builder(b, "\t\tclass_name := new_string_name(\"%\");\n\t\tdefer destroy(*class_name);\n", class_name);
+    print_to_builder(b, "\t\t%_%_bind = classdb_get_method_bind(*class_name, *method_name, %);\n", class_name, m_name, method.hash);
+    append(b, "\t}\n");
+    append(b, "\tvariants: [..] Variant;\n");
+    append(b, "\tdefer array_free(variants);\n");
+
+    for method.arguments {
+        arg_name := clean_name(it.name);
+        if it_index == 0 && it.type == "StringName" {
+            print_to_builder(b, "\t%1_sn := new_string_name(%1);\n", arg_name);
+            print_to_builder(b, "\tdefer destroy(*%_sn);\n", arg_name);
+            print_to_builder(b, "\t%_v: Variant;\n", arg_name);
+            print_to_builder(b, "\tvariant_from_string_name(xx *%1_v, xx *%1_sn);\n", arg_name);
+            print_to_builder(b, "\tarray_add(*variants, %_v);\n", arg_name);
+        } else {
+            print_to_builder(b, "\tarray_add(*variants, to_variant(%));\n", arg_name);
+        }
+    }
+    append(b, "\tfor args  array_add(*variants, to_variant(it));\n");
+
+    append(b, "\tptrs: [..] *void;\n");
+    append(b, "\tdefer array_free(ptrs);\n");
+    append(b, "\tfor * variants  array_add(*ptrs, it);\n");
+    append(b, "\terror: CallError;\n");
+    if returns {
+        print_to_builder(b, "\tret: %;\n", clean_type(method.return_value.type));
+        print_to_builder(b, "\tobject_method_bind_call(%_%_bind, self.__private, xx ptrs.data, ptrs.count, *ret, *error);\n", class_name, m_name);
+        append(b, "\treturn ret;\n");
+    } else {
+        print_to_builder(b, "\tobject_method_bind_call(%_%_bind, self.__private, xx ptrs.data, ptrs.count, null, *error);\n", class_name, m_name);
     }
     append(b, "}\n");
 }

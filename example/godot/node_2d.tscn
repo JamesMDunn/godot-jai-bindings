@@ -14,5 +14,7 @@ player_name = "Jon Snow"
 pos = Vector2(5, 67)
 position = Vector2(363, 124)
 
+[node name="Timer" type="Timer" parent="Player" unique_id=1372074115]
+
 [node name="Avatar" type="Sprite2D" parent="Player" unique_id=1212458945]
 texture = ExtResource("2_0e48y")

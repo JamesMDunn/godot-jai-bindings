@@ -19,12 +19,25 @@ jai_entry :: (p_get_proc_address: InterfaceGetProcAddress, p_library: ClassLibra
     return 1;
 }
 
+gm_singleton: GameManager;
+
+GameManager_get :: () -> GameManager {
+    return get_singleton(GameManager, "GameManager");
+}
+
 initialize :: (data: *void, level: InitializationLevel) #c_call {
     push_context cast(*#Context)data {
         if level != .INITIALIZATION_SCENE return;
         register_class(Player);
         register_class(Inventory);
         register_class(Item);
+        register_class(GameManager);
+
+        engine := get_singleton(Engine, "Engine");
+
+        gm_singleton = construct(GameManager);
+
+        Engine_register_singleton(*engine, "GameManager", gm_singleton);
     }
 }
 
@@ -33,6 +46,18 @@ deinitialize :: (data: *void, level: InitializationLevel) #c_call {
     }
 }
 
+
+
+GameManager :: struct {
+  using #as base: Node; @Base
+
+  _ready :: (self: *GameManager) {
+    print_to_godot("registered GameManager");
+  }
+
+}
+
+
 Player :: struct {
     using #as base: Node2D; @Base // @Base to mark this member as its' base class
     inventory: *Inventory;
@@ -40,8 +65,11 @@ Player :: struct {
     speed: float64; @export;
     player_name: string; @export;
     pos: Vector2; @export
+    timer: Timer;
 
     hit :: #type (amount: int); @signal
+
+
 
     get_speed :: (self: *Player) -> float64 {
         print_to_godot("uncomment this to see it wont auto gen this and u can do custom things here");
@@ -59,6 +87,19 @@ Player :: struct {
     }
 
     _ready :: (self: *Player) {
+
+        // get singleton test
+        gm := GameManager_get();
+        ensure_in_tree(*gm);
+
+        self.timer = get_node_as(Timer, self, "Timer");
+        if !is_valid(self.timer)  print_to_godot("TIMER HANDLE INVALID");
+        print_to_godot(tprint("self.__private = %", self.__private));
+        // err := Object_connect(*self.timer, "timeout", callable_mp(self, _on_timeout));
+        err := Object_connect(*self.timer, "timeout", callable(self, "_on_timeout"));
+        print_to_godot(tprint("connect result = %", err));
+        Timer_start(*self.timer);
+
         a: Vector2 = .{1, 2};
         print_to_godot(tprint("custom pos set to %", self.pos));
 
@@ -84,6 +125,10 @@ Player :: struct {
         if !is_valid(fake_avatar) {
           print_to_godot("fake node found");
         }
+    }
+
+    _on_timeout :: (self: *Player) {
+      print_to_godot("Timer timed out!");
     }
 
     _input :: (self: *Player, event: InputEvent) {
@@ -137,8 +182,10 @@ Item :: struct {
   item_name : string; @export;
 }
 
-to_variant :: (val: float) -> Variant {
-    result: Variant = ---;
-    variant_from_float(*result, *val);
-    return result;
-}
+// to_variant :: (val: float) -> Variant {
+//     result: Variant = ---;
+//     variant_from_float(*result, *val);
+//     return result;
+// }
+
+
