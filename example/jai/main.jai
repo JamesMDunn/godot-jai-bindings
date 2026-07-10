@@ -2,8 +2,6 @@
 
 #import "godot-jai-bindings";
 #import "Math";
-#load "helpers.jai";
-
 
 // Initialization code (could be automated)
 
@@ -18,7 +16,6 @@ jai_entry :: (p_get_proc_address: InterfaceGetProcAddress, p_library: ClassLibra
     }
     return 1;
 }
-
 
 
 initialize :: (data: *void, level: InitializationLevel) #c_call {
@@ -172,7 +169,7 @@ _ready :: (self: *Inventory) {
   // direct call
   print_to_godot("ready players inventory");
   parent := Node_get_parent(self);
-  player := as(Player, *parent);
+  player := get_instance(Player, *parent);
   speed := player.speed;
   print_to_godot(tprint("parent speed = %", speed));
 
@@ -190,11 +187,3 @@ Item :: struct {
   using #as base: Resource; @Base
   item_name : string; @export;
 }
-
-// to_variant :: (val: float) -> Variant {
-//     result: Variant = ---;
-//     variant_from_float(*result, *val);
-//     return result;
-// }
-
-
